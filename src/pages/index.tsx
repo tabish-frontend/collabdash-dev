@@ -1,3 +1,3 @@
-import { Overview } from "src/components/modules/dashboard/overview";
+import { Overview } from "src/component";
 
 export default Overview;
