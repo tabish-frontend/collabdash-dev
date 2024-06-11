@@ -8,7 +8,6 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 
 import { Seo } from "src/components/shared/seo";
-import { usePageView } from "src/hooks/use-page-view";
 import { DashboardLayout } from "src/layouts";
 import { TaskModal } from "./task-modal";
 import { ColumnCard } from "./column-card";
@@ -38,8 +37,6 @@ const KanbanBoardComponent = () => {
   const dispatch = useDispatch();
   const columnsIds = useColumnsIds();
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
-
-  usePageView();
 
   useBoard();
 

@@ -22,7 +22,6 @@ import {
 import ViewListIcon from "@mui/icons-material/ViewList";
 import ClearIcon from "@mui/icons-material/Clear";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
-import currency_data from "src/currencies.json";
 import dayjs from "dayjs";
 
 const monthOptions = [
@@ -57,7 +56,6 @@ function generateCustomArray(currentYear: number) {
 
 const currentYear = dayjs().year();
 const yearOptions = generateCustomArray(currentYear);
-const currencies = Object.keys(currency_data);
 interface SortOption {
   label: string;
   value: string;
@@ -263,40 +261,6 @@ export const ListSearch: FC<CustomerListSearchProps> = ({
             </TextField>
           )}
 
-          {isCurrency && (
-            <TextField
-              style={{ minWidth: "200px" }}
-              label="Select Currency"
-              value={setCurrency}
-              onChange={currencyChange}
-              SelectProps={{
-                MenuProps: {
-                  style: {
-                    maxHeight: "250px",
-                  },
-                },
-              }}
-              select
-              fullWidth={!isMediumUp}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="start">
-                    {setCurrency && (
-                      <IconButton onClick={clearCurrencyFilter} edge="start">
-                        <ClearIcon />
-                      </IconButton>
-                    )}
-                  </InputAdornment>
-                ),
-              }}
-            >
-              {currencies.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
-          )}
           {isMonthFilter && (
             <TextField
               style={{ minWidth: "200px" }}

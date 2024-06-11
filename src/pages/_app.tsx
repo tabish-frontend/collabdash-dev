@@ -46,11 +46,6 @@ const CustomApp = (props: CustomAppProps) => {
               <SettingsProvider>
                 <SettingsConsumer>
                   {(settings) => {
-                    // Prevent theme flicker when restoring custom settings from browser storage
-                    if (!settings.isInitialized) {
-                      return null;
-                    }
-
                     const theme = createTheme({
                       colorPreset: settings.colorPreset,
                       paletteMode: settings.paletteMode,

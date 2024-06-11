@@ -8,7 +8,6 @@ import type { Theme } from "@mui/material/styles/createTheme";
 
 import { RouterLink } from "src/components/shared";
 import { Seo } from "src/components/shared/seo";
-import { usePageView } from "src/hooks/use-page-view";
 import { paths } from "src/constants/paths";
 import { Stack, SvgIcon } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -20,8 +19,6 @@ import { AuthContextType } from "src/contexts/auth";
 
 const Page: NextPage = () => {
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
-
-  usePageView();
 
   const router = useRouter();
 
