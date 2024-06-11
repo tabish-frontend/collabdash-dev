@@ -1,3 +1,3 @@
-import { Overview } from "src/component";
+import { Overview } from "src/components";
 
 export default Overview;
