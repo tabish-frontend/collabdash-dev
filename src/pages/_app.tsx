@@ -34,7 +34,54 @@ const CustomApp = (props: CustomAppProps) => {
   const getLayout = Component.getLayout ?? ((page) => page);
 
   return (
-   <SplashScreen />  );
+    <CacheProvider value={emotionCache}>
+      <Head>
+        <title>Work Dock</title>
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
+      </Head>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <AuthProvider>
+          <AuthConsumer>
+            {(auth) => (
+              <SettingsProvider>
+                <SettingsConsumer>
+                  {(settings) => {
+                    // Prevent theme flicker when restoring custom settings from browser storage
+                    if (!settings.isInitialized) {
+                      return null;
+                    }
+
+                    const theme = createTheme({
+                      colorPreset: settings.colorPreset,
+                      paletteMode: settings.paletteMode,
+                      responsiveFontSizes: settings.responsiveFontSizes,
+                    });
+
+                    // Prevent guards from redirecting
+                    const showSlashScreen = !auth.isInitialized;
+
+                    return (
+                      <Provider store={store}>
+                     
+                          <CssBaseline />
+                          {showSlashScreen ? (
+                            <SplashScreen />
+                          ) : (
+                            <>{getLayout(<Component {...pageProps} />)}</>
+                          )}
+                          <Toaster />
+                        
+                      </Provider>
+                    );
+                  }}
+                </SettingsConsumer>
+              </SettingsProvider>
+            )}
+          </AuthConsumer>
+        </AuthProvider>
+      </LocalizationProvider>
+    </CacheProvider>
+  );
 };
 
 export default CustomApp;
