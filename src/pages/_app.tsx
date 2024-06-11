@@ -63,13 +63,7 @@ const CustomApp = (props: CustomAppProps) => {
                     return (
                       <Provider store={store}>
                         <ThemeProvider theme={theme}>
-                          <CssBaseline />
-                          {showSlashScreen ? (
-                            <SplashScreen />
-                          ) : (
-                            <>{getLayout(<Component {...pageProps} />)}</>
-                          )}
-                          <Toaster />
+                         <SplashScreen />
                         </ThemeProvider>
                       </Provider>
                     );
