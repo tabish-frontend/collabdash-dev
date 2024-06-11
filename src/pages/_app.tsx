@@ -42,41 +42,24 @@ const CustomApp = (props: CustomAppProps) => {
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <AuthProvider>
           <AuthConsumer>
-            {(auth) => (
-              <SettingsProvider>
-                <SettingsConsumer>
-                  {(settings) => {
-                    // Prevent theme flicker when restoring custom settings from browser storage
-                    if (!settings.isInitialized) {
-                      return null;
-                    }
+            {(auth) => {
+              const showSlashScreen = !auth.isInitialized;
 
-                    const theme = createTheme({
-                      colorPreset: settings.colorPreset,
-                      paletteMode: settings.paletteMode,
-                      responsiveFontSizes: settings.responsiveFontSizes,
-                    });
+              return (
+                <Provider store={store}>
+                  
+                    <CssBaseline />
+                    {showSlashScreen ? (
+                      <SplashScreen />
+                    ) : (
+                      <>{getLayout(<Component {...pageProps} />)}</>
+                    )}
+                    <Toaster />
+                
+                </Provider>
+              );
 
-                    // Prevent guards from redirecting
-                    const showSlashScreen = !auth.isInitialized;
-
-                    return (
-                      <Provider store={store}>
-                     
-                          <CssBaseline />
-                          {showSlashScreen ? (
-                            <SplashScreen />
-                          ) : (
-                            <>{getLayout(<Component {...pageProps} />)}</>
-                          )}
-                          <Toaster />
-                        
-                      </Provider>
-                    );
-                  }}
-                </SettingsConsumer>
-              </SettingsProvider>
-            )}
+            }}
           </AuthConsumer>
         </AuthProvider>
       </LocalizationProvider>
