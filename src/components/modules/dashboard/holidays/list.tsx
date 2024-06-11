@@ -5,7 +5,7 @@ import TableRow from "@mui/material/TableRow";
 import TableHead from "@mui/material/TableHead";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts/dashboard";
 import {
@@ -57,7 +57,7 @@ const HolidaysListComponent = () => {
   const [modalType, setModalType] = useState("");
   const [holidayValues, setHolidayValues] = useState();
 
-  const getHoliday = async () => {
+  const getHoliday = useCallback(async () => {
     let response = [];
     if (user?.role === ROLES.HR || user?.role === ROLES.Admin) {
       response = await holidaysApi.getAllUserHolidays();
@@ -65,7 +65,12 @@ const HolidaysListComponent = () => {
       response = await holidaysApi.getMyHolidays({ year: "2024" });
     }
     setHolidayList(response);
-  };
+  }, [user?.role]); // Dependencies array ensures memoization based on user.role
+
+  // useEffect to call getHoliday when the component mounts or when getHoliday changes
+  useEffect(() => {
+    getHoliday();
+  }, [getHoliday]);
 
   const addAndUpdateHoliday = async (values: any) => {
     const { _id, ...HolidayValues } = values;
@@ -87,10 +92,6 @@ const HolidaysListComponent = () => {
     );
   };
 
-  useEffect(() => {
-    getHoliday();
-  }, []);
-
   return (
     <Box
       component="main"
@@ -107,7 +108,7 @@ const HolidaysListComponent = () => {
           }}
         >
           <Stack direction={"row"} justifyContent="space-between" spacing={4}>
-            <Typography variant="h4">Holiday's</Typography>
+            <Typography variant="h4">{"Holiday's"}</Typography>
 
             {(user?.role === ROLES.Admin || user?.role === ROLES.HR) && (
               <Button

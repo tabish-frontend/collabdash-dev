@@ -17,7 +17,7 @@ import Typography from "@mui/material/Typography";
 
 import { RouterLink } from "src/components/shared/router-link";
 import { useRouter } from "src/hooks/use-router";
-import { paths } from "src/constants";
+import { paths } from "src/constants/paths";
 import { useAuth } from "src/hooks/use-auth";
 import { AuthContextType } from "src/contexts/auth";
 import { ConfirmationModal } from "../../modals";
@@ -43,7 +43,7 @@ export const AccountPopover: FC<AccountPopoverProps> = (props) => {
     } catch (err) {
       toast.error("Something went wrong!");
     }
-  }, [router, onClose]);
+  }, [signOut, router, onClose]);
 
   const userName = user ? user?.full_name : "";
   const userEmail = user ? user?.email : "";

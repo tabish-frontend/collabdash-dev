@@ -6,6 +6,8 @@ export type NavColor = "blend-in" | "discrete" | "evident";
 
 export interface Settings {
   colorPreset?: ColorPreset;
+  layout?: Layout;
+  navColor?: NavColor;
   paletteMode?: PaletteMode;
   responsiveFontSizes?: boolean;
   stretch?: boolean;

@@ -72,7 +72,6 @@ export const EmployeeDetails = ({
             xs={12}
             md={8}
             sx={{
-              paddingTop: ["0 !important", "0 !important", "1.5rem !important"],
               paddingLeft: [
                 "1.5rem !important",
                 "1.5rem !important",
@@ -87,7 +86,7 @@ export const EmployeeDetails = ({
               <Typography variant="body2" textTransform={"capitalize"}>
                 {employeeData?.designation}
               </Typography>
-              <Typography variant="body2" sx={{ my: 3 }}>
+              <Typography variant="body2" sx={{ mt: 3 }}>
                 {employeeData?.bio ||
                   "Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur saepe, quasi unde illo eum placeat harum vitae eos sapiente possimus quam assumenda quia"}
               </Typography>

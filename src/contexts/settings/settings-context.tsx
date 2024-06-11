@@ -4,6 +4,8 @@ import type { Settings } from "src/types/settings";
 
 export const defaultSettings: Settings = {
   colorPreset: "blue",
+  layout: "vertical",
+  navColor: "evident",
   paletteMode: "light",
   responsiveFontSizes: true,
   stretch: true,

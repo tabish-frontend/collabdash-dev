@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Box, Container, Grid, Stack, Typography } from "@mui/material";
 import { DashboardLayout } from "src/layouts/dashboard";
 import { NextPage } from "next";
@@ -16,10 +16,13 @@ const EmployeeProfileComponent = () => {
 
   const [employeeData, setEmployeeData] = useState<Employee | undefined>();
 
-  const handleGetEmployee = async () => {
+  // Memoize the handleGetEmployee function
+  const handleGetEmployee = useCallback(async () => {
+    if (!username) return;
+
     const response = await employeesApi.getEmployee(username);
     setEmployeeData(response);
-  };
+  }, [username]); // Memoize based on username
 
   const handleUpdateEmployee = async (values: any) => {
     const { username, ...UpdatedValues } = values;
@@ -29,11 +32,10 @@ const EmployeeProfileComponent = () => {
     setEmployeeData(response);
   };
 
+  // useEffect to call handleGetEmployee when username changes
   useEffect(() => {
-    if (username) {
-      handleGetEmployee();
-    }
-  }, [username]);
+    handleGetEmployee();
+  }, [handleGetEmployee]);
 
   return (
     <Box
@@ -52,7 +54,7 @@ const EmployeeProfileComponent = () => {
         >
           <Grid container spacing={4}>
             <Grid item xs={12} sx={{ paddingBottom: 4 }}>
-              <Typography variant="h5">Employee Profile</Typography>
+              <Typography variant="h5">{"Employee Profile"}</Typography>
             </Grid>
             <Grid item xs={12} sm={7}>
               <EmployeeDetails

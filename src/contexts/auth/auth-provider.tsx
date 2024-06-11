@@ -212,7 +212,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
 
   useEffect(() => {
     initialize();
-  }, []);
+  }, [initialize]);
 
   const signIn = useCallback(
     async (body: Login): Promise<void> => {

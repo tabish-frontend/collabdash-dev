@@ -45,14 +45,14 @@ const EmployeeListComponent = () => {
             lg: 4,
           }}
         >
-          <Grid container spacing={6}>
+          <Grid container spacing={2}>
             <Grid item xs={12} sx={{ paddingBottom: 4 }}>
               <Stack
                 direction={"row"}
                 justifyContent="space-between"
                 spacing={4}
               >
-                <Typography variant="h4">Employee's</Typography>
+                <Typography variant="h4">{"Employee's"}</Typography>
 
                 <Button
                   onClick={() => router.push(`${router.pathname}/new`)}

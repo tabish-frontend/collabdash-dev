@@ -15,7 +15,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { authApi } from "src/api/auth";
 import { RouterLink } from "src/components";
-import { paths } from "src/constants";
+import { paths } from "src/constants/paths";
 import { useMounted } from "src/hooks";
 import { AuthLayout } from "src/layouts";
 import * as Yup from "yup";
@@ -82,7 +82,7 @@ const ForgotPasswordComponent = () => {
         <Link
           color="text.primary"
           component={RouterLink}
-          href={paths.auth.index}
+          href={paths.auth.login}
           sx={{
             alignItems: "center",
             display: "inline-flex",

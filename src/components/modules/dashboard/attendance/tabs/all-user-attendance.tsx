@@ -1,5 +1,5 @@
 // ** React Imports
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import Typography from "@mui/material/Typography";
 
@@ -31,15 +31,16 @@ import { formatTime } from "src/utils/helpers";
 export const AllUserAttendance = ({ filters }: any) => {
   const [employees, setEmployees] = useState<undefined | []>([]);
 
-  const handleGetAttendances = async () => {
+  // Memoize the handleGetAttendances function
+  const handleGetAttendances = useCallback(async () => {
     const response = await attendanceApi.getAllUserAttendance(filters);
-
     setEmployees(response.data);
-  };
+  }, [filters]); // Memoize based on filters
 
+  // useEffect to call handleGetAttendances when the component mounts or when handleGetAttendances changes
   useEffect(() => {
     handleGetAttendances();
-  }, []);
+  }, [handleGetAttendances]);
 
   const isPastDate = (date: Date, joinDate: Date) => {
     return date < joinDate;

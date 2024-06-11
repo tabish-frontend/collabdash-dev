@@ -27,7 +27,7 @@ export const SplashScreen: FC = () => (
         width: 200,
       }}
     >
-      <Logo color="#2B91BD" />
+      <Logo />
     </Box>
   </Box>
 );

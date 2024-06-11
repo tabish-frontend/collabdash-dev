@@ -35,7 +35,7 @@ const Page: NextPage = () => {
     } catch (err) {
       toast.error("Something went wrong!");
     }
-  }, [router]);
+  }, [router, signOut]);
 
   return (
     <>

@@ -31,7 +31,7 @@ const useBoard = (): void => {
 
   useEffect(() => {
     handleBoardGet();
-  }, []);
+  }, [handleBoardGet]);
 };
 
 const KanbanBoardComponent = () => {

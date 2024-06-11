@@ -31,12 +31,6 @@ const restoreSettings = (): Settings | null => {
   return value;
 };
 
-const deleteSettings = (): void => {
-  try {
-    window.localStorage.removeItem(STORAGE_KEY);
-  } catch (err) {}
-};
-
 const storeSettings = (value: Record<string, any>): void => {
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
@@ -63,20 +57,10 @@ export const SettingsProvider: FC<SettingsProviderProps> = (props) => {
     }
   }, []);
 
-  const handleReset = useCallback((): void => {
-    deleteSettings();
-    setState((prevState) => ({
-      ...prevState,
-      ...defaultSettings,
-    }));
-  }, []);
-
   const handleUpdate = useCallback((settings: Settings): void => {
     setState((prevState) => {
       storeSettings({
         colorPreset: prevState.colorPreset,
-        contrast: prevState.contrast,
-        direction: prevState.direction,
         layout: prevState.layout,
         navColor: prevState.navColor,
         paletteMode: prevState.paletteMode,
@@ -92,25 +76,9 @@ export const SettingsProvider: FC<SettingsProviderProps> = (props) => {
     });
   }, []);
 
-  const handleDrawerOpen = useCallback(() => {
-    setState((prevState) => ({
-      ...prevState,
-      openDrawer: true,
-    }));
-  }, []);
-
-  const handleDrawerClose = useCallback(() => {
-    setState((prevState) => ({
-      ...prevState,
-      openDrawer: false,
-    }));
-  }, []);
-
   const isCustom = useMemo(() => {
     return !isEqual(defaultSettings, {
       colorPreset: state.colorPreset,
-      contrast: state.contrast,
-      direction: state.direction,
       layout: state.layout,
       navColor: state.navColor,
       paletteMode: state.paletteMode,
@@ -123,9 +91,6 @@ export const SettingsProvider: FC<SettingsProviderProps> = (props) => {
     <SettingsContext.Provider
       value={{
         ...state,
-        handleDrawerClose,
-        handleDrawerOpen,
-        handleReset,
         handleUpdate,
         isCustom,
       }}

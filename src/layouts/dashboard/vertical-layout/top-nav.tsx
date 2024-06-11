@@ -36,7 +36,7 @@ export const TopNav: FC<TopNavProps> = (props) => {
         [field]: value,
       });
     },
-    [setting.handleUpdate]
+    [setting]
   );
 
   return (

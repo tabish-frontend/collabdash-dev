@@ -19,7 +19,7 @@ import {
   Container,
   CardContent,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts/dashboard";
 import {
@@ -74,7 +74,7 @@ const LeavesListComponent = () => {
   const [leavesList, setLeavesList] = useState<any[]>([]);
   const [leaveValues, setLeaveValues] = useState();
 
-  const getLeaves = async () => {
+  const getLeaves = useCallback(async () => {
     let response = [];
     if (user?.role === ROLES.HR || user?.role === ROLES.Admin) {
       response = await leavesApi.getAllLeaves();
@@ -82,7 +82,12 @@ const LeavesListComponent = () => {
       response = await leavesApi.getMyLeaves();
     }
     setLeavesList(response);
-  };
+  }, [user?.role]); // Dependencies array ensures memoization based on user.role
+
+  // useEffect to call getLeaves when the component mounts or when getLeaves changes
+  useEffect(() => {
+    getLeaves();
+  }, [getLeaves]);
 
   const addAndUpdateHoliday = async (values: any) => {
     const { _id, ...LeaveValues } = values;
@@ -100,10 +105,6 @@ const LeavesListComponent = () => {
     setLeaveModal(false);
     setLeaveValues(undefined);
   };
-
-  useEffect(() => {
-    getLeaves();
-  }, []);
 
   const deleteLeave = async (_id: string) => {
     await leavesApi.deleteLeave(_id);

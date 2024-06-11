@@ -6,7 +6,7 @@ import TableHead from "@mui/material/TableHead";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { attendanceApi } from "src/api";
 import { formatDate, formatDuration, formatTime } from "src/utils/helpers";
 import { useAuth } from "src/hooks";
@@ -24,15 +24,14 @@ export const MyAttendance = ({ filters }: any) => {
   const [attendance, setAttendance] = useState<any[]>([]);
   const { user } = useAuth<AuthContextType>();
 
-  const fetchAndProcessData = async () => {
+  // Memoize the fetchAndProcessData function
+  const fetchAndProcessData = useCallback(async () => {
     const response = await attendanceApi.getMyAttendance(filters);
     const attendanceData = response.data.attendance;
 
     const currentDate = new Date();
     const selectedMonth = filters.month;
     const selectedYear = filters.year;
-
-    // Get the number of days in the selected month
     const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
     const joinDate = new Date(user?.join_date || new Date());
 
@@ -45,7 +44,8 @@ export const MyAttendance = ({ filters }: any) => {
         date
       );
       let dayAttendance = attendanceData.find(
-        (item: any) => new Date(item.date).getDate() === date
+        (item: { date: string | number | Date }) =>
+          new Date(item.date).getDate() === date
       );
 
       if (
@@ -67,11 +67,12 @@ export const MyAttendance = ({ filters }: any) => {
     }
 
     setAttendance(attendanceList.reverse());
-  };
+  }, [filters, user?.join_date]);
 
+  // useEffect to call fetchAndProcessData when filters change
   useEffect(() => {
     fetchAndProcessData();
-  }, [filters]);
+  }, [fetchAndProcessData]);
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden", mt: 4 }}>

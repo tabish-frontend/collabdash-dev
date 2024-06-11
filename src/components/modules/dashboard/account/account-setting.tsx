@@ -60,7 +60,7 @@ const AccountSettingsComponent = () => {
 
   useEffect(() => {
     setTabValue(tab);
-  }, [router]);
+  }, [router, tab]);
 
   const handleChange = (event: SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
