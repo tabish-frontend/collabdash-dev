@@ -42,24 +42,36 @@ const CustomApp = (props: CustomAppProps) => {
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <AuthProvider>
           <AuthConsumer>
-            {(auth) => {
-              const showSlashScreen = !auth.isInitialized;
+            {(auth) => (
+              <SettingsProvider>
+                <SettingsConsumer>
+                  {(settings) => {
+                    const theme = createTheme({
+                      colorPreset: settings.colorPreset,
+                      paletteMode: settings.paletteMode,
+                      responsiveFontSizes: settings.responsiveFontSizes,
+                    });
 
-              return (
-                <Provider store={store}>
-                  
-                    <CssBaseline />
-                    {showSlashScreen ? (
-                      <SplashScreen />
-                    ) : (
-                      <>{getLayout(<Component {...pageProps} />)}</>
-                    )}
-                    <Toaster />
-                
-                </Provider>
-              );
+                    // Prevent guards from redirecting
+                    const showSlashScreen = !auth.isInitialized;
 
-            }}
+                    return (
+                      <Provider store={store}>
+                        <ThemeProvider theme={theme}>
+                          <CssBaseline />
+                          {showSlashScreen ? (
+                            <SplashScreen />
+                          ) : (
+                            <>{getLayout(<Component {...pageProps} />)}</>
+                          )}
+                          <Toaster />
+                        </ThemeProvider>
+                      </Provider>
+                    );
+                  }}
+                </SettingsConsumer>
+              </SettingsProvider>
+            )}
           </AuthConsumer>
         </AuthProvider>
       </LocalizationProvider>
