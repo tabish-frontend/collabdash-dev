@@ -258,8 +258,8 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
   );
 
   const updateAttendanceLog = useCallback(
-    async (action: any, body: any): Promise<void> => {
-      const response = await attendanceApi.manageAttendance(action, body);
+    async (action: any): Promise<void> => {
+      const response = await attendanceApi.manageAttendance(action);
 
       dispatch({
         type: ActionType.UPDATE_ATTENDANCE,

@@ -50,9 +50,9 @@ export const getChangedFields = <T extends FormikValues>(
   return changedFields;
 };
 
-export const formatDuration = (startTime: Date, endTime: Date) => {
-  const durationMs =
-    new Date(endTime).getTime() - new Date(startTime).getTime();
+export const formatDuration = (durationMs: number) => {
+  // const durationMs =
+  //   new Date(endTime).getTime() - new Date(startTime).getTime();
   const totalMinutes = Math.floor(durationMs / 60000);
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
@@ -102,18 +102,39 @@ export const formatTime = (timeString: Date | null) => {
 };
 
 export const calculateWorkingPercentage = (
-  startTime: Date,
-  endTime: Date | null
+  timeIn: string,
+  timeOut: string | null,
+  breaks: { start: string; end: string | null }[]
 ) => {
+  if (!timeIn) return 0;
+
   const shiftDuration = 8 * 60 * 60 * 1000; // 8 hours in milliseconds
-  let elapsedTime;
-  if (!endTime) {
-    elapsedTime = new Date().getTime() - new Date(startTime).getTime();
+
+  const start = new Date(timeIn).getTime();
+  const end = timeOut ? new Date(timeOut).getTime() : Date.now();
+
+  let workingTime = end - start;
+  let breakDuration = 0;
+
+  // Calculate the total break duration
+  breaks.forEach((breakItem) => {
+    if (breakItem.end) {
+      const breakStart = new Date(breakItem.start).getTime();
+      const breakEnd = new Date(breakItem.end).getTime();
+      breakDuration += breakEnd - breakStart;
+    }
+  });
+
+  // If currently on a break, use the break start time
+  if (breaks.length > 0 && !breaks[breaks.length - 1].end) {
+    const breakStart = new Date(breaks[breaks.length - 1].start).getTime();
+    workingTime = breakStart - start;
   } else {
-    elapsedTime = new Date(endTime).getTime() - new Date(startTime).getTime();
+    // Subtract the total break duration from working time
+    workingTime -= breakDuration;
   }
 
-  return (elapsedTime / shiftDuration) * 100;
+  return (workingTime / shiftDuration) * 100;
 };
 
 export const getAbbreviatedDays = (days: string[]): string[] => {
@@ -170,21 +191,6 @@ export const getUserTimeZone = () => {
   return systemTimezone;
 };
 
-// export const getUserTimeZone = () => {
-//   const systemTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-//   const countryStandardTimezoneName = new Intl.DateTimeFormat("en-US", {
-//     timeZoneName: "short",
-//     timeZone: "America/New_York",
-//   }).format();
-
-//   // Use zoneName() method to get the full timezone name
-//   // const countryStandardTimezoneName = moment.tz(systemTimezone).zoneAbbr();
-//   // const countryStandardTimezoneName = DateTime.local().toFormat("ZZZZ");
-
-//   return countryStandardTimezoneName;
-// };
-
 export const getDuration = ({ startTime, endTime }: any) => {
   const startDate = dayjs(startTime);
   const endDate = dayjs(endTime);
@@ -213,29 +219,6 @@ export const getClassDuration = ({ startTime, endTime }: any) => {
   return durationString;
 };
 
-export const catchAsync =
-  <T extends any[], R>(
-    fn: (...args: T) => Promise<R>,
-    setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>
-  ) =>
-  async (...args: T) => {
-    if (setIsLoading) {
-      setIsLoading(true);
-    }
-    try {
-      const result = await fn(...args);
-      if (setIsLoading) {
-        setIsLoading(false);
-      }
-      return result;
-    } catch (error) {
-      if (setIsLoading) {
-        setIsLoading(false);
-      }
-      // toast.error(error.message);
-    }
-  };
-
 import { format } from "date-fns";
 
 type Document = any;
@@ -262,15 +245,6 @@ export const removeLastCharacter = (word: string): string => {
 export const getID = (ID: any) => {
   return `TH-${ID.substr(-4)}`.toUpperCase();
 };
-
-// export const getInitials = (name = ""): string => {
-//   return name
-//     .replace(/\s+/, " ")
-//     .split(" ")
-//     .slice(0, 2)
-//     .map((v) => v && v[0].toUpperCase())
-//     .join("");
-// };
 
 export const wait = (time: number): Promise<void> => {
   return new Promise((res) => setTimeout(res, time));

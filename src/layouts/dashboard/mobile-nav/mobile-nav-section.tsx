@@ -46,15 +46,13 @@ const reduceChildRoutes = ({
   item: Item;
   pathname?: string | null;
 }): Array<JSX.Element> => {
-  // const checkPath = !!(item.path && pathname);
-  // const partialMatch = checkPath ? pathname.includes(item.path!) : false;
   const checkPath = !!(item.path && pathname);
+
   const partialMatch = checkPath
-    ? item.path === "/dashboard"
-      ? pathname === "/dashboard"
+    ? item.path === "/"
+      ? pathname === "/"
       : pathname.includes(item.path!)
     : false;
-  const exactMatch = checkPath ? pathname === item.path : false;
 
   if (item.items) {
     acc.push(

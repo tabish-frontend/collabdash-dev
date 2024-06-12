@@ -14,10 +14,22 @@ import ClockInIcon from "mdi-material-ui/ClockCheckOutline";
 import ClockOutIcon from "mdi-material-ui/ClockMinus";
 
 // ** Types
-import { Button, Grid, Stack, Typography, useTheme } from "@mui/material";
+import {
+  Button,
+  Grid,
+  Stack,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 
 import { useEffect, useState } from "react";
-import { calculateWorkingPercentage, formatDuration } from "src/utils/helpers";
+import {
+  calculateWorkingPercentage,
+  formatDuration,
+  formatTime,
+} from "src/utils/helpers";
 import { ConfirmationModal } from "../modals";
 import { useAuth } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
@@ -25,25 +37,35 @@ import ReactApexChart from "react-apexcharts";
 import { Chart } from "../charts/style";
 
 export const TimeLogCard = () => {
+  const theme = useTheme();
+
   const { attendance, updateAttendanceLog } = useAuth<AuthContextType>();
 
   const [percentageWorked, setPercentageWorked] = useState<number>(0);
   const [clockOutModal, setClockOutModal] = useState(false);
-  const theme = useTheme();
 
   useEffect(() => {
     if (attendance) {
       setPercentageWorked(
-        calculateWorkingPercentage(attendance.timeIn, attendance.timeOut)
+        calculateWorkingPercentage(
+          attendance.timeIn,
+          attendance.timeOut,
+          attendance.breaks
+        )
       );
     }
   }, [attendance]);
 
   const handleTimeLog = async (action: string) => {
-    await updateAttendanceLog(action, {
-      notes: "",
-    });
+    await updateAttendanceLog(action);
   };
+
+  const isOnBreak =
+    attendance?.breaks?.length > 0 &&
+    !attendance.breaks[attendance.breaks.length - 1].end;
+
+  const completedBreaksCount =
+    attendance?.breaks?.filter((breakItem: any) => breakItem.end).length || 0;
 
   const options = {
     plotOptions: {
@@ -67,7 +89,7 @@ export const TimeLogCard = () => {
           },
           total: {
             show: true,
-            label: "Working",
+            label: isOnBreak ? "Break" : "Working",
             color: theme.palette.text.primary,
             formatter: () => `${percentageWorked.toFixed(2)}%`,
           },
@@ -83,20 +105,14 @@ export const TimeLogCard = () => {
   return (
     <>
       <Card>
-        <CardHeader
-          title="Attendance"
-          titleTypographyProps={{
-            sx: { lineHeight: "1.2", letterSpacing: "0.31px" },
-          }}
-        />
-        <CardContent sx={{ pt: theme.spacing(2) }}>
+        <CardHeader title="Attendance" />
+        <CardContent>
           <Grid container>
             <Grid item xs={12}>
               <Box
                 sx={{
                   display: "flex",
                   flexWrap: "wrap",
-                  alignItems: "center",
                   justifyContent: "space-between",
                 }}
               >
@@ -104,38 +120,19 @@ export const TimeLogCard = () => {
                   <Stack direction={"column"} spacing={2}>
                     {attendance && (
                       <Typography variant="body1" fontWeight={600}>
-                        {`ClockIn: ${
-                          attendance &&
-                          new Date(attendance?.timeIn).toLocaleTimeString(
-                            "en-US",
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }
-                          )
-                        }`}
+                        ClockIn: {attendance && formatTime(attendance?.timeIn)}
                       </Typography>
                     )}
 
                     {attendance && attendance.timeOut !== null && (
                       <Typography variant="body1" fontWeight={600}>
-                        {`ClockOut: ${
-                          attendance &&
-                          new Date(attendance?.timeOut).toLocaleTimeString(
-                            "en-US",
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }
-                          )
-                        }`}
+                        ClockOut:
+                        {attendance && formatTime(attendance?.timeOut)}
                       </Typography>
                     )}
                   </Stack>
                 </Box>
-                {!attendance ||
-                attendance.timeIn === null ||
-                attendance.timeOut === null ? (
+                {!attendance?.timeOut ? (
                   <Button
                     variant="contained"
                     color={
@@ -158,31 +155,83 @@ export const TimeLogCard = () => {
                   </Button>
                 ) : (
                   <Typography variant="body1">
-                    {`Duration: ${formatDuration(
-                      attendance.timeIn,
-                      attendance.timeOut
-                    )}`}
+                    {`Duration: ${formatDuration(attendance.duration)}`}
                   </Typography>
                 )}
               </Box>
             </Grid>
-          </Grid>
-          <Grid item xs={12}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Chart
-                options={options as any}
-                series={[percentageWorked]}
-                type="radialBar"
-                height={280}
-                key={series[0]}
-              />
-            </Box>
+
+            <Grid item xs={12}>
+              <Stack spacing={3} mt={2}>
+                <Stack direction={"row"} justifyContent={"center"}>
+                  {!attendance?.timeOut ? (
+                    <Tooltip
+                      arrow
+                      placement="left"
+                      title={
+                        completedBreaksCount >= 3
+                          ? "You are allowed only 3 breaks per day"
+                          : ""
+                      }
+                    >
+                      <span>
+                        <Button
+                          variant="contained"
+                          onClick={() =>
+                            handleTimeLog(isOnBreak ? "resume" : "break")
+                          }
+                          disabled={completedBreaksCount >= 3} // Disable if 3 breaks are completed
+                        >
+                          {isOnBreak ? "Resume" : "Break"}
+                        </Button>
+                      </span>
+                    </Tooltip>
+                  ) : (
+                    <Typography variant="h6">Breaks</Typography>
+                  )}
+                </Stack>
+
+                {attendance?.breaks.length > 0 &&
+                  attendance.breaks.map((breakItem: any, index: number) => (
+                    <Stack direction={"row"} spacing={2} key={index}>
+                      <Typography variant="subtitle2">{index + 1}.</Typography>
+                      <Typography variant="caption">
+                        {`Start : ${formatTime(breakItem.start)}`}
+                      </Typography>
+                      <Typography variant="caption">
+                        {`End : ${
+                          breakItem.end ? formatTime(breakItem.end) : "Ongoing"
+                        }`}
+                      </Typography>
+                      <Typography variant="caption">
+                        {`Duration : ${
+                          breakItem.end
+                            ? formatDuration(breakItem.duration)
+                            : "Ongoing"
+                        }`}
+                      </Typography>
+                    </Stack>
+                  ))}
+              </Stack>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <Chart
+                  options={options as any}
+                  series={[percentageWorked]}
+                  type="radialBar"
+                  height={280}
+                  key={series[0]}
+                />
+              </Box>
+            </Grid>
           </Grid>
         </CardContent>
       </Card>

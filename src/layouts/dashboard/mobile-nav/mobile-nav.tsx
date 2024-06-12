@@ -92,7 +92,7 @@ const useCssVars = (color: NavColor): Record<string, string> => {
             "--nav-item-active-color": theme.palette.common.white,
             "--nav-item-disabled-color": theme.palette.neutral[500],
             "--nav-item-icon-color": theme.palette.neutral[400],
-            "--nav-item-icon-active-color": theme.palette.warning.main,
+            "--nav-item-icon-active-color": theme.palette.primary.main,
             "--nav-item-icon-disabled-color": theme.palette.neutral[500],
             "--nav-item-chevron-color": theme.palette.neutral[600],
             "--nav-scrollbar-color": theme.palette.neutral[400],
@@ -125,7 +125,7 @@ export const MobileNav: FC<MobileNavProps> = (props) => {
       PaperProps={{
         sx: {
           ...cssVars,
-          backgroundColor: "#00295B",
+          backgroundColor: "#092635",
           color: "var(--nav-color)",
           width: MOBILE_NAV_WIDTH,
         },
@@ -153,9 +153,10 @@ export const MobileNav: FC<MobileNavProps> = (props) => {
                 height: 70,
                 p: "4px",
                 width: 200,
+                textDecoration: "none",
               }}
             >
-              <Logo />
+              <Logo textColor="#F3F3F3" />
             </Box>
           </Stack>
           <Stack

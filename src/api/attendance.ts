@@ -2,8 +2,8 @@ import axios from "axios";
 import Axios from "src/config/axios";
 
 class AttendanceApi {
-  async manageAttendance(action: string, body: object) {
-    const response = await Axios.post(`/attendance/${action}`, body);
+  async manageAttendance(action: string) {
+    const response = await Axios.post(`/attendance/${action}`);
 
     return response;
   }
