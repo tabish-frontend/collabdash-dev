@@ -7,11 +7,11 @@ export interface Employee {
   dob?: Date | null;
   country?: string;
   role?: string;
-  gender?: string;
+  gender: string;
   designation: string;
   avatar?: string;
   username: string;
-  mobile: number | undefined;
+  mobile: string;
   email: string;
   qualification: string;
   company: string;

@@ -1,29 +1,17 @@
-import Groups2Icon from "@mui/icons-material/Groups2";
-import MoodIcon from "@mui/icons-material/Mood";
 import { SvgIcon } from "@mui/material";
-import type { ReactNode } from "react";
-import { useTranslation } from "react-i18next";
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import { paths } from "src/constants/paths";
 import { useAuth } from "src/hooks/use-auth";
 import { AuthContextType } from "src/contexts/auth";
-import OverviewIcon from "src/icons/overview-icon";
-import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
-import PeopleIcon from "@mui/icons-material/People";
-import ReceiptIcon from "@mui/icons-material/Receipt";
-import SchoolIcon from "@mui/icons-material/School";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import EditNoteIcon from "@mui/icons-material/EditNote";
-import ArticleIcon from "@mui/icons-material/Article";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import DashboardCustomizeIcon from "@mui/icons-material/DashboardCustomize";
-import CheckDone01Icon from "src/icons/untitled-ui/duocolor/check-done-01";
-import FeedbackIcon from "@mui/icons-material/Feedback";
-import PaymentsIcon from "@mui/icons-material/Payments";
-import CubeOutline from "mdi-material-ui/CubeOutline";
-import HomeOutline from "mdi-material-ui/HomeOutline";
-import FormatLetterCase from "mdi-material-ui/FormatLetterCase";
-import AccountCogOutline from "mdi-material-ui/AccountCogOutline";
+import {
+  HomeOutline,
+  AccountMultipleOutline,
+  CubeOutline,
+  BullhornOutline,
+  FileTreeOutline,
+  CardAccountDetailsStarOutline,
+  BallotRecountOutline,
+} from "mdi-material-ui";
 
 export interface Item {
   disabled?: boolean;
@@ -33,6 +21,7 @@ export interface Item {
   label?: ReactNode;
   path?: string;
   title: string;
+  roles?: string[];
 }
 
 export interface Section {
@@ -40,77 +29,149 @@ export interface Section {
   subheader?: string;
 }
 
-const hrRoutes = [
+const navItems: Item[] = [
   {
     title: "Dashboard",
+    icon: <SvgIcon component={HomeOutline} />,
     path: paths.index,
-    icon: (
-      <SvgIcon>
-        <HomeOutline />
-      </SvgIcon>
-    ),
   },
   {
     title: "Employees",
+    icon: <SvgIcon component={AccountMultipleOutline} />,
     path: paths.employees,
-    icon: (
-      <SvgIcon>
-        <AccountCogOutline />
-      </SvgIcon>
-    ),
+    roles: ["admin", "hr"],
   },
   {
     title: "Attendance",
+    icon: <SvgIcon component={CubeOutline} />,
     path: paths.attendance,
-    icon: (
-      <SvgIcon>
-        <CubeOutline />
-      </SvgIcon>
-    ),
   },
   {
     title: "Holidays",
+    icon: <SvgIcon component={BullhornOutline} />,
     path: paths.holidays,
-    icon: (
-      <SvgIcon>
-        <CubeOutline />
-      </SvgIcon>
-    ),
   },
   {
     title: "Leaves",
+    icon: <SvgIcon component={CardAccountDetailsStarOutline} />,
     path: paths.leaves,
-    icon: (
-      <SvgIcon>
-        <FormatLetterCase />
-      </SvgIcon>
-    ),
   },
   {
     title: "Tasks",
+    icon: <SvgIcon component={FileTreeOutline} />,
     path: paths.tasks,
-    icon: (
-      <SvgIcon>
-        <ManageAccountsIcon />
-      </SvgIcon>
-    ),
   },
+  // {
+  //   title: "Salaries",
+  //   icon: <SvgIcon component={BallotRecountOutline} />,
+  //   path: "#",
+  // },
 ];
 
-export const useSections = () => {
+export const useSections = (): Section[] => {
   const { user } = useAuth<AuthContextType>();
 
-  const items = useMemo(() => {
-    switch (user?.role) {
-      case "hr":
-      case "admin":
-        return hrRoutes;
-      default:
-        return [];
-    }
+  const filteredNavItems = useMemo(() => {
+    return navItems.filter((item) => {
+      if (!item.roles) return true;
+      return item.roles.includes(user?.role ?? "");
+    });
   }, [user?.role]);
 
   return useMemo(() => {
-    return [{ items }];
-  }, [items]);
+    return [{ items: filteredNavItems }];
+  }, [filteredNavItems]);
 };
+
+// import type { ReactNode } from "react";
+// import { useMemo } from "react";
+// import SvgIcon from "@mui/material/SvgIcon";
+// import CheckDone01Icon from "src/icons/untitled-ui/duocolor/check-done-01";
+// import HomeSmileIcon from "src/icons/untitled-ui/duocolor/home-smile";
+// import LineChartUp04Icon from "src/icons/untitled-ui/duocolor/line-chart-up-04";
+// import Users03Icon from "src/icons/untitled-ui/duocolor/users-03";
+// import { paths } from "src/constants/paths";
+
+// export interface Item {
+//   disabled?: boolean;
+//   external?: boolean;
+//   icon?: ReactNode;
+//   items?: Item[];
+//   label?: ReactNode;
+//   path?: string;
+//   title: string;
+// }
+
+// export interface Section {
+//   items: Item[];
+//   subheader?: string;
+// }
+
+// export const useSections = () => {
+//   return useMemo(() => {
+//     return [
+//       {
+//         items: [
+//           {
+//             title: "Dashboard",
+//             path: paths.index,
+//             icon: (
+//               <SvgIcon fontSize="small">
+//                 <HomeSmileIcon />
+//               </SvgIcon>
+//             ),
+//           },
+//           {
+//             title: "Employees",
+//             path: paths.employees,
+//             icon: (
+//               <SvgIcon fontSize="small">
+//                 <Users03Icon />
+//               </SvgIcon>
+//             ),
+//           },
+//         ],
+//       },
+//       {
+//         items: [
+//           {
+//             title: "Time Management",
+//             path: paths.attendance,
+//             icon: (
+//               <SvgIcon fontSize="small">
+//                 <LineChartUp04Icon />
+//               </SvgIcon>
+//             ),
+//             items: [
+//               {
+//                 title: "Attendance",
+//                 path: paths.attendance,
+//               },
+//               {
+//                 title: "Holidays",
+//                 path: paths.holidays,
+//               },
+//               {
+//                 title: "Leaves",
+//                 path: paths.leaves,
+//               },
+//             ],
+//           },
+//         ],
+//       },
+//       {
+//         items: [
+//           {
+//             title: "Tasks",
+//             path: paths.tasks,
+//             icon: (
+//               <SvgIcon fontSize="small">
+//                 <CheckDone01Icon />
+//               </SvgIcon>
+//             ),
+//           },
+//         ],
+//       },
+//     ];
+//   }, []);
+// };

@@ -33,6 +33,9 @@ const chartOptions = (theme: Theme): ApexOptions => ({
     stacked: true,
     toolbar: {
       show: true,
+      tools: {
+        download: false, // Hides the download dropdown
+      },
     },
     zoom: {
       enabled: false,
@@ -177,12 +180,12 @@ export const AttendanceCard = () => {
           { name: "Absent", data: absents },
           { name: "No Values", data: noValues },
         ],
-        categories: dates.map((date) => `${date}/2023 GMT`),
+        categories: dates.map((date) => `${date}/${filters.year} GMT`),
       });
     };
 
     processChartData();
-  }, [attendanceData]);
+  }, [attendanceData, filters.year]);
 
   return (
     <Card>

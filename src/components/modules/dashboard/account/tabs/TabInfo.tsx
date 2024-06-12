@@ -18,17 +18,15 @@ import { AuthContextType } from "src/contexts/auth";
 import { LoadingButton } from "@mui/lab";
 import { Countries, Languages } from "src/constants/list-items";
 import { DatePicker } from "@mui/x-date-pickers";
-
-const CustomInput = forwardRef((props, ref) => {
-  return <TextField inputRef={ref} label="Birth Date" fullWidth {...props} />;
-});
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/material.css";
 
 export const TabInfo = () => {
   const { user, updateCurrentUser } = useAuth<AuthContextType>();
 
   const {
     bio = "",
-    mobile = 0,
+    mobile = "",
     dob: rawDob = null, // Use an alias to avoid conflict with the dob conversion
     country = "",
     natinal_identity_number = 0,
@@ -97,14 +95,17 @@ export const TabInfo = () => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              type="number"
-              label="Phone"
+            <PhoneInput
+              inputStyle={{ width: "100%", borderColor: "#9DA4AE" }}
+              specialLabel="Phone"
+              country="pk"
+              inputProps={{
+                name: "mobile",
+              }}
               value={formik.values.mobile}
-              name="mobile"
-              placeholder="(123) 456-7890"
-              onChange={formik.handleChange}
+              onChange={(...value: any[]) => {
+                formik.setFieldValue("mobile", value[3]);
+              }}
             />
           </Grid>
 

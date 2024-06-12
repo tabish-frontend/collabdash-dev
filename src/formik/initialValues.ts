@@ -34,7 +34,7 @@ export const UpdateMyPassword: UpdatePassword = {
 export const employeeInitialValues: Employee = {
   username: "",
   full_name: "",
-  mobile: undefined,
+  mobile: "",
   role: "employee",
   email: "",
   qualification: "",

@@ -12,22 +12,31 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
-  MenuItem,
   Radio,
   RadioGroup,
   Stack,
   TextField,
-  Typography,
 } from "@mui/material";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts/dashboard";
 import { useFormik } from "formik";
-import { employeeInitialValues } from "src/formik";
+import { employeeInitialValues, employeeValidation } from "src/formik";
 import { employeesApi } from "src/api";
 import { useRouter } from "next/router";
 import { LoadingButton } from "@mui/lab";
-import { AccountStatus } from "src/constants/status";
 import { useSettings } from "src/hooks";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/material.css";
+import {
+  CompanyField,
+  DesignationField,
+  EmailField,
+  FullNameField,
+  GenderField,
+  MobileField,
+  NationalIdentityField,
+  UsernameField,
+} from "src/components/shared/form-fields";
 
 const CreateEmployeeComponent = () => {
   const settings = useSettings();
@@ -36,6 +45,7 @@ const CreateEmployeeComponent = () => {
 
   const formik = useFormik({
     initialValues: employeeInitialValues,
+    validationSchema: employeeValidation,
     onSubmit: async (values, helpers): Promise<void> => {
       await employeesApi.createEmployee(values);
       helpers.setStatus({ success: true });
@@ -59,7 +69,7 @@ const CreateEmployeeComponent = () => {
             lg: 4,
           }}
         >
-          <Grid container spacing={6}>
+          <Grid container spacing={4}>
             <Grid item xs={12}>
               <Card>
                 <CardHeader
@@ -69,7 +79,7 @@ const CreateEmployeeComponent = () => {
                 <Divider sx={{ margin: 0 }} />
                 <form onSubmit={formik.handleSubmit}>
                   <CardContent>
-                    <Grid container spacing={5}>
+                    <Grid container spacing={4}>
                       {/* <Grid item xs={12}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           1. Account Details
@@ -77,110 +87,87 @@ const CreateEmployeeComponent = () => {
                       </Grid> */}
 
                       <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          required
-                          label="Username"
-                          name="username"
+                        <UsernameField
                           value={formik.values.username}
-                          onChange={formik.handleChange}
+                          handleChange={formik.handleChange}
+                          handleBlur={formik.handleBlur}
+                          formikError={formik.errors.username}
+                          formikTouched={formik.touched.username}
                         />
                       </Grid>
 
                       <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          required
-                          label="Full Name"
-                          name="full_name"
+                        <FullNameField
                           value={formik.values.full_name}
-                          onChange={formik.handleChange}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          required
-                          label="Phone No."
-                          name="mobile"
-                          placeholder="+1-123-456-8790"
-                          type="number"
-                          value={formik.values.mobile || ""}
-                          onChange={formik.handleChange}
+                          handleChange={formik.handleChange}
+                          handleBlur={formik.handleBlur}
+                          formikError={formik.errors.full_name}
+                          formikTouched={formik.touched.full_name}
                         />
                       </Grid>
 
                       <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          required
-                          type="email"
-                          label="Email"
-                          name="email"
-                          placeholder="johnDoe@example.com"
+                        <MobileField
+                          value={formik.values.mobile}
+                          handleChange={(...value: any[]) => {
+                            formik.setFieldValue("mobile", value[3]);
+                          }}
+                          handleBlur={formik.handleBlur}
+                          formikError={formik.errors.mobile}
+                          formikTouched={formik.touched.mobile}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} sm={6}>
+                        <EmailField
                           value={formik.values.email}
-                          onChange={formik.handleChange}
+                          handleChange={formik.handleChange}
+                          handleBlur={formik.handleBlur}
+                          formikError={formik.errors.email}
+                          formikTouched={formik.touched.email}
                         />
                       </Grid>
 
                       <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          required
-                          type="number"
-                          label="Natinal Identity Number"
-                          name="national_identity_number"
-                          placeholder="Please add NIC"
-                          value={formik.values.national_identity_number || ""}
-                          onChange={formik.handleChange}
+                        <NationalIdentityField
+                          value={formik.values.national_identity_number}
+                          handleChange={formik.handleChange}
+                          handleBlur={formik.handleBlur}
+                          formikError={formik.errors.national_identity_number}
+                          formikTouched={
+                            formik.touched.national_identity_number
+                          }
                         />
                       </Grid>
 
                       <Grid item xs={12} sm={6}>
-                        <TextField
-                          label="Designation"
-                          name="designation"
-                          fullWidth
+                        <DesignationField
                           value={formik.values.designation}
-                          onChange={formik.handleChange}
+                          handleChange={formik.handleChange}
+                          handleBlur={formik.handleBlur}
+                          formikError={formik.errors.designation}
+                          formikTouched={formik.touched.designation}
                         />
                       </Grid>
 
                       <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Company"
-                          placeholder="Please add your company name"
-                          name="company"
+                        <CompanyField
                           value={formik.values.company}
-                          onChange={formik.handleChange}
+                          handleChange={formik.handleChange}
+                          handleBlur={formik.handleBlur}
+                          formikError={formik.errors.company}
+                          formikTouched={formik.touched.company}
                         />
                       </Grid>
 
                       <Grid item xs={12} sm={6}>
-                        <FormControl>
-                          <FormLabel sx={{ fontSize: "0.875rem" }}>
-                            Gender
-                          </FormLabel>
-                          <RadioGroup
-                            row
-                            aria-label="gender"
-                            value={formik.values.gender}
-                            name="gender"
-                            onChange={formik.handleChange}
-                          >
-                            <FormControlLabel
-                              value="male"
-                              label="Male"
-                              control={<Radio />}
-                            />
-                            <FormControlLabel
-                              value="female"
-                              label="Female"
-                              control={<Radio />}
-                            />
-                          </RadioGroup>
-                        </FormControl>
+                        <GenderField
+                          value={formik.values.gender}
+                          handleChange={formik.handleChange}
+                          handleBlur={formik.handleBlur}
+                          formikTouched={formik.touched.gender}
+                          formikError={formik.errors.gender}
+                        />
                       </Grid>
                     </Grid>
                   </CardContent>

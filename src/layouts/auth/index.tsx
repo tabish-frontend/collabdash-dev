@@ -6,6 +6,7 @@ import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
 
 import { GuestGuard } from "src/components";
+import { Typography } from "@mui/material";
 
 const LayoutRoot = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
@@ -45,6 +46,29 @@ export const AuthLayout: FC<LayoutProps> = (props) => {
               },
             }}
           >
+            <Box
+              sx={{
+                mb: 4,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <img src="/images/work-dock-logo.png" alt="logo" width={50} />
+              <Typography
+                variant="h6"
+                sx={{
+                  ml: 1,
+                  lineHeight: 1,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  fontSize: "1.5rem !important",
+                  fontFamily: "Poppins-SemiBold, Poppins",
+                }}
+              >
+                Work Dock
+              </Typography>
+            </Box>
             {children}
           </Container>
         </Box>

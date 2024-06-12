@@ -13,14 +13,14 @@ import SvgIcon from "@mui/material/SvgIcon";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
-import { RouterLink } from "src/components/shared";
-
 import { Seo } from "src/components/shared/seo";
 import { AuthLayout } from "src/layouts";
 import { paths } from "src/constants/paths";
 import { useAuth, useRouter } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { LoginInitialValues } from "src/formik";
+import { PasswordField, RouterLink } from "src/components/shared";
+import { LoadingButton } from "@mui/lab";
 
 const LoginComponent: NextPage = () => {
   const router = useRouter();
@@ -42,84 +42,65 @@ const LoginComponent: NextPage = () => {
 
   return (
     <>
-      <Seo title="Login" />
-      <div>
-        <Box
-          sx={{
-            mb: 4,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <img src="/images/work-dock-logo.png" alt="logo" width={50} />
-          <Typography
-            variant="h6"
-            sx={{
-              ml: 1,
-              lineHeight: 1,
-              fontWeight: 600,
-              textTransform: "uppercase",
-              fontSize: "1.5rem !important",
-              fontFamily: "Poppins-SemiBold, Poppins",
-            }}
-          >
-            Work Dock
-          </Typography>
-        </Box>
-        <Card elevation={16}>
-          <CardHeader title={<Typography variant="h5">Log in</Typography>} />
-          <CardContent>
-            <form noValidate onSubmit={formik.handleSubmit}>
-              <Stack spacing={3}>
-                <TextField
-                  autoFocus
-                  error={!!(formik.touched.email && formik.errors.email)}
-                  fullWidth
-                  helperText={formik.touched.email && formik.errors.email}
-                  label="Email Address"
-                  name="email"
-                  onBlur={formik.handleBlur}
-                  onChange={formik.handleChange}
-                  type="email"
-                  value={formik.values.email}
-                />
-                <TextField
-                  error={!!(formik.touched.password && formik.errors.password)}
-                  fullWidth
-                  helperText={formik.touched.password && formik.errors.password}
-                  label="Password"
-                  name="password"
-                  onBlur={formik.handleBlur}
-                  onChange={formik.handleChange}
-                  type="password"
-                  value={formik.values.password}
-                />
-              </Stack>
-              <Button
+      <Card elevation={16}>
+        <CardHeader title={<Typography variant="h5">Log in</Typography>} />
+        <CardContent>
+          <form noValidate onSubmit={formik.handleSubmit}>
+            <Stack spacing={3}>
+              <TextField
+                autoFocus
+                error={!!(formik.touched.email && formik.errors.email)}
                 fullWidth
-                size="large"
-                sx={{ mt: 2 }}
-                type="submit"
-                variant="contained"
+                helperText={formik.touched.email && formik.errors.email}
+                label="Email Address"
+                name="email"
+                onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                type="email"
+                value={formik.values.email}
+              />
+
+              <PasswordField
+                handleChange={formik.handleChange}
+                label="Password"
+                name="password"
+                values={formik.values.password}
+                formikErrors={formik.errors.password}
+                formikTouched={formik.touched.password}
+                handleBlur={formik.handleBlur}
+              />
+            </Stack>
+            <LoadingButton
+              loading={formik.isSubmitting}
+              fullWidth
+              startIcon={<></>}
+              loadingPosition="start"
+              type="submit"
+              sx={{ mt: 3 }}
+              size="large"
+              variant="contained"
+            >
+              Log In
+            </LoadingButton>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                mt: 3,
+              }}
+            >
+              <Link
+                component={RouterLink}
+                href={paths.auth.forgot_password}
+                underline="hover"
+                variant="subtitle2"
               >
-                Log In
-              </Button>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  mt: 3,
-                }}
-              >
-                <Link href="#" underline="hover" variant="subtitle2">
-                  Forgot password?
-                </Link>
-              </Box>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
+                Forgot password?
+              </Link>
+            </Box>
+          </form>
+        </CardContent>
+      </Card>
     </>
   );
 };

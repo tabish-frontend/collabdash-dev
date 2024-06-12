@@ -76,7 +76,9 @@ export const createComponents = ({ palette }: Config): Components => {
       styleOverrides: {
         input: {
           "&::placeholder": {
-            color: palette.text!.primary,
+            color: palette.text!.secondary,
+            fontSize: 12,
+            letterSpacing: 3,
           },
         },
       },
@@ -114,10 +116,10 @@ export const createComponents = ({ palette }: Config): Components => {
           },
           [`&.${outlinedInputClasses.focused}`]: {
             backgroundColor: "transparent",
-            [`& .${outlinedInputClasses.notchedOutline}`]: {
-              borderColor: (palette.primary as PaletteColor).main,
-              boxShadow: `${(palette.primary as PaletteColor).main} 0 0 0 2px`,
-            },
+            // [`& .${outlinedInputClasses.notchedOutline}`]: {
+            //   borderColor: (palette.primary as PaletteColor).main,
+            //   boxShadow: `${(palette.primary as PaletteColor).main} 0 0 0 2px`,
+            // },
           },
           [`&.${filledInputClasses.error}`]: {
             [`& .${outlinedInputClasses.notchedOutline}`]: {

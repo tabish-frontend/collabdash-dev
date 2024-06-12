@@ -1,4 +1,5 @@
 import { LoadingButton } from "@mui/lab";
+import { Card, CardContent } from "@mui/material";
 import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
@@ -77,53 +78,55 @@ const ForgotPasswordComponent = () => {
   });
 
   return (
-    <div>
-      <Box sx={{ mb: 4 }}>
-        <Link
-          color="text.primary"
-          component={RouterLink}
-          href={paths.auth.login}
-          sx={{
-            alignItems: "center",
-            display: "inline-flex",
-          }}
-          underline="hover"
-        >
-          <SvgIcon sx={{ mr: 1 }}>
-            <ArrowLeftIcon />
-          </SvgIcon>
-          <Typography variant="subtitle2">Login</Typography>
-        </Link>
-      </Box>
-      <Stack sx={{ mb: 4 }} spacing={1}>
-        <Typography variant="h5">Forgot password</Typography>
-      </Stack>
-      <form noValidate onSubmit={formik.handleSubmit}>
-        <TextField
-          autoFocus
-          error={!!(formik.touched.email && formik.errors.email)}
-          fullWidth
-          helperText={formik.touched.email && formik.errors.email}
-          label="Email Address"
-          name="email"
-          onBlur={formik.handleBlur}
-          onChange={formik.handleChange}
-          type="email"
-          value={formik.values.email}
-        />
-        <LoadingButton
-          loading={formik.isSubmitting}
-          fullWidth
-          size="large"
-          loadingPosition="start"
-          type="submit"
-          sx={{ mt: 3 }}
-          variant="contained"
-        >
-          Send reset link
-        </LoadingButton>
-      </form>
-    </div>
+    <Card elevation={16}>
+      <CardContent>
+        <Box sx={{ mb: 4 }}>
+          <Link
+            color="text.primary"
+            component={RouterLink}
+            href={paths.auth.login}
+            sx={{
+              alignItems: "center",
+              display: "inline-flex",
+            }}
+            underline="hover"
+          >
+            <SvgIcon sx={{ mr: 1 }}>
+              <ArrowLeftIcon />
+            </SvgIcon>
+            <Typography variant="subtitle2">Login</Typography>
+          </Link>
+        </Box>
+        <Stack sx={{ mb: 4 }} spacing={1}>
+          <Typography variant="h5">Forgot password</Typography>
+        </Stack>
+        <form noValidate onSubmit={formik.handleSubmit}>
+          <TextField
+            autoFocus
+            error={!!(formik.touched.email && formik.errors.email)}
+            fullWidth
+            helperText={formik.touched.email && formik.errors.email}
+            label="Email Address"
+            name="email"
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            type="email"
+            value={formik.values.email}
+          />
+          <LoadingButton
+            loading={formik.isSubmitting}
+            fullWidth
+            size="large"
+            loadingPosition="start"
+            type="submit"
+            sx={{ mt: 3 }}
+            variant="contained"
+          >
+            Send reset link
+          </LoadingButton>
+        </form>
+      </CardContent>
+    </Card>
   );
 };
 

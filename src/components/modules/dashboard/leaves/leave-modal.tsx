@@ -79,7 +79,7 @@ export const LeaveModal: FC<LeaveModalProps> = ({
       <form onSubmit={formik.handleSubmit}>
         <Paper elevation={12}>
           <DialogTitle sx={{ m: 0, p: 3, fontSize: 24, fontWeight: 600 }}>
-            {modalType === "create" ? "Add Holiday" : "Update Holiday"}
+            {modalType === "create" ? "Add Leave" : "Update Leave"}
           </DialogTitle>
           <IconButton
             aria-label="close"

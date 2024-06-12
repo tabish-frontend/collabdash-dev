@@ -259,7 +259,7 @@ export const ShiftModal: FC<ShiftModalProps> = ({
               </Grid>
             </>
           ) : (
-            <Grid item xs={12} sm={6} ml={4} mt={5}>
+            <Grid item xs={12} sm={6} ml={2}>
               <TextField
                 type="number"
                 label="Hours Per Day"
