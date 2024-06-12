@@ -45,7 +45,7 @@ const AttendanceListComponent = () => {
   const { user } = useAuth<AuthContextType>();
 
   const [filters, setFilters] = useState({
-    month: 5,
+    month: 6,
     year: 2024,
   });
 

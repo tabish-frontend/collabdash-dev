@@ -164,7 +164,7 @@ export const TimeLogCard = () => {
             <Grid item xs={12}>
               <Stack spacing={3} mt={2}>
                 <Stack direction={"row"} justifyContent={"center"}>
-                  {!attendance?.timeOut ? (
+                  {!attendance?.timeOut && (
                     <Tooltip
                       arrow
                       placement="left"
@@ -186,32 +186,39 @@ export const TimeLogCard = () => {
                         </Button>
                       </span>
                     </Tooltip>
-                  ) : (
-                    <Typography variant="h6">Breaks</Typography>
                   )}
                 </Stack>
 
-                {attendance?.breaks.length > 0 &&
-                  attendance.breaks.map((breakItem: any, index: number) => (
-                    <Stack direction={"row"} spacing={2} key={index}>
-                      <Typography variant="subtitle2">{index + 1}.</Typography>
-                      <Typography variant="caption">
-                        {`Start : ${formatTime(breakItem.start)}`}
-                      </Typography>
-                      <Typography variant="caption">
-                        {`End : ${
-                          breakItem.end ? formatTime(breakItem.end) : "Ongoing"
-                        }`}
-                      </Typography>
-                      <Typography variant="caption">
-                        {`Duration : ${
-                          breakItem.end
-                            ? formatDuration(breakItem.duration)
-                            : "Ongoing"
-                        }`}
-                      </Typography>
-                    </Stack>
-                  ))}
+                {attendance?.breaks.length > 0 && (
+                  <>
+                    <Typography variant="h6">Breaks</Typography>
+
+                    {attendance.breaks.map((breakItem: any, index: number) => (
+                      <Stack direction={"row"} spacing={2} key={index}>
+                        <Typography variant="subtitle2">
+                          {index + 1}.
+                        </Typography>
+                        <Typography variant="caption">
+                          {`Start : ${formatTime(breakItem.start)}`}
+                        </Typography>
+                        <Typography variant="caption">
+                          {`End : ${
+                            breakItem.end
+                              ? formatTime(breakItem.end)
+                              : "Ongoing"
+                          }`}
+                        </Typography>
+                        <Typography variant="caption">
+                          {`Duration : ${
+                            breakItem.end
+                              ? formatDuration(breakItem.duration)
+                              : "Ongoing"
+                          }`}
+                        </Typography>
+                      </Stack>
+                    ))}
+                  </>
+                )}
               </Stack>
             </Grid>
 

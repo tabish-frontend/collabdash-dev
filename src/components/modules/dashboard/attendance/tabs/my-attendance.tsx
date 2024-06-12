@@ -57,6 +57,7 @@ export const MyAttendance = ({ filters }: any) => {
           date: currentViewingDate,
           timeIn: null,
           timeOut: null,
+          duration: 0,
           status: "Absent",
         };
       }
@@ -104,7 +105,7 @@ export const MyAttendance = ({ filters }: any) => {
                 </TableCell>
                 <TableCell align="center">
                   {attendance.timeIn && attendance.timeOut
-                    ? formatDuration(attendance.timeIn, attendance.timeOut)
+                    ? formatDuration(attendance.duration)
                     : "--"}
                 </TableCell>
               </TableRow>
