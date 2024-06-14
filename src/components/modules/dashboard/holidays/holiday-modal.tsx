@@ -144,14 +144,16 @@ export const HolidayModal: FC<HolidayModalProps> = ({
               />
             </Grid>
 
-            <Grid item xs={12}>
-              <SelectMultipleDepartments
-                departments={departments}
-                handleChange={(event: any, value: any[]) => {
-                  setDepartments(value);
-                }}
-              />
-            </Grid>
+            {modalType === "create" && (
+              <Grid item xs={12}>
+                <SelectMultipleDepartments
+                  departments={departments}
+                  handleChange={(event: any, value: any[]) => {
+                    setDepartments(value);
+                  }}
+                />
+              </Grid>
+            )}
 
             <Grid item xs={12}>
               <SelectMultipleUsers

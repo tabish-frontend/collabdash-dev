@@ -83,6 +83,9 @@ export const EmployeeDetails = ({
               <Typography variant="h6" sx={{ textTransform: "capitalize" }}>
                 {employeeData?.full_name}
               </Typography>
+              <Typography variant="subtitle1" color="Highlight">
+                {employeeData?.department}
+              </Typography>
               <Typography variant="body2" textTransform={"capitalize"}>
                 {employeeData?.designation}
               </Typography>

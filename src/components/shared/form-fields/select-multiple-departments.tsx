@@ -81,11 +81,7 @@ export const SelectMultipleDepartments: React.FC<
         </>
       )}
       renderInput={(params) => (
-        <TextField
-          {...params}
-          required={!departments.length}
-          label="Select Department"
-        />
+        <TextField {...params} label="Select Department" />
       )}
     />
   );
