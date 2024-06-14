@@ -7,6 +7,8 @@ export * from "./company";
 export * from "./gender";
 export * from "./mobile";
 export * from "./national-identity-number";
-
+export * from "./department";
+export * from "./select-multiple-users";
+export * from "./select-multiple-departments";
 export * from "./password";
 export * from "./key-press-function";

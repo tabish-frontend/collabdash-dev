@@ -15,3 +15,4 @@ export * from "./online-badge";
 export * from "./charts";
 export * from "./image-avatar";
 export * from "./form-fields";
+export * from "./users-avatar-group";

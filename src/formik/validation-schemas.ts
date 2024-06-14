@@ -70,6 +70,7 @@ export const UserBankValidation = Yup.object().shape({
 
 export const employeeValidation = Yup.object().shape({
   ...common_user_validation,
+  department: Yup.string().required("Department is required"),
   mobile: Yup.string()
     .required("Mobile number is required")
     .min(10, "Mobile number must be at least 15 digits")

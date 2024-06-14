@@ -1,13 +1,12 @@
-import { FormControl, FormLabel, Typography } from "@mui/material";
+import { Typography, useTheme } from "@mui/material";
 import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/material.css";
 
 interface MobileFieldProps {
   value: string;
   handleChange: <T = string>(e: T) => void;
-  handleBlur: <T = string>(e: T) => void;
-  formikTouched: boolean | undefined;
-  formikError: string | undefined;
+  handleBlur?: <T = string>(e: T) => void;
+  formikTouched?: boolean | undefined;
+  formikError?: string | undefined;
 }
 
 export const MobileField: React.FC<MobileFieldProps> = ({
@@ -17,10 +16,16 @@ export const MobileField: React.FC<MobileFieldProps> = ({
   formikTouched,
   formikError,
 }) => {
+  const theme = useTheme();
   return (
     <>
       <PhoneInput
-        inputStyle={{ width: "100%", borderColor: "#9DA4AE" }}
+        inputStyle={{
+          backgroundColor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+          width: "100%",
+        }}
+        containerStyle={{ color: theme.palette.grey[900] }}
         country="pk"
         value={value}
         onChange={handleChange}

@@ -1,5 +1,4 @@
 // ** MUI Imports
-import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableRow from "@mui/material/TableRow";
 import TableHead from "@mui/material/TableHead";
@@ -9,6 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts/dashboard";
 import {
+  Avatar,
   AvatarGroup,
   Box,
   Button,
@@ -17,6 +17,7 @@ import {
   Container,
   Grid,
   Link,
+  Popover,
   Stack,
   SvgIcon,
   TableBody,
@@ -27,12 +28,18 @@ import { Plus } from "mdi-material-ui";
 import { HolidayModal } from "./holiday-modal";
 import { holidaysApi } from "src/api";
 import { formatDate, getDayFromDate } from "src/utils/helpers";
-import { ImageAvatar } from "src/components/shared";
+import {
+  ConfirmationModal,
+  ImageAvatar,
+  RouterLink,
+  UserAvatarGroup,
+} from "src/components/shared";
 import { paths } from "src/constants/paths";
 import { SquareEditOutline, TrashCanOutline } from "mdi-material-ui";
 import { useAuth, useSettings } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { ROLES } from "src/constants/roles";
+import { Employee } from "src/types";
 
 const employee_Screen = ["Holiday Day", "Holiday Date", "Holiday Name"];
 const HR_Screen = [
@@ -56,6 +63,10 @@ const HolidaysListComponent = () => {
   const [holidayList, setHolidayList] = useState<any[]>([]);
   const [modalType, setModalType] = useState("");
   const [holidayValues, setHolidayValues] = useState();
+  const [deleteModal, setDeleteModal] = useState({
+    open: false,
+    holidayID: "",
+  });
 
   const getHoliday = useCallback(async () => {
     let response = [];
@@ -146,56 +157,23 @@ const HolidaysListComponent = () => {
                   </TableHead>
                   <TableBody>
                     {holidayList.map((holiday, index) => {
-                      let userAvatar = [];
-
-                      if (
-                        user?.role === ROLES.Admin ||
-                        user?.role === ROLES.HR
-                      ) {
-                        userAvatar = holiday.users.map((user: any) => {
-                          return (
-                            <Tooltip key={user._id} title={user.full_name}>
-                              <span>
-                                <Link
-                                  key={user._id}
-                                  href={`${paths.employees}/${user.username}`}
-                                  variant="subtitle2"
-                                >
-                                  <ImageAvatar
-                                    path={user.avatar || ""}
-                                    alt="user image"
-                                    width={40}
-                                    height={40}
-                                  />
-                                </Link>
-                              </span>
-                            </Tooltip>
-                          );
-                        });
-                      }
-
                       return (
                         <TableRow hover role="checkbox" key={index}>
                           <TableCell align="center">
                             {getDayFromDate(holiday.date)}
                           </TableCell>
+
                           <TableCell align="center">
                             {formatDate(holiday.date)}
                           </TableCell>
+
                           <TableCell align="center">{holiday.title}</TableCell>
+
                           {(user?.role === ROLES.Admin ||
                             user?.role === ROLES.HR) && (
                             <>
                               <TableCell align="center">
-                                <AvatarGroup
-                                  max={3}
-                                  style={{
-                                    cursor: "pointer",
-                                    justifyContent: "center",
-                                  }}
-                                >
-                                  {userAvatar}
-                                </AvatarGroup>
+                                <UserAvatarGroup users={holiday.users} />
                               </TableCell>
 
                               <TableCell align="center">
@@ -215,7 +193,12 @@ const HolidaysListComponent = () => {
                                   <TrashCanOutline
                                     color="error"
                                     sx={{ cursor: "pointer" }}
-                                    onClick={() => deleteHoliday(holiday._id)}
+                                    onClick={() =>
+                                      setDeleteModal({
+                                        open: true,
+                                        holidayID: holiday._id,
+                                      })
+                                    }
                                   />
                                 </Stack>
                               </TableCell>
@@ -242,6 +225,28 @@ const HolidaysListComponent = () => {
             setHolidayModal(false);
           }}
           onConfirm={addAndUpdateHoliday}
+        />
+      )}
+
+      {deleteModal.open && (
+        <ConfirmationModal
+          warning_title={"Delete"}
+          warning_text={"Are you sure you want to delete the Holiday ?"}
+          button_text={"Delete"}
+          modal={deleteModal.open}
+          onCancel={() =>
+            setDeleteModal({
+              open: false,
+              holidayID: "",
+            })
+          }
+          onConfirm={async () => {
+            deleteHoliday(deleteModal.holidayID);
+            setDeleteModal({
+              open: false,
+              holidayID: "",
+            });
+          }}
         />
       )}
     </Box>

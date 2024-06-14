@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import {
   Box,
   Card,
+  Link,
   Paper,
   Stack,
   Table,
@@ -27,6 +28,8 @@ import { attendanceApi } from "src/api";
 import { Holiday, Leaves, Shift } from "src/types";
 import { StatusIndicator, headerStatus } from "../attendance-status-indicator";
 import { formatTime } from "src/utils/helpers";
+import { RouterLink } from "src/components/shared";
+import { paths } from "src/constants/paths";
 
 export const AllUserAttendance = ({ filters }: any) => {
   const [employees, setEmployees] = useState<undefined | []>([]);
@@ -188,7 +191,7 @@ export const AllUserAttendance = ({ filters }: any) => {
               <Box
                 width={8}
                 height={8}
-                m={1}
+                m={2.4}
                 borderRadius="50%"
                 bgcolor={"green"}
               />
@@ -279,7 +282,17 @@ export const AllUserAttendance = ({ filters }: any) => {
             ) : (
               employees.map((item: any, index: number) => (
                 <TableRow key={index}>
-                  <TableCell>{item.full_name}</TableCell>
+                  <TableCell>
+                    <Link
+                      color="inherit"
+                      component={RouterLink}
+                      href={`${paths.employees}/${item.username}`}
+                      variant="subtitle2"
+                      sx={{ textTransform: "capitalize" }}
+                    >
+                      {item.full_name}
+                    </Link>
+                  </TableCell>
                   {[...Array(31)].map((_, index) => {
                     const date = index + 1;
                     const currentDate = new Date();

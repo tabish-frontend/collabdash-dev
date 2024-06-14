@@ -39,6 +39,7 @@ export const employeeInitialValues: Employee = {
   email: "",
   qualification: "",
   gender: "",
+  department: "",
   designation: "",
   company: "",
   account_status: "active",

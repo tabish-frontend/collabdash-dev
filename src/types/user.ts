@@ -15,7 +15,7 @@ export interface UserBasicInformation {
   country: string;
   languages: string[];
   qualification: string;
-  natinal_identity_number: number;
+  national_identity_number: number;
 }
 
 export interface UserBankDetails {
@@ -40,13 +40,14 @@ export interface User {
   avatar: string;
   account_status?: string;
   company?: string;
-  natinal_identity_number?: number;
+  national_identity_number?: number;
   bank_details?: UserBankDetails;
   email: string;
   gender?: string;
   qualification?: string;
   join_date?: Date | null;
   leave_date?: Date | null;
+  department: string;
   designation?: string;
   qualification_certificates?: string[];
 }

@@ -119,7 +119,6 @@ export const LeaveModal: FC<LeaveModalProps> = ({
             <Grid item xs={12} sm={6}>
               <DatePicker
                 label="Leave From Date"
-                disablePast
                 views={["year", "month", "day"]}
                 sx={{ width: "100%" }}
                 value={formik.values.startDate}
@@ -136,7 +135,6 @@ export const LeaveModal: FC<LeaveModalProps> = ({
             <Grid item xs={12} sm={6}>
               <DatePicker
                 label="Leave to Date"
-                disablePast
                 sx={{ width: "100%" }}
                 minDate={formik.values.startDate || new Date()}
                 views={["year", "month", "day"]}
@@ -181,7 +179,7 @@ export const LeaveModal: FC<LeaveModalProps> = ({
                         <Avatar
                           alt="user"
                           src={avatar}
-                          sx={{ width: "2rem", height: "2rem", m: 2 }}
+                          sx={{ width: "1.5rem", height: "1.5rem", m: 1 }}
                         />
                         <ListItemText primary={full_name} />
                       </Stack>

@@ -4,9 +4,9 @@ import { handleKeyPress } from "./key-press-function";
 interface NationalIdentityFieldProps {
   value: number | undefined;
   handleChange: <T = string>(e: T) => void;
-  handleBlur: <T = string>(e: T) => void;
-  formikTouched: boolean | undefined;
-  formikError: string | undefined;
+  handleBlur?: <T = string>(e: T) => void;
+  formikTouched?: boolean | undefined;
+  formikError?: string | undefined;
 }
 
 export const NationalIdentityField: React.FC<NationalIdentityFieldProps> = ({

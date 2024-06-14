@@ -12,6 +12,15 @@ import {
   TextField,
   Paper,
   Avatar,
+  Stack,
+  Typography,
+  FormControlLabel,
+  FormControl,
+  InputLabel,
+  Select,
+  Popper,
+  styled,
+  OutlinedInput,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -22,12 +31,13 @@ import { forwardRef, useEffect, useState, type FC } from "react";
 import { holidayInitialValues } from "src/formik";
 
 import { employeesApi } from "src/api";
-import { Holiday } from "src/types";
+import { Employee, Holiday } from "src/types";
 import { DatePicker } from "@mui/x-date-pickers";
-
-const CustomInput = forwardRef((props, ref) => {
-  return <TextField inputRef={ref} label="Date" fullWidth {...props} />;
-});
+import { DepartmentNames } from "src/constants/departments";
+import {
+  SelectMultipleDepartments,
+  SelectMultipleUsers,
+} from "src/components/shared";
 
 interface HolidayModalProps {
   modal: boolean;
@@ -44,7 +54,7 @@ export const HolidayModal: FC<HolidayModalProps> = ({
   onCancel,
   onConfirm,
 }) => {
-  const [selectAll, setSelectAll] = useState(false);
+  const [departments, setDepartments] = useState<string[]>([]);
 
   const formik = useFormik({
     initialValues: holidayValues
@@ -63,10 +73,12 @@ export const HolidayModal: FC<HolidayModalProps> = ({
     },
   });
 
-  const [employees, setEmployees] = useState<any[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
 
   const handleGetEmployees = async () => {
-    const response = await employeesApi.getAllEmployees("full_name,avatar");
+    const response = await employeesApi.getAllEmployees(
+      "full_name,avatar,department"
+    );
     setEmployees(response.users);
   };
 
@@ -74,26 +86,9 @@ export const HolidayModal: FC<HolidayModalProps> = ({
     handleGetEmployees();
   }, []);
 
-  const handleAutocompleteChange = (event: any, value: any[]) => {
-    formik.setFieldValue(
-      "users",
-      value.map((v) => v._id)
-    );
-  };
-
-  const getSelectedUsers = () => {
-    return employees.filter((employee) =>
-      formik.values.users.includes(employee._id)
-    );
-  };
-
-  const handleSelectAllChange = (event: any) => {
-    const selectedIds = event.target.checked
-      ? employees.map((user) => user._id)
-      : [];
-    formik.setFieldValue("users", selectedIds);
-    setSelectAll(event.target.checked);
-  };
+  useEffect(() => {
+    console.log("employees", employees);
+  }, [employees]);
 
   return (
     <Dialog
@@ -123,7 +118,7 @@ export const HolidayModal: FC<HolidayModalProps> = ({
 
           <Divider />
 
-          <Grid container spacing={4} p={4}>
+          <Grid container spacing={2} p={2}>
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -150,94 +145,27 @@ export const HolidayModal: FC<HolidayModalProps> = ({
             </Grid>
 
             <Grid item xs={12}>
-              <Autocomplete
-                multiple
-                options={employees}
-                value={getSelectedUsers()}
-                getOptionLabel={(option) => option.full_name}
-                disableCloseOnSelect
-                onChange={handleAutocompleteChange}
-                renderTags={() => {
-                  const selectedUsers = getSelectedUsers();
-
-                  return (
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        paddingTop: 15,
-                        paddingLeft: 5,
-                      }}
-                    >
-                      {selectedUsers.length > 1 ? (
-                        <Badge
-                          color="info"
-                          badgeContent={`+${selectedUsers.length - 1}`}
-                          anchorOrigin={{
-                            vertical: "top",
-                            horizontal: "right",
-                          }}
-                        >
-                          <div
-                            style={{
-                              paddingRight: "4px",
-                            }}
-                          >
-                            <span style={{ fontSize: 16, marginRight: "8px" }}>
-                              {selectedUsers[0].full_name.length > 15
-                                ? `${selectedUsers[0].full_name.slice(
-                                    0,
-                                    15
-                                  )}...`
-                                : selectedUsers[0].full_name}
-                            </span>
-                          </div>
-                        </Badge>
-                      ) : (
-                        <span style={{ fontSize: 16, marginRight: "8px" }}>
-                          {selectedUsers[0]?.full_name}
-                        </span>
-                      )}
-                    </div>
-                  );
+              <SelectMultipleDepartments
+                departments={departments}
+                handleChange={(event: any, value: any[]) => {
+                  setDepartments(value);
                 }}
-                renderOption={(props, option) => (
-                  <div>
-                    {option._id === employees[0]._id && (
-                      <MenuItem>
-                        <Checkbox
-                          checked={selectAll}
-                          onChange={handleSelectAllChange}
-                        />
-                        <ListItemText primary="Select All" />
-                      </MenuItem>
-                    )}
-                    <MenuItem
-                      key={option._id}
-                      value={option}
-                      sx={{ justifyContent: "space-between" }}
-                      {...props}
-                    >
-                      <Checkbox
-                        checked={formik.values.users.includes(option._id)}
-                      />
-                      <Avatar
-                        alt="user"
-                        src={option.avatar}
-                        sx={{ width: "2rem", height: "2rem", m: 2 }}
-                      />
-                      <ListItemText primary={option.full_name} />
-                    </MenuItem>
-                  </div>
-                )}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    required={!formik.values.users.length}
-                    label="Users"
-                    name="users"
-                  />
-                )}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <SelectMultipleUsers
+                employees={
+                  departments.length
+                    ? employees.filter((employee) =>
+                        departments.includes(employee.department)
+                      )
+                    : employees
+                }
+                formikUsers={formik.values.users}
+                setFieldValue={(value: any) =>
+                  formik.setFieldValue("users", value)
+                }
               />
             </Grid>
           </Grid>

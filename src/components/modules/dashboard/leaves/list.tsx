@@ -1,10 +1,9 @@
-import Grid from "@mui/material/Grid";
-import Card from "@mui/material/Card";
-import Typography from "@mui/material/Typography";
 import {
   Paper,
   TableBody,
   TableCell,
+  Typography,
+  Card,
   TableContainer,
   TableHead,
   TableRow,
@@ -36,7 +35,11 @@ import { ROLES } from "src/constants/roles";
 import { LeaveModal } from "./leave-modal";
 import { leavesApi } from "src/api";
 import { formatDate } from "src/utils/helpers";
-import { ImageAvatar } from "src/components/shared";
+import {
+  ConfirmationModal,
+  ImageAvatar,
+  RouterLink,
+} from "src/components/shared";
 import { paths } from "src/constants/paths";
 import { LeavesStatus } from "src/constants/status";
 
@@ -73,6 +76,10 @@ const LeavesListComponent = () => {
   const [modalType, setModalType] = useState("");
   const [leavesList, setLeavesList] = useState<any[]>([]);
   const [leaveValues, setLeaveValues] = useState();
+  const [deleteModal, setDeleteModal] = useState({
+    open: false,
+    leaveID: "",
+  });
 
   const getLeaves = useCallback(async () => {
     let response = [];
@@ -193,8 +200,10 @@ const LeavesListComponent = () => {
 
                                 <Link
                                   color="inherit"
+                                  component={RouterLink}
                                   href={`${paths.employees}/${leave.user.username}`}
                                   variant="subtitle1"
+                                  sx={{ textTransform: "capitalize" }}
                                 >
                                   {leave.user.full_name}
                                 </Link>
@@ -211,74 +220,88 @@ const LeavesListComponent = () => {
                           {(user?.role === ROLES.Admin ||
                             user?.role === ROLES.HR) && (
                             <TableCell>
-                              <Box sx={{ display: "flex", mx: 3 }}>
+                              <Stack direction={"row"} spacing={1}>
                                 <Tooltip title="Approved">
-                                  <IconButton
-                                    onClick={() =>
-                                      handleUpdateStatus(
-                                        leave._id,
-                                        LeavesStatus.Approved
-                                      )
-                                    }
-                                    disabled={
-                                      leave.status === LeavesStatus.Approved
-                                    }
-                                    sx={{
-                                      "&:hover": {
-                                        backgroundColor: "green",
-                                        color: "white",
-                                      },
-                                      color: "green",
-                                    }}
-                                  >
-                                    <CheckCircleOutline />
-                                  </IconButton>
+                                  <span>
+                                    <IconButton
+                                      onClick={() =>
+                                        handleUpdateStatus(
+                                          leave._id,
+                                          LeavesStatus.Approved
+                                        )
+                                      }
+                                      disabled={
+                                        leave.status === LeavesStatus.Approved
+                                      }
+                                      sx={{
+                                        "&:hover": {
+                                          backgroundColor: "green",
+                                          color: "white",
+                                        },
+                                        color: "green",
+                                      }}
+                                    >
+                                      <CheckCircleOutline />
+                                    </IconButton>
+                                  </span>
                                 </Tooltip>
+
                                 <Tooltip title="Rejected">
-                                  <IconButton
-                                    onClick={() =>
-                                      handleUpdateStatus(
-                                        leave._id,
-                                        LeavesStatus.Rejected
-                                      )
-                                    }
-                                    disabled={
-                                      leave.status === LeavesStatus.Rejected
-                                    }
-                                    sx={{
-                                      "&:hover": {
-                                        backgroundColor: "red",
-                                        color: "white",
-                                      },
-                                      color: "red",
-                                    }}
-                                  >
-                                    <CloseCircleOutline />
-                                  </IconButton>
+                                  <span>
+                                    <IconButton
+                                      onClick={() =>
+                                        handleUpdateStatus(
+                                          leave._id,
+                                          LeavesStatus.Rejected
+                                        )
+                                      }
+                                      disabled={
+                                        leave.status === LeavesStatus.Rejected
+                                      }
+                                      sx={{
+                                        "&:hover": {
+                                          backgroundColor: "red",
+                                          color: "white",
+                                        },
+                                        color: "red",
+                                      }}
+                                    >
+                                      <CloseCircleOutline />
+                                    </IconButton>
+                                  </span>
                                 </Tooltip>
-                              </Box>
+                              </Stack>
                             </TableCell>
                           )}
                           <TableCell>
-                            <Stack direction={"row"} spacing={2}>
+                            <Stack direction={"row"} spacing={1}>
                               <Tooltip title="Edit">
-                                <SquareEditOutline
-                                  color="success"
-                                  sx={{ cursor: "pointer" }}
-                                  onClick={() => {
-                                    setModalType("update");
-                                    setLeaveModal(true);
-                                    setLeaveValues(leave);
-                                  }}
-                                />
+                                <span>
+                                  <SquareEditOutline
+                                    color="success"
+                                    sx={{ cursor: "pointer" }}
+                                    onClick={() => {
+                                      setModalType("update");
+                                      setLeaveModal(true);
+                                      setLeaveValues(leave);
+                                    }}
+                                  />
+                                </span>
                               </Tooltip>
 
                               <Tooltip title="Delete">
-                                <TrashCanOutline
-                                  color="error"
-                                  sx={{ cursor: "pointer" }}
-                                  onClick={() => deleteLeave(leave._id)}
-                                />
+                                <span>
+                                  <TrashCanOutline
+                                    color="error"
+                                    sx={{ cursor: "pointer" }}
+                                    onClick={() =>
+                                      setDeleteModal({
+                                        open: true,
+                                        leaveID: leave._id,
+                                      })
+                                    }
+                                  />
+                                </span>
                               </Tooltip>
                             </Stack>
                           </TableCell>
@@ -303,6 +326,28 @@ const LeavesListComponent = () => {
             setLeaveValues(undefined);
           }}
           onConfirm={addAndUpdateHoliday}
+        />
+      )}
+
+      {deleteModal.open && (
+        <ConfirmationModal
+          warning_title={"Delete"}
+          warning_text={"Are you sure you want to delete the Leave ?"}
+          button_text={"Delete"}
+          modal={deleteModal.open}
+          onCancel={() =>
+            setDeleteModal({
+              open: false,
+              leaveID: "",
+            })
+          }
+          onConfirm={async () => {
+            deleteLeave(deleteModal.leaveID);
+            setDeleteModal({
+              open: false,
+              leaveID: "",
+            });
+          }}
         />
       )}
     </Box>

@@ -8,6 +8,7 @@ export interface Employee {
   country?: string;
   role?: string;
   gender: string;
+  department: string;
   designation: string;
   avatar?: string;
   username: string;
