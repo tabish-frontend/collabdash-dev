@@ -24,62 +24,74 @@ import {
   TimerSandEmpty,
 } from "mdi-material-ui";
 import { AttendanceStatus, LeavesStatus } from "src/constants/status";
+
 import { attendanceApi } from "src/api";
 import { Holiday, Leaves, Shift } from "src/types";
 import { StatusIndicator, headerStatus } from "../attendance-status-indicator";
 import { formatTime } from "src/utils/helpers";
 import { RouterLink } from "src/components/shared";
 import { paths } from "src/constants/paths";
+import { isPastDate, isFutureDate, isOnHoliday, isOnLeave, isOnWeekend } from "src/utils/helpers";
 
-export const AllUserAttendance = ({ filters }: any) => {
+interface AllUserAttendanceProps {
+  filters: any;
+  selectedUsers: string[]; // Array of selected user IDs
+}
+
+export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
+  filters,
+  selectedUsers,
+}) => {
   const [employees, setEmployees] = useState<undefined | []>([]);
 
-  // Memoize the handleGetAttendances function
   const handleGetAttendances = useCallback(async () => {
     const response = await attendanceApi.getAllUserAttendance(filters);
-    setEmployees(response.data);
-  }, [filters]); // Memoize based on filters
+    let filteredEmployees = response.data;
 
-  // useEffect to call handleGetAttendances when the component mounts or when handleGetAttendances changes
-  useEffect(() => {
-    handleGetAttendances();
-  }, [handleGetAttendances]);
-
-  const isPastDate = (date: Date, joinDate: Date) => {
-    return date < joinDate;
-  };
-
-  const isFutureDate = (date: Date, currentDate: Date) => {
-    return date > currentDate;
-  };
-
-  const isOnLeave = (date: Date, leaves: any[]) => {
-    return leaves.some(
-      (leave) =>
-        new Date(leave.startDate) <= date &&
-        date <= new Date(leave.endDate) &&
-        leave.status === LeavesStatus.Approved
-    );
-  };
-
-  const isOnHoliday = (date: Date, holidays: any[]) => {
-    return holidays.some(
-      (holiday) => new Date(holiday.date).toDateString() === date.toDateString()
-    );
-  };
-
-  const isOnWeekend = (date: Date, shift: any, joinDate: Date) => {
-    const dayOfWeek = date.toLocaleString("en-US", { weekday: "long" });
-
-    if (date < joinDate) {
-      return false;
+    if (selectedUsers.length > 0) {
+      filteredEmployees = filteredEmployees.filter((employee: any) =>
+        selectedUsers.includes(employee._id)
+      );
     }
 
-    return shift?.weekends.includes(dayOfWeek);
-  };
+    setEmployees(filteredEmployees);
+  }, [filters, selectedUsers]);
+
+  useEffect(() => {
+    handleGetAttendances();
+  }, [handleGetAttendances]);  
+
+  const renderTooltip = (title: string | JSX.Element, content: JSX.Element | null, icon: JSX.Element): JSX.Element => (
+    <Tooltip title={title}>
+      <span>
+        {content ? content : icon}
+      </span>
+    </Tooltip>
+  );
+
+  const renderAttendanceStatus = (status: string, timeIn: Date, timeOut: Date): JSX.Element => (
+    <Tooltip
+      title={
+        <div>
+          <h4>{status.toUpperCase()}</h4>
+          <p>Time In: {formatTime(timeIn)}</p>
+          <p>Time out: {formatTime(timeOut)}</p>
+        </div>
+      }
+    >
+      <span>
+        {status === AttendanceStatus.SHORT_ATTENDANCE && <TimerSandEmpty sx={{ fontSize: 16 }} color="success" />}
+        {status === AttendanceStatus.FULL_DAY_PRESENT && <CheckCircleOutline sx={{ fontSize: 16 }} color="success" />}
+        {status === AttendanceStatus.HALF_DAY_PRESENT && <ClockTimeThreeOutline sx={{ fontSize: 18 }} color="warning" />}
+        {status !== AttendanceStatus.SHORT_ATTENDANCE && status !== AttendanceStatus.FULL_DAY_PRESENT && status !== AttendanceStatus.HALF_DAY_PRESENT && (
+          <Box width={8} height={8} m={2.4} borderRadius="50%" bgcolor={"green"} />
+        )}
+      </span>
+    </Tooltip>
+  );
 
   const renderBadge = (
-    dayAttendance: { timeOut: any; status: string; timeIn: any },
+    dayAttendance: { timeOut: Date; status: string; timeIn: Date } | null,
     date: number,
     joinDate: Date,
     currentDate: Date,
@@ -88,155 +100,41 @@ export const AllUserAttendance = ({ filters }: any) => {
     leaves: Leaves[],
     holidays: Holiday[],
     shift: Shift
-  ) => {
+  ): JSX.Element => {
     const viewingDate = new Date(year, month - 1, date);
     const dayOfDate = viewingDate.toLocaleString("en-US", { weekday: "long" });
-
+  
     if (isOnLeave(viewingDate, leaves)) {
-      return (
-        <Tooltip title="On Leave">
-          <span>
-            <StatusIndicator status="Leave" />
-          </span>
-        </Tooltip>
-      );
+      return renderTooltip("On Leave", null, <StatusIndicator status="Leave" />);
     }
-
+  
     if (isOnHoliday(viewingDate, holidays)) {
-      return (
-        <Tooltip title="Holiday">
-          <span>
-            <StatusIndicator status="Holiday" />
-          </span>
-        </Tooltip>
-      );
+      return renderTooltip("Holiday", null, <StatusIndicator status="Holiday" />);
     }
-
+  
     if (isOnWeekend(viewingDate, shift, joinDate)) {
-      return (
-        <Tooltip title="Weekend">
-          <span>
-            <StatusIndicator status="Weekend" />
-          </span>
-        </Tooltip>
-      );
+      return renderTooltip("Weekend", null, <StatusIndicator status="Weekend" />);
     }
-
+  
     if (dayAttendance) {
-      if (dayAttendance.status === AttendanceStatus.SHORT_ATTENDANCE) {
-        return (
-          <Tooltip
-            title={
-              <div>
-                <h4>{dayAttendance.status.toUpperCase()}</h4>
-                <p>Time In: {formatTime(dayAttendance.timeIn)}</p>
-                <p>Time out: {formatTime(dayAttendance.timeOut)}</p>
-              </div>
-            }
-          >
-            <span>
-              <TimerSandEmpty sx={{ fontSize: 16 }} color="success" />
-            </span>
-          </Tooltip>
-        );
-      } else if (dayAttendance.status === AttendanceStatus.FULL_DAY_PRESENT) {
-        return (
-          <Tooltip
-            title={
-              <div>
-                <h4>{dayAttendance.status.toUpperCase()}</h4>
-                <p>Time In: {formatTime(dayAttendance.timeIn)}</p>
-                <p>Time out: {formatTime(dayAttendance.timeOut)}</p>
-              </div>
-            }
-          >
-            <span>
-              <CheckCircleOutline sx={{ fontSize: 16 }} color="success" />
-            </span>
-          </Tooltip>
-        );
-      } else if (dayAttendance.status === AttendanceStatus.HALF_DAY_PRESENT) {
-        return (
-          <Tooltip
-            title={
-              <div>
-                <h4>{dayAttendance.status.toUpperCase()}</h4>
-                <p>Time In: {formatTime(dayAttendance.timeIn)}</p>
-                <p>Time out: {formatTime(dayAttendance.timeOut)}</p>
-              </div>
-            }
-          >
-            <span>
-              <ClockTimeThreeOutline sx={{ fontSize: 18 }} color="warning" />
-            </span>
-          </Tooltip>
-        );
-      } else {
-        return (
-          <Tooltip
-            title={
-              <div>
-                <h4>Online</h4>
-                <p>Time In: {formatTime(dayAttendance.timeIn)}</p>
-                <p>
-                  Time out:{" "}
-                  {dayAttendance.timeOut
-                    ? formatTime(dayAttendance.timeOut)
-                    : null}
-                </p>
-              </div>
-            }
-          >
-            <span>
-              <Box
-                width={8}
-                height={8}
-                m={2.4}
-                borderRadius="50%"
-                bgcolor={"green"}
-              />
-            </span>
-          </Tooltip>
-        );
-      }
+      return renderAttendanceStatus(dayAttendance.status, dayAttendance.timeIn, dayAttendance.timeOut);
     } else {
       if (isPastDate(viewingDate, joinDate)) {
-        return (
+        return <Box width={4} height={4} m={2} borderRadius="50%" bgcolor={"#ddd"} />;
+      } else if (isFutureDate(viewingDate, currentDate)) {
+        const shiftDay = shift?.times.find(time => time.days.includes(dayOfDate));
+        return renderTooltip(
+          shiftDay ? (
+            <div>
+              <p>Start Time: {formatTime(shiftDay.start)}</p>
+              <p>End Time: {formatTime(shiftDay.end)}</p>
+            </div>
+          ) : "No shift found",
+          null,
           <Box width={4} height={4} m={2} borderRadius="50%" bgcolor={"#ddd"} />
         );
-      } else if (isFutureDate(viewingDate, currentDate)) {
-        const shiftDay = shift?.times.find((time) =>
-          time.days.includes(dayOfDate)
-        );
-
-        return (
-          <Tooltip
-            title={
-              shiftDay ? (
-                <div>
-                  <p>Start Time: {formatTime(shiftDay.start)}</p>
-                  <p>End Time: {formatTime(shiftDay.end)}</p>
-                </div>
-              ) : (
-                "No shift found"
-              )
-            }
-          >
-            <Box
-              width={4}
-              height={4}
-              m={2}
-              borderRadius="50%"
-              bgcolor={"#ddd"}
-            />
-          </Tooltip>
-        );
       } else {
-        return (
-          <Tooltip title={`${AttendanceStatus.FULL_DAY_ABSENT.toUpperCase()}`}>
-            <CloseCircleOutline sx={{ fontSize: 18 }} color="error" />
-          </Tooltip>
-        );
+        return renderTooltip(`${AttendanceStatus.FULL_DAY_ABSENT.toUpperCase()}`, null, <CloseCircleOutline sx={{ fontSize: 18 }} color="error" />);
       }
     }
   };
@@ -295,6 +193,8 @@ export const AllUserAttendance = ({ filters }: any) => {
                   </TableCell>
                   {[...Array(31)].map((_, index) => {
                     const date = index + 1;
+
+                  
                     const currentDate = new Date();
 
                     const joinDate = new Date(item.join_date);

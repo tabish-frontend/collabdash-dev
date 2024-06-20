@@ -4,6 +4,24 @@ import utc from "dayjs/plugin/utc";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 
+import {
+  Box,
+  Tooltip,
+} from "@mui/material";
+import {
+  CheckCircleOutline,
+  ClockTimeThreeOutline,
+  CloseCircleOutline,
+  TimerSandEmpty,
+} from "mdi-material-ui";
+import { AttendanceStatus, LeavesStatus } from "src/constants/status";
+
+import { attendanceApi } from "src/api";
+import { Holiday, Leaves, Shift } from "src/types";
+import { StatusIndicator } from "src/components/modules/dashboard/attendance/attendance-status-indicator";
+import { headerStatus } from "src/components/modules/dashboard/attendance/attendance-status-indicator";
+
+
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(localizedFormat);
@@ -363,3 +381,17 @@ export const getCurrentUTCDate = () => {
 
 export const roleReplace = (path: string, role: string) =>
   path.replace("ROLE", role);
+
+export const isPastDate = (date: Date, joinDate: Date): boolean => date < joinDate;
+
+export const isFutureDate = (date: Date, currentDate: Date): boolean => date > currentDate;
+
+export const isOnLeave = (date: Date, leaves: any[]): boolean => 
+  leaves.some(leave => new Date(leave.startDate) <= date && date <= new Date(leave.endDate) && leave.status === LeavesStatus.Approved);
+
+export const isOnHoliday = (date: Date, holidays: any[]): boolean => 
+  holidays.some(holiday => new Date(holiday.date).toDateString() === date.toDateString());
+
+export const isOnWeekend = (date: Date, shift: any, joinDate: Date): boolean => 
+  date >= joinDate && shift?.weekends.includes(date.toLocaleString("en-US", { weekday: "long" }));
+

@@ -57,6 +57,9 @@ export const SelectMultipleUsers: React.FC<SelectMultipleUsersProps> = ({
       getOptionLabel={(option) => option.full_name}
       disableCloseOnSelect
       onChange={handleAutocompleteChange}
+      sx={{
+        minWidth: "300px",
+      }}
       componentsProps={{
         popper: {
           modifiers: [
