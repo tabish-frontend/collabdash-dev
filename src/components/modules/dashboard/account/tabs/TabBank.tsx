@@ -40,10 +40,6 @@ export const TabBank = () => {
     },
   });
 
-  useEffect(() => {
-    console.log("formik values", formik.values);
-  }, [formik.values]);
-
   return (
     <CardContent>
       <form onSubmit={formik.handleSubmit}>

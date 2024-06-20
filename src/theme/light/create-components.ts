@@ -77,8 +77,6 @@ export const createComponents = ({ palette }: Config): Components => {
         input: {
           "&::placeholder": {
             color: palette.text!.secondary,
-            fontSize: 12,
-            letterSpacing: 3,
           },
         },
       },

@@ -86,10 +86,6 @@ export const HolidayModal: FC<HolidayModalProps> = ({
     handleGetEmployees();
   }, []);
 
-  useEffect(() => {
-    console.log("employees", employees);
-  }, [employees]);
-
   return (
     <Dialog
       fullWidth

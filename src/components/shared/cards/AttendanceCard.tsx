@@ -3,7 +3,7 @@ import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import { MenuItem, TextField, Theme, useTheme } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { statisticsApi } from "src/api";
 
 // Define month options
@@ -129,20 +129,15 @@ export const AttendanceCard = () => {
     categories: [],
   });
 
-  useEffect(() => {
-    const fetchAttendance = async () => {
-      try {
-        const response = await statisticsApi.getAllUserMonthlyAttendance(
-          filters
-        );
-        setAttendanceData(response.data);
-      } catch (error) {
-        console.error("Failed to fetch attendance data:", error);
-      }
-    };
+  const fetchAttendance = useCallback(async () => {
+    const response = await statisticsApi.getAllUserMonthlyAttendance(filters);
 
-    fetchAttendance();
+    setAttendanceData(response.data);
   }, [filters]);
+
+  useEffect(() => {
+    fetchAttendance();
+  }, [fetchAttendance]);
 
   useEffect(() => {
     const processChartData = () => {

@@ -76,9 +76,8 @@ const HolidaysListComponent = () => {
       response = await holidaysApi.getMyHolidays({ year: "2024" });
     }
     setHolidayList(response);
-  }, [user?.role]); // Dependencies array ensures memoization based on user.role
+  }, [user?.role]);
 
-  // useEffect to call getHoliday when the component mounts or when getHoliday changes
   useEffect(() => {
     getHoliday();
   }, [getHoliday]);

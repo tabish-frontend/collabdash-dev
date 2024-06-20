@@ -190,6 +190,8 @@ export const createComponents = (): Components => {
         input: {
           "&::placeholder": {
             opacity: 1,
+            fontSize: 12,
+            letterSpacing: 3,
           },
         },
       },

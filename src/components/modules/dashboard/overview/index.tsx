@@ -18,8 +18,6 @@ const OverviewComponent = () => {
 
   const settings = useSettings();
 
-  console.log("is it view");
-
   return (
     <Box
       component="main"
