@@ -95,9 +95,9 @@ export const AllUserAttendance = ({ filters }: any) => {
     if (isOnLeave(viewingDate, leaves)) {
       return (
         <Tooltip title="On Leave">
-          <span>
+          <Box component="span">
             <StatusIndicator status="Leave" />
-          </span>
+          </Box>
         </Tooltip>
       );
     }
@@ -105,9 +105,9 @@ export const AllUserAttendance = ({ filters }: any) => {
     if (isOnHoliday(viewingDate, holidays)) {
       return (
         <Tooltip title="Holiday">
-          <span>
+          <Box component="span">
             <StatusIndicator status="Holiday" />
-          </span>
+          </Box>
         </Tooltip>
       );
     }

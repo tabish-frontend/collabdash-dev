@@ -20,14 +20,6 @@ const TriangleImg = styled("img")({
   marginTop: -10,
 });
 
-// Styled component for the trophy image
-// const TrophyImg = styled('img')({
-//   right: 36,
-//   bottom: 20,
-//   height: 98,
-//   position: 'absolute'
-// })
-
 export const WelcomeCard = () => {
   const { user } = useAuth<AuthContextType>();
 
@@ -59,9 +51,10 @@ export const WelcomeCard = () => {
             justifyContent: "space-between",
           }}
         >
-          <Typography variant="h5">{`Good Morning! ${
-            user?.full_name.split(" ")[0]
-          } 🥳`}</Typography>
+          <Typography
+            variant="h5"
+            style={{ whiteSpace: "pre" }}
+          >{`Good Morning!!  ${user?.full_name}`}</Typography>
 
           <IconButton color="secondary" onClick={handleNewQuote}>
             <RefreshIcon fontSize="large" />
