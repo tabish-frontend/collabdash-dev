@@ -201,7 +201,7 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
         }}
         spacing={1}
         gap={1}
-        my={4}
+        my={2}
         justifyContent={"space-between"}
       >
         <Stack
