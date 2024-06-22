@@ -29,7 +29,7 @@ import { attendanceApi } from "src/api";
 import { Holiday, Leaves, Shift } from "src/types";
 import { StatusIndicator, headerStatus } from "../attendance-status-indicator";
 import { formatTime } from "src/utils/helpers";
-import { RouterLink } from "src/components/shared";
+import { RouterLink, SelectMultipleUsers } from "src/components/shared";
 import { paths } from "src/constants/paths";
 import {
   isPastDate,
@@ -41,17 +41,18 @@ import {
 
 interface AllUserAttendanceProps {
   filters: any;
-  selectedUsers: string[]; // Array of selected user IDs
 }
 
 export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
   filters,
-  selectedUsers,
 }) => {
-  const [employees, setEmployees] = useState<undefined | []>([]);
+  const [employees, setEmployees] = useState<any[] | []>([]);
+  const [employeesAttendance, setEmployeesAttendance] = useState<any[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
 
   const handleGetAttendances = useCallback(async () => {
     const response = await attendanceApi.getAllUserAttendance(filters);
+    setEmployees(response.data);
     let filteredEmployees = response.data;
 
     if (selectedUsers.length > 0) {
@@ -60,7 +61,7 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
       );
     }
 
-    setEmployees(filteredEmployees);
+    setEmployeesAttendance(filteredEmployees);
   }, [filters, selectedUsers]);
 
   useEffect(() => {
@@ -193,22 +194,39 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
 
   return (
     <>
-      <Stack direction="row" gap={1} my={4} flexWrap={"wrap"}>
-        {headerStatus.map((item: any, index: number) => {
-          return (
-            <Stack
-              direction="row"
-              spacing={2}
-              key={index}
-              alignItems={"center"}
-            >
-              {item.icon}
-              <Typography variant="subtitle1" lineHeight={1}>
-                {item.title}
-              </Typography>
-            </Stack>
-          );
-        })}
+      <Stack
+        direction={{
+          xs: "column",
+          md: "row",
+        }}
+        spacing={1}
+        gap={1}
+        my={4}
+        justifyContent={"space-between"}
+      >
+        <Stack
+          direction="row"
+          spacing={2}
+          alignItems={"center"}
+          flexWrap={"wrap"}
+        >
+          {headerStatus.map((item: any, index: number) => {
+            return (
+              <>
+                {item.icon}
+                <Typography variant="subtitle1" lineHeight={1} key={index}>
+                  {item.title}
+                </Typography>
+              </>
+            );
+          })}
+        </Stack>
+
+        <SelectMultipleUsers
+          employees={employees}
+          formikUsers={selectedUsers}
+          setFieldValue={(value: any) => setSelectedUsers(value)}
+        />
       </Stack>
 
       <TableContainer component={Paper}>
@@ -217,7 +235,11 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
             <TableRow>
               <TableCell>Employee</TableCell>
               {[...Array(31)].map((_, index) => (
-                <TableCell key={index + 1}>{index + 1}</TableCell>
+                <TableCell key={index + 1}>
+                  <Typography variant="caption">{`Sun / ${
+                    index + 1
+                  }`}</Typography>
+                </TableCell>
               ))}
             </TableRow>
           </TableHead>
@@ -230,7 +252,7 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
                 </TableCell>
               </TableRow>
             ) : (
-              employees.map((item: any, index: number) => (
+              employeesAttendance.map((item: any, index: number) => (
                 <TableRow key={index}>
                   <TableCell>
                     <Link
