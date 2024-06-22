@@ -116,23 +116,7 @@ export const TimeLogCard = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <Stack direction={"column"} spacing={2}>
-                    {attendance && (
-                      <Typography variant="body1" fontWeight={600}>
-                        ClockIn: {attendance && formatTime(attendance?.timeIn)}
-                      </Typography>
-                    )}
-
-                    {attendance && attendance.timeOut !== null && (
-                      <Typography variant="body1" fontWeight={600}>
-                        ClockOut:
-                        {attendance && formatTime(attendance?.timeOut)}
-                      </Typography>
-                    )}
-                  </Stack>
-                </Box>
-                {!attendance?.timeOut ? (
+                {!attendance?.timeOut && (
                   <Button
                     variant="contained"
                     color={
@@ -153,7 +137,22 @@ export const TimeLogCard = () => {
                   >
                     {attendance && attendance.timeIn ? "CHECK OUT" : "CHECK IN"}
                   </Button>
-                ) : (
+                )}
+
+                {attendance && (
+                  <Typography variant="body1">
+                    ClockIn: {attendance && formatTime(attendance?.timeIn)}
+                  </Typography>
+                )}
+
+                {attendance && attendance.timeOut !== null && (
+                  <Typography variant="body1">
+                    ClockOut:
+                    {attendance && formatTime(attendance?.timeOut)}
+                  </Typography>
+                )}
+
+                {attendance && attendance.duration !== 0 && (
                   <Typography variant="body1">
                     {`Duration: ${formatDuration(attendance.duration)}`}
                   </Typography>
@@ -163,31 +162,30 @@ export const TimeLogCard = () => {
 
             <Grid item xs={12}>
               <Stack spacing={3} mt={2}>
-                <Stack direction={"row"} justifyContent={"center"}>
-                  {!attendance?.timeOut && (
-                    <Tooltip
-                      arrow
-                      placement="left"
-                      title={
-                        completedBreaksCount >= 3
-                          ? "You are allowed only 3 breaks per day"
-                          : ""
-                      }
-                    >
-                      <span>
-                        <Button
-                          variant="contained"
-                          onClick={() =>
-                            handleTimeLog(isOnBreak ? "resume" : "break")
-                          }
-                          disabled={completedBreaksCount >= 3} // Disable if 3 breaks are completed
-                        >
-                          {isOnBreak ? "Resume" : "Break"}
-                        </Button>
-                      </span>
-                    </Tooltip>
-                  )}
-                </Stack>
+                {!attendance?.timeOut && (
+                  <Tooltip
+                    arrow
+                    placement="left"
+                    title={
+                      completedBreaksCount >= 3
+                        ? "You are allowed only 3 breaks per day"
+                        : ""
+                    }
+                  >
+                    <span>
+                      <Button
+                        variant="contained"
+                        color={isOnBreak ? "success" : "info"}
+                        onClick={() =>
+                          handleTimeLog(isOnBreak ? "resume" : "break")
+                        }
+                        disabled={completedBreaksCount >= 3} // Disable if 3 breaks are completed
+                      >
+                        {isOnBreak ? "Resume" : "Break"}
+                      </Button>
+                    </span>
+                  </Tooltip>
+                )}
 
                 {attendance?.breaks.length > 0 && (
                   <>
