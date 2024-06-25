@@ -14,8 +14,6 @@ export const DashboardLayout: FC<LayoutProps> = (props) => {
   const settings = useSettings();
   const sections = useSections();
 
-  console.log("section", sections);
-
   const component = (
     <VerticalLayout
       sections={sections}

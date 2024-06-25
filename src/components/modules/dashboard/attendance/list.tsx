@@ -31,8 +31,7 @@ import { MyAttendance } from "./tabs/my-attendance";
 import { useAuth, useSettings } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { ROLES } from "src/constants/roles";
-import { getMonthLabel, monthOptions } from "src/constants/month-names";
-import { attendanceFormat } from "src/constants/attendance-format";
+import { monthOptions } from "src/constants/month-names";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import {
   AccountOutline,
@@ -40,8 +39,7 @@ import {
   ChevronRight,
   LockOpenOutline,
 } from "mdi-material-ui";
-import { DayWiseUserAttendance } from "./tabs/daywise-user-attendance";
-import { getLocalFormattedDate } from "src/utils";
+import dayjs from "dayjs";
 
 interface FiltersType {
   view: string;
@@ -69,6 +67,7 @@ const TabName = styled("span")(({ theme }) => ({
 }));
 
 const AttendanceListComponent = () => {
+  const settings = useSettings();
   const { user } = useAuth<AuthContextType>();
 
   const currentMonth = new Date().getMonth();
@@ -85,15 +84,9 @@ const AttendanceListComponent = () => {
     user?.role === ROLES.Employee ? "my_attendance" : "employee_attendance"
   );
 
-  const handleChange = (event: SyntheticEvent, newValue: string) => {
+  const handleTabChange = (event: SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
   };
-
-  const handleDateChange = (date: any) => {
-    setFilters((prev) => ({ ...prev, date }));
-  };
-
-  const settings = useSettings();
 
   const handleViewChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>): void => {
@@ -101,24 +94,68 @@ const AttendanceListComponent = () => {
         ? setFilters((prev) => ({
             ...prev,
             view: e.target.value,
+            date: new Date(),
             month: 0,
             year: 0,
-            date: new Date(),
           }))
         : setFilters((prev) => ({
             ...prev,
             view: e.target.value,
+            date: null,
             month: currentMonth + 1,
             year: currentYear,
-            date: null,
           }));
     },
     [filters]
   );
 
-  useEffect(() => {
-    console.log("Filters", filters.date);
-  }, [filters]);
+  const handleNext = () => {
+    setFilters((prev) => {
+      if (prev.view === "month") {
+        const newMonth = prev.month === 12 ? 1 : prev.month + 1;
+        const newYear = prev.month === 12 ? prev.year + 1 : prev.year;
+        return {
+          ...prev,
+          month: newMonth,
+          year: newYear,
+        };
+      } else {
+        const date = dayjs(prev.date);
+        const newDate = date.add(1, "day").toDate();
+        return { ...prev, date: newDate };
+      }
+    });
+  };
+
+  const handlePrevious = () => {
+    setFilters((prev) => {
+      if (prev.view === "month") {
+        const newMonth = prev.month === 1 ? 12 : prev.month - 1;
+        const newYear = prev.month === 1 ? prev.year - 1 : prev.year;
+        return {
+          ...prev,
+          month: newMonth,
+          year: newYear,
+        };
+      } else {
+        const date = dayjs(prev.date);
+        const newDate = date.subtract(1, "day").toDate();
+        return { ...prev, date: newDate };
+      }
+    });
+  };
+
+  const getLocalFormattedDate = (date: Date | null) => {
+    if (date) {
+      return dayjs(date).format("DD MMMM YYYY");
+    } else {
+      return `${monthOptions[filters.month - 1].label} ${filters.year}`;
+    }
+  };
+
+  // useEffect(() => {
+  //   console.log("Filters", filters.date);
+  // }, [filters.date]);
 
   return (
     <Box
@@ -148,32 +185,18 @@ const AttendanceListComponent = () => {
             spacing={3}
             sx={{ px: 3 }}
           >
-            {filters.view === "month" ? (
-              <Typography variant="h5">{`${getMonthLabel(filters.month)} ${
-                filters.year
-              }`}</Typography>
-            ) : (
-              <Typography variant="h5">
-                {getLocalFormattedDate(filters.date)}
-              </Typography>
-            )}
+            <Typography variant="h5">
+              {getLocalFormattedDate(filters.date)}
+            </Typography>
 
             <Stack alignItems="center" direction="row" spacing={1}>
-              <IconButton
-                onClick={() =>
-                  setFilters((prev) => ({ ...prev, month: filters.month - 1 }))
-                }
-              >
+              <IconButton onClick={handlePrevious}>
                 <SvgIcon>
                   <ChevronLeft />
                 </SvgIcon>
               </IconButton>
 
-              <IconButton
-                onClick={() =>
-                  setFilters((prev) => ({ ...prev, month: filters.month + 1 }))
-                }
-              >
+              <IconButton onClick={handleNext}>
                 <SvgIcon>
                   <ChevronRight />
                 </SvgIcon>
@@ -199,9 +222,9 @@ const AttendanceListComponent = () => {
                 }}
                 value={filters.view}
               >
-                {attendanceFormat.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
+                {["month", "day"].map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
                   </MenuItem>
                 ))}
               </TextField>
@@ -239,7 +262,12 @@ const AttendanceListComponent = () => {
                   value={filters.date}
                   label="Select Date"
                   sx={{ width: 150 }}
-                  onChange={handleDateChange}
+                  onChange={(date) => {
+                    if (date) {
+                      date.setHours(18, 0, 0, 0);
+                      setFilters((prev) => ({ ...prev, date }));
+                    }
+                  }}
                 />
               )}
             </Stack>
@@ -251,7 +279,7 @@ const AttendanceListComponent = () => {
                 <TabContext value={tabValue as string}>
                   {user?.role === ROLES.HR && (
                     <TabList
-                      onChange={handleChange}
+                      onChange={handleTabChange}
                       aria-label="account-settings tabs"
                       sx={{
                         borderBottom: (theme) =>
@@ -280,11 +308,7 @@ const AttendanceListComponent = () => {
                   )}
 
                   <TabPanel sx={{ p: 0 }} value="employee_attendance">
-                    {filters.view === "month" ? (
-                      <AllUserAttendance filters={filters} />
-                    ) : (
-                      <DayWiseUserAttendance filters={filters} />
-                    )}
+                    <AllUserAttendance filters={filters} />
                   </TabPanel>
 
                   <TabPanel sx={{ p: 0 }} value="my_attendance">

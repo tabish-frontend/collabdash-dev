@@ -70,7 +70,6 @@ export const MyAttendance = ({ filters }: any) => {
     setAttendance(attendanceList.reverse());
   }, [filters, user?.join_date]);
 
-  // useEffect to call fetchAndProcessData when filters change
   useEffect(() => {
     fetchAndProcessData();
   }, [fetchAndProcessData]);

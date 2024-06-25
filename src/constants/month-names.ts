@@ -12,9 +12,3 @@ export const monthOptions = [
   { value: 11, label: "November" },
   { value: 12, label: "December" },
 ];
-
-export const getMonthLabel = (monthValue: number) => {
-  return (
-    monthOptions.find((option) => option.value === monthValue)?.label || ""
-  );
-};

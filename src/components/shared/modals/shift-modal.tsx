@@ -91,10 +91,6 @@ export const ShiftModal: FC<ShiftModalProps> = ({
     });
   };
 
-  useEffect(() => {
-    console.log("formik values", formik.values);
-  }, [formik.values]);
-
   const addShift = () => {
     const newShiftValues = {
       start: null,

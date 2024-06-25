@@ -15,8 +15,6 @@ import { AttendanceStatus, LeavesStatus } from "src/constants/status";
 
 import { attendanceApi } from "src/api";
 import { Holiday, Leaves, Shift } from "src/types";
-import { StatusIndicator } from "src/components/modules/dashboard/attendance/attendance-status-indicator";
-import { headerStatus } from "src/components/modules/dashboard/attendance/attendance-status-indicator";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -378,8 +376,12 @@ export const getCurrentUTCDate = () => {
 export const roleReplace = (path: string, role: string) =>
   path.replace("ROLE", role);
 
-export const isPastDate = (date: Date, joinDate: Date): boolean =>
-  date < joinDate;
+export const isPastDate = (date: Date, joinDate: Date): boolean => {
+  console.log("date", date);
+  console.log("joinDate", joinDate);
+
+  return date < joinDate;
+};
 
 export const isFutureDate = (date: Date, currentDate: Date): boolean =>
   date > currentDate;
@@ -387,8 +389,8 @@ export const isFutureDate = (date: Date, currentDate: Date): boolean =>
 export const isOnLeave = (date: Date, leaves: any[]): boolean =>
   leaves.some(
     (leave) =>
-      new Date(leave.startDate) <= date &&
-      date <= new Date(leave.endDate) &&
+      new Date(leave.startDate).toDateString() <= date.toDateString() &&
+      date.toDateString() <= new Date(leave.endDate).toDateString() &&
       leave.status === LeavesStatus.Approved
   );
 

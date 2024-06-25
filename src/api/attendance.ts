@@ -29,7 +29,7 @@ class AttendanceApi {
 
   async getAllUserAttendance(query: any) {
     const response = await Axios.get(
-      `/attendance?month=${query.month}&year=${query.year}`
+      `/attendance?view=${query.view}&month=${query.month}&year=${query.year}&date=${query.date}`
     );
 
     return response;

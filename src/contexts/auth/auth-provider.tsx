@@ -219,7 +219,6 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
       const response = await authApi.signIn(body);
 
       if (response) {
-        console.log("response", response);
         const token = response?.data.accessToken;
         localStorage.setItem(STORAGE_KEY, token);
 
