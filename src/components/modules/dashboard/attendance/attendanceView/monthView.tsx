@@ -16,6 +16,12 @@ import { paths } from "src/constants/paths";
 import { CellValues } from "../helper";
 
 export const MonthViewAttendance = ({ employeesAttendance, filters }: any) => {
+  const getDaysInMonth = (month: number, year: number) => {
+    return new Date(year, month, 0).getDate();
+  };
+
+  const daysInMonth = getDaysInMonth(filters.month, filters.year);
+
   return (
     <TableContainer component={Paper}>
       <Table aria-label="attendance table">
@@ -29,7 +35,7 @@ export const MonthViewAttendance = ({ employeesAttendance, filters }: any) => {
             >
               Employee
             </TableCell>
-            {[...Array(31)].map((_, index) => (
+            {[...Array(daysInMonth)].map((_, index) => (
               <TableCell key={index + 1}>
                 <Typography variant="caption">{index + 1}</Typography>
               </TableCell>
@@ -68,7 +74,7 @@ export const MonthViewAttendance = ({ employeesAttendance, filters }: any) => {
                   </Stack>
                 </TableCell>
 
-                {[...Array(31)].map((_, index) => {
+                {[...Array(daysInMonth)].map((_, index) => {
                   const date = new Date(
                     filters.year,
                     filters.month - 1,
