@@ -20,10 +20,13 @@ const EmployeeListComponent = () => {
   const settings = useSettings();
 
   const [employeesList, setEmployeesList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleGetEmployees = async () => {
+    setIsLoading(true);
     const response = await employeesApi.getAllEmployees();
     setEmployeesList(response.users);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -68,11 +71,17 @@ const EmployeeListComponent = () => {
               </Stack>
             </Grid>
 
-            {employeesList.map((employee: Employee) => (
-              <Grid item xs={12} xl={4} lg={6} key={employee._id}>
-                <EmployeeCard employee={employee} />
-              </Grid>
-            ))}
+            {isLoading
+              ? [...Array(3)].map((index) => (
+                  <Grid item xs={12} xl={4} lg={6} key={index}>
+                    <EmployeeCard isLoading={isLoading} />
+                  </Grid>
+                ))
+              : employeesList.map((employee: Employee) => (
+                  <Grid item xs={12} xl={4} lg={6} key={employee._id}>
+                    <EmployeeCard employee={employee} isLoading={isLoading} />
+                  </Grid>
+                ))}
           </Grid>
         </Stack>
       </Container>

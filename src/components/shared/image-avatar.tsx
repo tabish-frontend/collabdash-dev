@@ -1,4 +1,4 @@
-import { Avatar, SvgIcon, styled } from "@mui/material";
+import { Avatar, Skeleton, SvgIcon, styled } from "@mui/material";
 import Image from "next/image";
 import User01Icon from "@untitled-ui/icons-react/build/esm/User01";
 
@@ -9,6 +9,7 @@ interface ImageAvatarProps {
   alt: string;
   width: number;
   height: number;
+  isLoading?: boolean;
 }
 
 export const ImageAvatar: React.FC<ImageAvatarProps> = ({
@@ -16,16 +17,32 @@ export const ImageAvatar: React.FC<ImageAvatarProps> = ({
   alt,
   width,
   height,
+  isLoading = false,
 }) => {
   return (
-    <StyledAvatar sx={{ width, height }} alt="image">
-      {path ? (
-        <Image src={path} alt={alt} width={width} height={height} />
+    <>
+      {isLoading ? (
+        <Skeleton variant="circular" width={width} height={height} />
       ) : (
-        <SvgIcon>
-          <User01Icon />
-        </SvgIcon>
+        <StyledAvatar sx={{ width, height }} alt="image">
+          {path ? (
+            <Image src={path} alt={alt} width={width} height={height} />
+          ) : (
+            <SvgIcon>
+              <User01Icon />
+            </SvgIcon>
+          )}
+        </StyledAvatar>
       )}
-    </StyledAvatar>
+    </>
+    // <StyledAvatar sx={{ width, height }} alt="image">
+    //   {path ? (
+    //     <Image src={path} alt={alt} width={width} height={height} />
+    //   ) : (
+    //     <SvgIcon>
+    //       <User01Icon />
+    //     </SvgIcon>
+    //   )}
+    // </StyledAvatar>
   );
 };

@@ -377,9 +377,6 @@ export const roleReplace = (path: string, role: string) =>
   path.replace("ROLE", role);
 
 export const isPastDate = (date: Date, joinDate: Date): boolean => {
-  console.log("date", date);
-  console.log("joinDate", joinDate);
-
   return date < joinDate;
 };
 

@@ -2,8 +2,14 @@ import Axios from "src/config/axios";
 import { Leaves } from "src/types";
 
 class LeavesAPI {
-  async getAllLeaves() {
-    const response = await Axios.get(`/leaves`);
+  async getAllUserLeaves(params: any) {
+    const response = await Axios.get(`/leaves?year=${params.year}`);
+
+    return response.data;
+  }
+
+  async getMyLeaves(params: any) {
+    const response = await Axios.get(`/users/getMyLeaves?year=${params.year}`);
 
     return response.data;
   }
@@ -22,12 +28,6 @@ class LeavesAPI {
 
   async deleteLeave(leave_id: string) {
     const response = await Axios.delete(`/leaves/${leave_id}`);
-
-    return response.data;
-  }
-
-  async getMyLeaves() {
-    const response = await Axios.get(`/users/getMyLeaves`);
 
     return response.data;
   }

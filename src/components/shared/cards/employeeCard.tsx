@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 
 // ** Types Imports
 import { Employee } from "src/types";
-import { Box } from "@mui/material";
+import { Box, Skeleton } from "@mui/material";
 import { ImageAvatar } from "../image-avatar";
 
 // Styled Grid component
@@ -40,41 +40,48 @@ const truncateBio = (bio: string | undefined, maxLength: number) => {
   return bio.substring(0, maxLength) + "...";
 };
 
-export const EmployeeCard = ({ employee }: { employee: Employee }) => {
+export const EmployeeCard = ({
+  employee,
+  isLoading,
+}: {
+  employee?: Employee;
+  isLoading: boolean;
+}) => {
   const router = useRouter();
 
   return (
     <Card
       sx={{ cursor: "pointer", position: "relative" }}
-      onClick={() => router.push(`${router.pathname}/${employee.username}`)}
+      onClick={() => router.push(`${router.pathname}/${employee?.username}`)}
     >
-      <Box
-        position={"absolute"}
-        top={20}
-        right={20}
-        bgcolor={"yellowgreen"}
-        px={2}
-        borderRadius={20}
-      >
-        <Typography variant="subtitle2" color={"white"}>
-          {employee.Today_Status}
-        </Typography>
-      </Box>
+      {isLoading ? (
+        <Box position={"absolute"} top={20} right={20} px={2}>
+          <Skeleton variant="rounded" width={60} height={20} />
+        </Box>
+      ) : (
+        <Box
+          position={"absolute"}
+          top={20}
+          right={20}
+          bgcolor={"yellowgreen"}
+          px={2}
+          borderRadius={20}
+        >
+          <Typography variant="subtitle2" color={"white"}>
+            {employee?.Today_Status}
+          </Typography>
+        </Box>
+      )}
 
       <Grid container spacing={4}>
         <StyledGrid item md={4.5} xs={12}>
-          <CardContent
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+          <CardContent>
             <ImageAvatar
-              path={employee.avatar || ""}
+              path={employee?.avatar || ""}
               alt="user image"
               width={120}
               height={120}
+              isLoading={isLoading}
             />
           </CardContent>
         </StyledGrid>
@@ -92,27 +99,52 @@ export const EmployeeCard = ({ employee }: { employee: Employee }) => {
           }}
         >
           <CardContent>
-            <Typography
-              variant="h6"
-              sx={{ marginBottom: 2, textTransform: "capitalize" }}
-            >
-              {employee.full_name}
-            </Typography>
-            <Button
-              style={{
-                backgroundColor: "#EEE5FF",
-                padding: 5,
-                textTransform: "capitalize",
-              }}
-            >
-              {employee.designation}
-            </Button>
-            <Typography
-              variant="body2"
-              sx={{ marginBottom: 3.5, marginTop: 3.5 }}
-            >
-              {truncateBio(employee?.bio, 70)}
-            </Typography>
+            {isLoading ? (
+              <>
+                <Skeleton
+                  variant="rectangular"
+                  width={210}
+                  height={20}
+                  sx={{ mt: 2 }}
+                />
+                <Skeleton
+                  variant="rectangular"
+                  width={210}
+                  height={20}
+                  sx={{ mt: 2 }}
+                />
+                <Skeleton
+                  variant="rectangular"
+                  width={210}
+                  height={50}
+                  sx={{ mt: 2 }}
+                />
+              </>
+            ) : (
+              <>
+                <Typography
+                  variant="h6"
+                  sx={{ marginBottom: 2, textTransform: "capitalize" }}
+                >
+                  {employee?.full_name}
+                </Typography>
+                <Button
+                  style={{
+                    backgroundColor: "#EEE5FF",
+                    padding: 5,
+                    textTransform: "capitalize",
+                  }}
+                >
+                  {employee?.designation}
+                </Button>
+                <Typography
+                  variant="body2"
+                  sx={{ marginBottom: 3.5, marginTop: 3.5 }}
+                >
+                  {truncateBio(employee?.bio, 70)}
+                </Typography>
+              </>
+            )}
           </CardContent>
         </Grid>
       </Grid>
