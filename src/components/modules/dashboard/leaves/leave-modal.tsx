@@ -64,7 +64,10 @@ export const LeaveModal: FC<LeaveModalProps> = ({
   const [employees, setEmployees] = useState<any[]>([]);
 
   const handleGetEmployees = async () => {
-    const response = await employeesApi.getAllEmployees("full_name,avatar");
+    const response = await employeesApi.getAllEmployees(
+      "active",
+      "full_name,avatar"
+    );
     setEmployees(response.users);
   };
 

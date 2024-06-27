@@ -7,6 +7,8 @@ import {
   Box,
   Tabs,
   Tab,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
@@ -26,6 +28,7 @@ import { AccountStatus } from "src/constants/status";
 const EmployeeListComponent = () => {
   const router = useRouter();
   const settings = useSettings();
+  const theme = useTheme();
 
   const [employeesList, setEmployeesList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,6 +51,8 @@ const EmployeeListComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusValue]);
 
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
     <Box
       component="main"
@@ -67,13 +72,14 @@ const EmployeeListComponent = () => {
             <Typography variant="h4">{"Employee's"}</Typography>
 
             <Button
+              variant="contained"
+              size={isSmallScreen ? "small" : "medium"}
               onClick={() => router.push(`${router.pathname}/new`)}
               startIcon={
                 <SvgIcon>
                   <Plus />
                 </SvgIcon>
               }
-              variant="contained"
             >
               Add Employee
             </Button>

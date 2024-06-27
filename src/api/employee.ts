@@ -2,10 +2,11 @@ import Axios from "src/config/axios";
 
 class EmployeesApi {
   async getAllEmployees(
-    account_status: string | string[] | undefined = "active"
+    account_status: string | string[] | undefined = "active",
+    fields = ""
   ) {
     const response = await Axios.get(
-      `/employees?account_status=${account_status}`
+      `/employees?account_status=${account_status}&fields=${fields}`
     );
 
     return response.data;

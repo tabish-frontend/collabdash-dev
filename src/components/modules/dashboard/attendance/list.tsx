@@ -14,6 +14,8 @@ import {
   MenuItem,
   IconButton,
   SvgIcon,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import {
   ChangeEvent,
@@ -68,6 +70,7 @@ const TabName = styled("span")(({ theme }) => ({
 
 const AttendanceListComponent = () => {
   const settings = useSettings();
+
   const { user } = useAuth<AuthContextType>();
 
   const currentMonth = new Date().getMonth();
@@ -168,7 +171,9 @@ const AttendanceListComponent = () => {
             lg: 4,
           }}
         >
-          <Typography variant="h4">Attendance</Typography>
+          <Typography variant="h4" lineHeight={1}>
+            Attendance
+          </Typography>
 
           <Stack
             alignItems="center"
@@ -178,65 +183,40 @@ const AttendanceListComponent = () => {
               xs: "column",
               md: "row",
             }}
-            spacing={3}
-            sx={{ px: 3 }}
+            sx={{ px: 3, marginTop: "14px !important" }}
           >
             <Typography variant="h5">
               {getLocalFormattedDate(filters.date)}
             </Typography>
 
-            <Stack alignItems="center" direction="row" spacing={1}>
-              <IconButton onClick={handlePrevious}>
-                <SvgIcon>
-                  <ChevronLeft />
-                </SvgIcon>
-              </IconButton>
+            <Stack
+              alignItems="center"
+              flexDirection={{
+                xs: "column-reverse",
+                md: "row",
+              }}
+              spacing={1}
+            >
+              <Stack direction={"row"}>
+                <IconButton onClick={handlePrevious}>
+                  <SvgIcon>
+                    <ChevronLeft />
+                  </SvgIcon>
+                </IconButton>
 
-              <IconButton onClick={handleNext}>
-                <SvgIcon>
-                  <ChevronRight />
-                </SvgIcon>
-              </IconButton>
+                <IconButton onClick={handleNext}>
+                  <SvgIcon>
+                    <ChevronRight />
+                  </SvgIcon>
+                </IconButton>
+              </Stack>
 
-              <TextField
-                label="View"
-                name="view"
-                onChange={handleViewChange}
-                select
-                SelectProps={{
-                  MenuProps: {
-                    PaperProps: {
-                      style: {
-                        maxHeight: "150px",
-                      },
-                    },
-                  },
-                }}
-                size="small"
-                sx={{
-                  minWidth: 150,
-                }}
-                value={filters.view}
-              >
-                {["month", "day"].map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </TextField>
-
-              {filters.view === "month" ? (
+              <Stack direction={"row"} spacing={1}>
                 <TextField
+                  label="View"
+                  name="view"
+                  onChange={handleViewChange}
                   select
-                  label="Select Month"
-                  value={filters.month}
-                  size="small"
-                  sx={{
-                    minWidth: 150,
-                  }}
-                  onChange={(e: any) =>
-                    setFilters((prev) => ({ ...prev, month: e.target.value }))
-                  }
                   SelectProps={{
                     MenuProps: {
                       PaperProps: {
@@ -246,26 +226,61 @@ const AttendanceListComponent = () => {
                       },
                     },
                   }}
+                  size="small"
+                  sx={{
+                    minWidth: 150,
+                  }}
+                  value={filters.view}
                 >
-                  {monthOptions.map((option: any) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
+                  {["month", "day"].map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
                     </MenuItem>
                   ))}
                 </TextField>
-              ) : (
-                <DatePicker
-                  value={filters.date}
-                  label="Select Date"
-                  sx={{ width: 150 }}
-                  onChange={(date) => {
-                    if (date) {
-                      date.setHours(18, 0, 0, 0);
-                      setFilters((prev) => ({ ...prev, date }));
+
+                {filters.view === "month" ? (
+                  <TextField
+                    select
+                    label="Select Month"
+                    value={filters.month}
+                    size="small"
+                    sx={{
+                      minWidth: 150,
+                    }}
+                    onChange={(e: any) =>
+                      setFilters((prev) => ({ ...prev, month: e.target.value }))
                     }
-                  }}
-                />
-              )}
+                    SelectProps={{
+                      MenuProps: {
+                        PaperProps: {
+                          style: {
+                            maxHeight: "150px",
+                          },
+                        },
+                      },
+                    }}
+                  >
+                    {monthOptions.map((option: any) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                ) : (
+                  <DatePicker
+                    value={filters.date}
+                    label="Select Date"
+                    sx={{ width: 150 }}
+                    onChange={(date) => {
+                      if (date) {
+                        date.setHours(18, 0, 0, 0);
+                        setFilters((prev) => ({ ...prev, date }));
+                      }
+                    }}
+                  />
+                )}
+              </Stack>
             </Stack>
           </Stack>
 
