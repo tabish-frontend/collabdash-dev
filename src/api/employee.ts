@@ -1,8 +1,12 @@
 import Axios from "src/config/axios";
 
 class EmployeesApi {
-  async getAllEmployees(fields = "") {
-    const response = await Axios.get(`/employees?fields=${fields}`);
+  async getAllEmployees(
+    account_status: string | string[] | undefined = "active"
+  ) {
+    const response = await Axios.get(
+      `/employees?account_status=${account_status}`
+    );
 
     return response.data;
   }
