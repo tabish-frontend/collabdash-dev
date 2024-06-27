@@ -7,6 +7,9 @@ import { useRouter } from "next/router";
 import { employeesApi } from "src/api";
 import { EmployeeDetails, ShiftDetails } from "src/components";
 import { useSettings } from "src/hooks";
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { ConfirmationModal } from "src/components/shared";
 
 const EmployeeProfileComponent = () => {
   const settings = useSettings();
@@ -15,6 +18,9 @@ const EmployeeProfileComponent = () => {
   const { username } = router.query;
 
   const [employeeData, setEmployeeData] = useState<Employee | undefined>();
+  const [deleteModal, setDeleteModal] = useState({
+    open: false,
+  });
 
   // Memoize the handleGetEmployee function
   const handleGetEmployee = useCallback(async () => {
@@ -30,6 +36,11 @@ const EmployeeProfileComponent = () => {
     const response = await employeesApi.updateEmployee(username, UpdatedValues);
 
     setEmployeeData(response);
+  };
+
+  const handleDeleteEmployee = async (username: any) => {
+    await employeesApi.deleteEmployee(username);
+    router.back();
   };
 
   // useEffect to call handleGetEmployee when username changes
@@ -53,8 +64,22 @@ const EmployeeProfileComponent = () => {
           }}
         >
           <Grid container spacing={4}>
-            <Grid item xs={12} sx={{ paddingBottom: 4 }}>
+            <Grid item xs={10} sx={{ paddingBottom: 4 }}>
               <Typography variant="h5">{"Employee Profile"}</Typography>
+            </Grid>
+            <Grid item xs={2} sx={{ paddingBottom: 4 }}>
+              <Button
+                variant="contained"
+                startIcon={<DeleteIcon />}
+                color="error"
+                onClick={() =>
+                  setDeleteModal({
+                    open: true,
+                  })
+                }
+              >
+                Delete Employee
+              </Button>
             </Grid>
             <Grid item xs={12} sm={7}>
               <EmployeeDetails
@@ -74,6 +99,26 @@ const EmployeeProfileComponent = () => {
           </Grid>
         </Stack>
       </Container>
+
+      {deleteModal.open && (
+        <ConfirmationModal
+          warning_title={"Delete"}
+          warning_text={"Are you sure you want to delete the Employee ?"}
+          button_text={"Delete"}
+          modal={deleteModal.open}
+          onCancel={() =>
+            setDeleteModal({
+              open: false,
+            })
+          }
+          onConfirm={async () => {
+            handleDeleteEmployee(username);
+            setDeleteModal({
+              open: false,
+            });
+          }}
+        />
+      )}
     </Box>
   );
 };
