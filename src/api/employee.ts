@@ -29,6 +29,11 @@ class EmployeesApi {
 
     return response.data;
   }
+
+  async deleteEmployee(username: string){
+    const response = await Axios.delete(`/employees/${username}`);
+    return response.data
+  }
 }
 
 export const employeesApi = new EmployeesApi();
