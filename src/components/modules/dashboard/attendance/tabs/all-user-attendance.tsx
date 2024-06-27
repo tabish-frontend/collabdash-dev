@@ -6,7 +6,7 @@ import { Stack, Typography } from "@mui/material";
 import { attendanceApi } from "src/api";
 import { SelectMultipleUsers } from "src/components/shared";
 
-import { DayWiseUserAttendance } from "../attendanceView/dayView";
+import { DayViewAttendance } from "../attendanceView/dayView";
 import { MonthViewAttendance } from "../attendanceView/monthView";
 import { React } from "mdi-material-ui";
 import { statusMapping } from "src/constants/attendance-status";
@@ -18,6 +18,7 @@ interface AllUserAttendanceProps {
 export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
   filters,
 }) => {
+  const [isLoading, setIsLoading] = useState(true);
   const [employees, setEmployees] = useState<any[] | []>([]);
   const [employeesAttendance, setEmployeesAttendance] = useState<any[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
@@ -34,6 +35,7 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
     }
 
     setEmployeesAttendance(filteredEmployees);
+    setIsLoading(false);
   }, [filters, selectedUsers]);
 
   useEffect(() => {
@@ -69,8 +71,7 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
             })}
           </Stack>
         ) : (
-          <div>
-          </div>
+          <div></div>
         )}
 
         <SelectMultipleUsers
@@ -84,11 +85,13 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
         <MonthViewAttendance
           employeesAttendance={employeesAttendance}
           filters={filters}
+          isLoading={isLoading}
         />
       ) : (
-        <DayWiseUserAttendance
+        <DayViewAttendance
           employeesAttendance={employeesAttendance}
           filters={filters}
+          isLoading={isLoading}
         />
       )}
     </>

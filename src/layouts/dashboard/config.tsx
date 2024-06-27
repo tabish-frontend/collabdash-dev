@@ -61,11 +61,6 @@ const navItems: Item[] = [
     icon: <SvgIcon component={FileTreeOutline} />,
     path: paths.tasks,
   },
-  // {
-  //   title: "Salaries",
-  //   icon: <SvgIcon component={BallotRecountOutline} />,
-  //   path: "#",
-  // },
 ];
 
 export const useSections = (): Section[] => {

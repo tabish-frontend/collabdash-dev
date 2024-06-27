@@ -1,13 +1,9 @@
-import type { NextPage } from "next";
-import Box from "@mui/material/Box";
+import Link from "next/link";
 import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
+import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import type { Theme } from "@mui/material/styles/createTheme";
-
-import { RouterLink } from "src/components/shared";
-import { Seo } from "src/components/shared/seo";
+import Box, { BoxProps } from "@mui/material/Box";
+import type { NextPage } from "next";
 import { paths } from "src/constants/paths";
 import { Stack, SvgIcon } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -17,9 +13,28 @@ import { useRouter } from "next/router";
 import { useAuth } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 
-const Page: NextPage = () => {
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+// ** Styled Components
+const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
+  [theme.breakpoints.down("md")]: {
+    width: "90vw",
+  },
+}));
 
+const Img = styled("img")(({ theme }) => ({
+  marginBottom: theme.spacing(10),
+  [theme.breakpoints.down("lg")]: {
+    height: 450,
+    marginTop: theme.spacing(10),
+  },
+  [theme.breakpoints.down("md")]: {
+    height: 400,
+  },
+  [theme.breakpoints.up("lg")]: {
+    marginTop: theme.spacing(13),
+  },
+}));
+
+const Page: NextPage = () => {
   const router = useRouter();
 
   const { signOut } = useAuth<AuthContextType>();
@@ -35,9 +50,8 @@ const Page: NextPage = () => {
   }, [router, signOut]);
 
   return (
-    <>
-      <Seo title="Error: Not Found" />
-      <Stack justifyContent={"flex-end"} direction={"row"} margin={5}>
+    <Box className="content-center">
+      <Stack justifyContent={"flex-end"} direction={"row"} margin={2}>
         <Button
           size="medium"
           color="error"
@@ -51,55 +65,39 @@ const Page: NextPage = () => {
           Logout
         </Button>
       </Stack>
+
       <Box
-        component="main"
         sx={{
-          alignItems: "center",
           display: "flex",
-          flexGrow: 1,
-          py: "80px",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
         }}
       >
-        <Container maxWidth="lg">
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              mb: 6,
-            }}
+        <BoxWrapper>
+          <Typography variant="h1">404</Typography>
+          <Typography
+            variant="h5"
+            sx={{ mb: 1, fontSize: "1.5rem !important" }}
           >
-            <Box
-              alt="Not found"
-              component="img"
-              src="/assets/errors/error-404.svg"
-              sx={{
-                height: "auto",
-                maxWidth: "100%",
-                width: 200,
-              }}
-            />
-          </Box>
-          <Typography align="center" variant={mdUp ? "h1" : "h4"}>
-            404: The page you are looking for isn’t here
+            Page Not Found ⚠️
           </Typography>
-          <Typography align="center" color="text.secondary" sx={{ mt: 0.5 }}>
-            You either tried some shady route or you came here by mistake.
-            Whichever it is, try using the navigation.
+          <Typography variant="body2">
+            We couldn&prime;t find the page you are looking for.
           </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              mt: 6,
-            }}
-          >
-            <Button component={RouterLink} href={paths.index}>
-              Back to Home
-            </Button>
-          </Box>
-        </Container>
+        </BoxWrapper>
+        <Img
+          height="487"
+          alt="error-illustration"
+          src="/images/pages/404.png"
+        />
+        <Link passHref href={paths.index}>
+          <Button component="a" variant="contained" sx={{ px: 5.5 }}>
+            Back to Home
+          </Button>
+        </Link>
       </Box>
-    </>
+    </Box>
   );
 };
 

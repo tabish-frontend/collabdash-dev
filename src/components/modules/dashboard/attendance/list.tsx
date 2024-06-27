@@ -153,10 +153,6 @@ const AttendanceListComponent = () => {
     }
   };
 
-  // useEffect(() => {
-  //   console.log("Filters", filters.date);
-  // }, [filters.date]);
-
   return (
     <Box
       component="main"

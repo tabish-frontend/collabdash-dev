@@ -17,6 +17,9 @@ import {
   Tooltip,
   Container,
   CardContent,
+  Skeleton,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import { NextPage } from "next";
@@ -62,8 +65,19 @@ const HR_Screen = [
   "Action",
 ];
 
+interface FiltersType {
+  year: number;
+}
+
 const LeavesListComponent = () => {
   const settings = useSettings();
+  const theme = useTheme();
+
+  const currentYear = new Date().getFullYear();
+
+  const [filters, setFilters] = useState<FiltersType>({
+    year: currentYear,
+  });
 
   const { user } = useAuth<AuthContextType>();
 
@@ -72,6 +86,7 @@ const LeavesListComponent = () => {
       ? HR_Screen
       : employee_Screen;
 
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [leaveModal, setLeaveModal] = useState(false);
   const [modalType, setModalType] = useState("");
   const [leavesList, setLeavesList] = useState<any[]>([]);
@@ -84,19 +99,20 @@ const LeavesListComponent = () => {
   const getLeaves = useCallback(async () => {
     let response = [];
     if (user?.role === ROLES.HR || user?.role === ROLES.Admin) {
-      response = await leavesApi.getAllLeaves();
+      response = await leavesApi.getAllUserLeaves(filters);
     } else {
-      response = await leavesApi.getMyLeaves();
+      response = await leavesApi.getMyLeaves(filters);
     }
     setLeavesList(response);
-  }, [user?.role]); // Dependencies array ensures memoization based on user.role
+    setIsLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters]);
 
-  // useEffect to call getLeaves when the component mounts or when getLeaves changes
   useEffect(() => {
     getLeaves();
   }, [getLeaves]);
 
-  const addAndUpdateHoliday = async (values: any) => {
+  const addAndUpdateLeaves = async (values: any) => {
     const { _id, ...LeaveValues } = values;
 
     if (modalType === "update") {
@@ -126,6 +142,8 @@ const LeavesListComponent = () => {
       )
     );
   };
+
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <Box
@@ -180,134 +198,167 @@ const LeavesListComponent = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {leavesList.map((leave, index) => {
-                      return (
-                        <TableRow hover role="checkbox" key={index}>
-                          {(user?.role === ROLES.Admin ||
-                            user?.role === ROLES.HR) && (
-                            <TableCell>
-                              <Stack
-                                alignItems={"center"}
-                                direction={"row"}
-                                spacing={1}
-                              >
-                                <ImageAvatar
-                                  path={leave.user.avatar || ""}
-                                  alt="user image"
-                                  width={40}
-                                  height={40}
-                                />
-
-                                <Link
-                                  color="inherit"
-                                  component={RouterLink}
-                                  href={`${paths.employees}/${leave.user.username}`}
-                                  variant="subtitle1"
-                                  sx={{ textTransform: "capitalize" }}
-                                >
-                                  {leave.user.full_name}
-                                </Link>
-                              </Stack>
+                    {isLoading ? (
+                      [...Array(5)].map((_, index) => (
+                        <TableRow key={`skeleton-${index}`}>
+                          {columns.map((col, colIndex) => (
+                            <TableCell key={colIndex} align="center">
+                              <Skeleton
+                                variant="rounded"
+                                width="100%"
+                                height={25}
+                              />
                             </TableCell>
-                          )}
+                          ))}
+                        </TableRow>
+                      ))
+                    ) : leavesList.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={columns.length}>
+                          <Stack
+                            direction={"row"}
+                            justifyContent={"center"}
+                            alignItems={"center"}
+                          >
+                            <img
+                              width={isSmallScreen ? 200 : 400}
+                              height={isSmallScreen ? 150 : 300}
+                              alt="error-illustration"
+                              src="/images/pages/nodata.png"
+                            />
+                          </Stack>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      leavesList.map((leave, index) => {
+                        return (
+                          <TableRow hover role="checkbox" key={index}>
+                            {(user?.role === ROLES.Admin ||
+                              user?.role === ROLES.HR) && (
+                              <TableCell>
+                                <Stack
+                                  alignItems={"center"}
+                                  direction={"row"}
+                                  spacing={1}
+                                >
+                                  <ImageAvatar
+                                    path={leave.user.avatar || ""}
+                                    alt="user image"
+                                    width={40}
+                                    height={40}
+                                  />
 
-                          <TableCell>{leave.leave_type}</TableCell>
-                          <TableCell>{formatDate(leave.startDate)}</TableCell>
-                          <TableCell>{formatDate(leave.endDate)}</TableCell>
-                          <TableCell>{leave.reason}</TableCell>
-                          <TableCell>{leave.status.toUpperCase()}</TableCell>
+                                  <Link
+                                    color="inherit"
+                                    component={RouterLink}
+                                    href={`${paths.employees}/${leave.user.username}`}
+                                    variant="subtitle1"
+                                    sx={{ textTransform: "capitalize" }}
+                                  >
+                                    {leave.user.full_name}
+                                  </Link>
+                                </Stack>
+                              </TableCell>
+                            )}
 
-                          {(user?.role === ROLES.Admin ||
-                            user?.role === ROLES.HR) && (
+                            <TableCell>{leave.leave_type}</TableCell>
+                            <TableCell>{formatDate(leave.startDate)}</TableCell>
+                            <TableCell>{formatDate(leave.endDate)}</TableCell>
+                            <TableCell>{leave.reason}</TableCell>
+                            <TableCell>{leave.status.toUpperCase()}</TableCell>
+
+                            {(user?.role === ROLES.Admin ||
+                              user?.role === ROLES.HR) && (
+                              <TableCell>
+                                <Stack direction={"row"} spacing={1}>
+                                  <Tooltip title="Approved">
+                                    <span>
+                                      <IconButton
+                                        onClick={() =>
+                                          handleUpdateStatus(
+                                            leave._id,
+                                            LeavesStatus.Approved
+                                          )
+                                        }
+                                        disabled={
+                                          leave.status === LeavesStatus.Approved
+                                        }
+                                        sx={{
+                                          "&:hover": {
+                                            backgroundColor: "green",
+                                            color: "white",
+                                          },
+                                          color: "green",
+                                        }}
+                                      >
+                                        <CheckCircleOutline />
+                                      </IconButton>
+                                    </span>
+                                  </Tooltip>
+
+                                  <Tooltip title="Rejected">
+                                    <span>
+                                      <IconButton
+                                        onClick={() =>
+                                          handleUpdateStatus(
+                                            leave._id,
+                                            LeavesStatus.Rejected
+                                          )
+                                        }
+                                        disabled={
+                                          leave.status === LeavesStatus.Rejected
+                                        }
+                                        sx={{
+                                          "&:hover": {
+                                            backgroundColor: "red",
+                                            color: "white",
+                                          },
+                                          color: "red",
+                                        }}
+                                      >
+                                        <CloseCircleOutline />
+                                      </IconButton>
+                                    </span>
+                                  </Tooltip>
+                                </Stack>
+                              </TableCell>
+                            )}
                             <TableCell>
                               <Stack direction={"row"} spacing={1}>
-                                <Tooltip title="Approved">
+                                <Tooltip title="Edit">
                                   <span>
-                                    <IconButton
-                                      onClick={() =>
-                                        handleUpdateStatus(
-                                          leave._id,
-                                          LeavesStatus.Approved
-                                        )
-                                      }
-                                      disabled={
-                                        leave.status === LeavesStatus.Approved
-                                      }
-                                      sx={{
-                                        "&:hover": {
-                                          backgroundColor: "green",
-                                          color: "white",
-                                        },
-                                        color: "green",
+                                    <SquareEditOutline
+                                      color="success"
+                                      sx={{ cursor: "pointer" }}
+                                      onClick={() => {
+                                        setModalType("update");
+                                        setLeaveModal(true);
+                                        setLeaveValues(leave);
                                       }}
-                                    >
-                                      <CheckCircleOutline />
-                                    </IconButton>
+                                    />
                                   </span>
                                 </Tooltip>
 
-                                <Tooltip title="Rejected">
+                                <Tooltip title="Delete">
                                   <span>
-                                    <IconButton
+                                    <TrashCanOutline
+                                      color="error"
+                                      sx={{ cursor: "pointer" }}
                                       onClick={() =>
-                                        handleUpdateStatus(
-                                          leave._id,
-                                          LeavesStatus.Rejected
-                                        )
+                                        setDeleteModal({
+                                          open: true,
+                                          leaveID: leave._id,
+                                        })
                                       }
-                                      disabled={
-                                        leave.status === LeavesStatus.Rejected
-                                      }
-                                      sx={{
-                                        "&:hover": {
-                                          backgroundColor: "red",
-                                          color: "white",
-                                        },
-                                        color: "red",
-                                      }}
-                                    >
-                                      <CloseCircleOutline />
-                                    </IconButton>
+                                    />
                                   </span>
                                 </Tooltip>
                               </Stack>
                             </TableCell>
-                          )}
-                          <TableCell>
-                            <Stack direction={"row"} spacing={1}>
-                              <Tooltip title="Edit">
-                                <span>
-                                  <SquareEditOutline
-                                    color="success"
-                                    sx={{ cursor: "pointer" }}
-                                    onClick={() => {
-                                      setModalType("update");
-                                      setLeaveModal(true);
-                                      setLeaveValues(leave);
-                                    }}
-                                  />
-                                </span>
-                              </Tooltip>
-
-                              <Tooltip title="Delete">
-                                <span>
-                                  <TrashCanOutline
-                                    color="error"
-                                    sx={{ cursor: "pointer" }}
-                                    onClick={() =>
-                                      setDeleteModal({
-                                        open: true,
-                                        leaveID: leave._id,
-                                      })
-                                    }
-                                  />
-                                </span>
-                              </Tooltip>
-                            </Stack>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
+                          </TableRow>
+                        );
+                      })
+                    )}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -325,7 +376,7 @@ const LeavesListComponent = () => {
             setLeaveModal(false);
             setLeaveValues(undefined);
           }}
-          onConfirm={addAndUpdateHoliday}
+          onConfirm={addAndUpdateLeaves}
         />
       )}
 

@@ -1,16 +1,18 @@
 // ** MUI Imports
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableRow from "@mui/material/TableRow";
-import TableHead from "@mui/material/TableHead";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
+import {
+  Paper,
+  TableContainer,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Skeleton,
+} from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { attendanceApi } from "src/api";
-import { formatDate, formatDuration, formatTime } from "src/utils/helpers";
-import { useAuth } from "src/hooks";
-import { AuthContextType } from "src/contexts/auth";
+import { formatDate } from "src/utils/helpers";
+import { CellValues } from "../helper";
 
 const columns = [
   "Date",
@@ -22,53 +24,52 @@ const columns = [
 
 export const MyAttendance = ({ filters }: any) => {
   const [attendance, setAttendance] = useState<any[]>([]);
-  const { user } = useAuth<AuthContextType>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Memoize the fetchAndProcessData function
   const fetchAndProcessData = useCallback(async () => {
+    setIsLoading(true);
     const response = await attendanceApi.getMyAttendance(filters);
-    const attendanceData = response.data.attendance;
+    const attendanceData = response.data.data;
 
-    const currentDate = new Date();
-    const selectedMonth = filters.month;
-    const selectedYear = filters.year;
-    const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
-    const joinDate = new Date(user?.join_date || new Date());
+    let selectedMonth;
+    let selectedYear;
+    let daysInMonth;
+
+    if (filters.view === "day") {
+      const date = new Date(filters.date);
+      selectedMonth = date.getMonth() + 1; // getMonth() returns 0-based month
+      selectedYear = date.getFullYear();
+      daysInMonth = 1; // Only one day to process
+    } else {
+      selectedMonth = filters.month;
+      selectedYear = filters.year;
+      daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
+    }
 
     const attendanceList = [];
 
     for (let date = 1; date <= daysInMonth; date++) {
-      const currentViewingDate = new Date(
-        selectedYear,
-        selectedMonth - 1,
-        date
-      );
-      let dayAttendance = attendanceData.find(
-        (item: { date: string | number | Date }) =>
-          new Date(item.date).getDate() === date
-      );
+      const currentViewingDate =
+        filters.view === "day"
+          ? new Date(filters.date)
+          : new Date(selectedYear, selectedMonth - 1, date);
 
-      if (
-        !dayAttendance &&
-        currentViewingDate >= joinDate &&
-        currentViewingDate <= currentDate
-      ) {
-        dayAttendance = {
-          date: currentViewingDate,
-          timeIn: null,
-          timeOut: null,
-          duration: 0,
-          status: "Absent",
-        };
-      }
+      const attendanceValues = CellValues(attendanceData, currentViewingDate);
 
-      if (currentViewingDate >= joinDate && currentViewingDate <= currentDate) {
-        attendanceList.push(dayAttendance);
-      }
+      const dayAttendance = {
+        date: currentViewingDate,
+        timeIn: attendanceValues.attendance.clockIn,
+        timeOut: attendanceValues.attendance.clockOut,
+        duration: attendanceValues.attendance.duration,
+        status: attendanceValues.status,
+      };
+
+      attendanceList.push(dayAttendance);
     }
 
     setAttendance(attendanceList.reverse());
-  }, [filters, user?.join_date]);
+    setIsLoading(false);
+  }, [filters]);
 
   useEffect(() => {
     fetchAndProcessData();
@@ -88,27 +89,27 @@ export const MyAttendance = ({ filters }: any) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {attendance.map((attendance, index) => (
-              <TableRow hover role="checkbox" key={index}>
-                <TableCell align="center">
-                  {formatDate(attendance.date)}
-                </TableCell>
-                <TableCell align="center">
-                  {attendance.timeIn ? formatTime(attendance.timeIn) : "--"}
-                </TableCell>
-                <TableCell align="center">
-                  {attendance.timeOut ? formatTime(attendance.timeOut) : "--"}
-                </TableCell>
-                <TableCell align="center">
-                  {attendance.status.toUpperCase()}
-                </TableCell>
-                <TableCell align="center">
-                  {attendance.timeIn && attendance.timeOut
-                    ? formatDuration(attendance.duration)
-                    : "--"}
-                </TableCell>
-              </TableRow>
-            ))}
+            {isLoading
+              ? [...Array(5)].map((_, index) => (
+                  <TableRow key={`skeleton-${index}`}>
+                    {columns.map((col, colIndex) => (
+                      <TableCell key={colIndex} align="center">
+                        <Skeleton variant="rounded" width="100%" height={15} />
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              : attendance.map((attendance, index) => (
+                  <TableRow hover role="checkbox" key={index}>
+                    <TableCell align="center">
+                      {formatDate(attendance.date)}
+                    </TableCell>
+                    <TableCell align="center">{attendance.timeIn}</TableCell>
+                    <TableCell align="center">{attendance.timeOut}</TableCell>
+                    <TableCell align="center">{attendance.status}</TableCell>
+                    <TableCell align="center">{attendance.duration}</TableCell>
+                  </TableRow>
+                ))}
           </TableBody>
         </Table>
       </TableContainer>

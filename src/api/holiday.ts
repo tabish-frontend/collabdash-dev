@@ -2,8 +2,16 @@ import Axios from "src/config/axios";
 import { Holiday } from "src/types";
 
 class HolidayAPI {
-  async getAllUserHolidays() {
-    const response = await Axios.get(`/holidays`);
+  async getAllUserHolidays(params: any) {
+    const response = await Axios.get(`/holidays?year=${params.year}`);
+
+    return response.data;
+  }
+
+  async getMyHolidays(params: any) {
+    const response = await Axios.get(
+      `/users/getMyAllHolidays?year=${params.year}`
+    );
 
     return response.data;
   }
@@ -22,14 +30,6 @@ class HolidayAPI {
 
   async deleteHoliday(holiday_id: string) {
     const response = await Axios.delete(`/holidays/${holiday_id}`);
-
-    return response.data;
-  }
-
-  async getMyHolidays(params: any) {
-    const response = await Axios.get(
-      `/users/getMyAllHolidays?year=${params.year}`
-    );
 
     return response.data;
   }
