@@ -69,7 +69,8 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
             })}
           </Stack>
         ) : (
-          "Status"
+          <div>
+          </div>
         )}
 
         <SelectMultipleUsers
