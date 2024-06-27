@@ -18,9 +18,7 @@ const EmployeeProfileComponent = () => {
   const { username } = router.query;
 
   const [employeeData, setEmployeeData] = useState<Employee | undefined>();
-  const [deleteModal, setDeleteModal] = useState({
-    open: false,
-  });
+  const [deleteModal, setDeleteModal] = useState(false);
 
   // Memoize the handleGetEmployee function
   const handleGetEmployee = useCallback(async () => {
@@ -64,23 +62,21 @@ const EmployeeProfileComponent = () => {
           }}
         >
           <Grid container spacing={4}>
-            <Grid item xs={10} sx={{ paddingBottom: 4 }}>
-              <Typography variant="h5">{"Employee Profile"}</Typography>
+            <Grid item xs={12} sx={{ paddingBottom: 4 }}>
+              <Stack direction={"row"} justifyContent={"space-between"}>
+                <Typography variant="h5">{"Employee Profile"}</Typography>
+
+                <Button
+                  variant="contained"
+                  startIcon={<DeleteIcon />}
+                  color="error"
+                  onClick={() => setDeleteModal(true)}
+                >
+                  Delete Employee
+                </Button>
+              </Stack>
             </Grid>
-            <Grid item xs={2} sx={{ paddingBottom: 4 }}>
-              <Button
-                variant="contained"
-                startIcon={<DeleteIcon />}
-                color="error"
-                onClick={() =>
-                  setDeleteModal({
-                    open: true,
-                  })
-                }
-              >
-                Delete Employee
-              </Button>
-            </Grid>
+
             <Grid item xs={12} sm={7}>
               <EmployeeDetails
                 employeeData={employeeData}
@@ -100,22 +96,16 @@ const EmployeeProfileComponent = () => {
         </Stack>
       </Container>
 
-      {deleteModal.open && (
+      {deleteModal && (
         <ConfirmationModal
           warning_title={"Delete"}
           warning_text={"Are you sure you want to delete the Employee ?"}
           button_text={"Delete"}
-          modal={deleteModal.open}
-          onCancel={() =>
-            setDeleteModal({
-              open: false,
-            })
-          }
+          modal={deleteModal}
+          onCancel={() => setDeleteModal(true)}
           onConfirm={async () => {
             handleDeleteEmployee(username);
-            setDeleteModal({
-              open: false,
-            });
+            setDeleteModal(false);
           }}
         />
       )}
