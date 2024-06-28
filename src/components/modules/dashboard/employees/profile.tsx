@@ -10,6 +10,7 @@ import { useSettings } from "src/hooks";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ConfirmationModal } from "src/components/shared";
+import { AttendanceChartCard } from "src/components/shared/cards/AttendanceChartCard";
 
 const EmployeeProfileComponent = () => {
   const settings = useSettings();
@@ -91,6 +92,12 @@ const EmployeeProfileComponent = () => {
                 employeeID={employeeData?._id}
                 shiftDetails={employeeData?.shift}
               />
+            </Grid>
+
+            <Grid item xs={12} sm={5}></Grid>
+
+            <Grid item xs={12} md={4}>
+                <AttendanceChartCard employeeUsername={employeeData?._id} />
             </Grid>
           </Grid>
         </Stack>

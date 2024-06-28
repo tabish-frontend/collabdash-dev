@@ -42,6 +42,7 @@ import {
   LockOpenOutline,
 } from "mdi-material-ui";
 import dayjs from "dayjs";
+import { useRouter } from "next/router";
 import { DateView } from "@mui/x-date-pickers";
 
 interface FiltersType {
@@ -73,12 +74,16 @@ const TabStatus = [
 
 const AttendanceListComponent = () => {
   const settings = useSettings();
+  const router = useRouter();
 
+  const { date: queryDate } = router.query;
   const { user } = useAuth<AuthContextType>();
+
+  const initialDate = queryDate ? new Date(queryDate as string) : new Date();
 
   const [filters, setFilters] = useState<FiltersType>({
     view: "month",
-    date: new Date(),
+    date: initialDate,
   });
 
   const [tabValue, setTabValue] = useState<string | string[]>(
