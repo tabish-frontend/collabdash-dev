@@ -108,7 +108,7 @@ const EmployeeListComponent = () => {
             <Scrollbar sx={{ maxHeight: 650, overflowY: "auto", py: 3 }}>
               <Grid container spacing={2}>
                 {isLoading ? (
-                  [...Array(9)].map((index) => (
+                  [...Array(9)].map((_, index) => (
                     <Grid item xs={12} xl={4} lg={6} key={index}>
                       <EmployeeCard isLoading={isLoading} />
                     </Grid>

@@ -33,7 +33,6 @@ import { MyAttendance } from "./tabs/my-attendance";
 import { useAuth, useSettings } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { ROLES } from "src/constants/roles";
-import { monthOptions } from "src/constants/month-names";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import {
   AccountOutline,
@@ -75,11 +74,13 @@ const TabStatus = [
 const AttendanceListComponent = () => {
   const settings = useSettings();
   const router = useRouter();
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
 
   const { date: queryDate } = router.query;
   const { user } = useAuth<AuthContextType>();
 
-  const initialDate = queryDate ? new Date(queryDate as string) : new Date();
+  const initialDate = queryDate ? new Date(queryDate as string) : currentDate;
 
   const [filters, setFilters] = useState<FiltersType>({
     view: "month",
@@ -169,7 +170,7 @@ const AttendanceListComponent = () => {
               xs: "column",
               md: "row",
             }}
-            sx={{ px: 3, marginTop: "14px !important" }}
+            sx={{ px: 1, marginTop: "14px !important" }}
           >
             <Typography variant="h5">
               {getLocalFormattedDate(filters)}
@@ -201,24 +202,15 @@ const AttendanceListComponent = () => {
                 <TextField
                   label="View"
                   name="view"
-                  onChange={(e) =>
-                    setFilters((prev) => ({ ...prev, view: e.target.value }))
-                  }
                   select
-                  SelectProps={{
-                    MenuProps: {
-                      PaperProps: {
-                        style: {
-                          maxHeight: "150px",
-                        },
-                      },
-                    },
-                  }}
                   size="small"
+                  value={filters.view}
                   sx={{
                     minWidth: 150,
                   }}
-                  value={filters.view}
+                  onChange={(e) =>
+                    setFilters((prev) => ({ ...prev, view: e.target.value }))
+                  }
                 >
                   {["month", "day"].map((option) => (
                     <MenuItem key={option} value={option}>
@@ -233,8 +225,8 @@ const AttendanceListComponent = () => {
                   label={DatePickerLabel}
                   views={DatePickerViews}
                   openTo={filters.view === "month" ? "month" : "day"}
-                  minDate={new Date(2024, 0, 1)}
-                  maxDate={new Date(2030, 11, 31)}
+                  minDate={new Date(currentYear - 3, 0, 1)}
+                  maxDate={new Date(currentYear, 11, 31)}
                   sx={{ width: 180 }}
                   onChange={(date) => {
                     if (date) {

@@ -61,7 +61,9 @@ export const LeaveModal: FC<LeaveModalProps> = ({
   });
 
   // HR ROLE --> STATES AND FUNCTIONS
-  const [employees, setEmployees] = useState<any[]>([]);
+  const [employees, setEmployees] = useState<any[]>(
+    leaveValues ? [leaveValues.user] : []
+  );
 
   const handleGetEmployees = async () => {
     const response = await employeesApi.getAllEmployees(
@@ -72,10 +74,13 @@ export const LeaveModal: FC<LeaveModalProps> = ({
   };
 
   useEffect(() => {
-    if (user?.role === ROLES.Admin || user?.role === ROLES.HR) {
+    if (
+      (user?.role === ROLES.Admin || user?.role === ROLES.HR) &&
+      modalType === "create"
+    ) {
       handleGetEmployees();
     }
-  }, [user]);
+  }, [user, modalType]);
 
   return (
     <Dialog fullWidth maxWidth="sm" open={modal} onClose={onCancel}>

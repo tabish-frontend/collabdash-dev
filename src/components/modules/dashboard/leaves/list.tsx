@@ -252,7 +252,7 @@ const LeavesListComponent = () => {
                                     color="inherit"
                                     component={RouterLink}
                                     href={`${paths.employees}/${leave.user.username}`}
-                                    variant="subtitle1"
+                                    variant="subtitle2"
                                     sx={{ textTransform: "capitalize" }}
                                   >
                                     {leave.user.full_name}
