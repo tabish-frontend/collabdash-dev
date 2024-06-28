@@ -19,31 +19,30 @@ interface AllUserAttendanceProps {
 export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
   filters,
 }) => {
-
   const router = useRouter();
-  const { user } = router.query;
+  const { user: queryUser } = router.query;
+
+  const initialUser = queryUser ? [queryUser] : [];
 
   const [isLoading, setIsLoading] = useState(true);
   const [employees, setEmployees] = useState<any[] | []>([]);
   const [employeesAttendance, setEmployeesAttendance] = useState<any[]>([]);
-  const [selectedUsers, setSelectedUsers] = useState<any[]>([user]);
+  const [selectedUsers, setSelectedUsers] = useState<any[]>(initialUser);
 
   const handleGetAttendances = useCallback(async () => {
     const response = await attendanceApi.getAllUserAttendance(filters);
     setEmployees(response.data);
-    let filteredEmployees = response.data;
+    setEmployeesAttendance(response.data);
+    setIsLoading(false);
+  }, [filters]);
 
-    // if(router.query) {
-    //   const selectedEmployee = filteredEmployees.filter((emp: any) => 
-        
-    //     emp.username === username
-    //   )
+  useEffect(() => {
+    handleGetAttendances();
+  }, [handleGetAttendances]);
 
-    //   console.log("selectedEmployee",selectedEmployee )
-    //   setSelectedUsers([selectedEmployee[0]._id])
-    // }
+  const handleFilterEmployees = useCallback(async () => {
+    let filteredEmployees = employees;
 
-    // console.log("selectedUsers", selectedUsers)
     if (selectedUsers.length > 0) {
       filteredEmployees = filteredEmployees.filter((employee: any) =>
         selectedUsers.includes(employee._id)
@@ -51,13 +50,11 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
     }
 
     setEmployeesAttendance(filteredEmployees);
-    setIsLoading(false);
-  }, [filters, selectedUsers]);
+  }, [employees, selectedUsers]);
 
   useEffect(() => {
-    handleGetAttendances();
-  }, [handleGetAttendances]);
-
+    handleFilterEmployees();
+  }, [handleFilterEmployees]);
 
   return (
     <>

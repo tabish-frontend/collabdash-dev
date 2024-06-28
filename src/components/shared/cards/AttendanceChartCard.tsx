@@ -124,71 +124,9 @@ export const AttendanceChartCard = ({
           }}
           title={"% of Attendance"}
           action={
-            // <Stack direction="row" spacing={2} sx={{ m: 1 }}>
-            //   <TextField
-            //     sx={{ minWidth: 100 }}
-            //     label="Month"
-            //     name="month"
-            //     select
-            //     value={filters.month}
-            //     onChange={(e) =>
-            //       setFilters((prevFilters) => ({
-            //         ...prevFilters,
-            //         month: Number(e.target.value),
-            //       }))
-            //     }
-            //     SelectProps={{
-            //       MenuProps: {
-            //         PaperProps: {
-            //           style: {
-            //             maxHeight: "150px",
-            //           },
-            //         },
-            //       },
-            //     }}
-            //     size="small"
-            //   >
-            //     {monthOptions.map(({ value, label }) => (
-            //       <MenuItem key={value} value={value}>
-            //         {label}
-            //       </MenuItem>
-            //     ))}
-            //   </TextField>
-            //   <TextField
-            //     sx={{ minWidth: 100 }}
-            //     label="Year"
-            //     name="year"
-            //     select
-            //     value={filters.year}
-            //     onChange={(e) =>
-            //       setFilters((prevFilters) => ({
-            //         ...prevFilters,
-            //         year: Number(e.target.value),
-            //       }))
-            //     }
-            //     SelectProps={{
-            //       MenuProps: {
-            //         PaperProps: {
-            //           style: {
-            //             maxHeight: "150px",
-            //           },
-            //         },
-            //       },
-            //     }}
-            //     size="small"
-            //   >
-            //     {yearOptions.map(({ value, label }) => (
-            //       <MenuItem key={value} value={value}>
-            //         {label}
-            //       </MenuItem>
-            //     ))}
-            //   </TextField>
-            // </Stack>
-
             <DatePicker
               label={"Month And Year"}
               views={["year", "month"]}
-              
               openTo="month"
               minDate={minDate}
               maxDate={maxDate}

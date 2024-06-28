@@ -49,6 +49,7 @@ export const TopPerformers = () => {
         <Stack direction="row" justifyContent="space-between" flexWrap="wrap">
           {cardDetails.map((card, index) => (
             <Card
+              key={index}
               sx={{
                 minWidth: 300,
                 textAlign: "center",
