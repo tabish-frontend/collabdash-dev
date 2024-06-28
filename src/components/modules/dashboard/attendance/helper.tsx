@@ -72,7 +72,9 @@ export const CellValues = (employeeAttendance: any, date: any) => {
       icon: (
         <Box width={4} height={4} m={2} borderRadius="50%" bgcolor={"#ddd"} />
       ),
-      tooltip: dayjs(employeeAttendance.join_date).format("DD MMMM YYYY"),
+      tooltip: `Join Date: ${dayjs(employeeAttendance.join_date).format(
+        "DD MMMM YYYY"
+      )}`,
       status: "Not Joined",
       shift: shiftValues,
       attendance: attendanceValues,

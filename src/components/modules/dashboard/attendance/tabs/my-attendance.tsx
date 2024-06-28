@@ -13,6 +13,7 @@ import { useCallback, useEffect, useState } from "react";
 import { attendanceApi } from "src/api";
 import { formatDate } from "src/utils/helpers";
 import { CellValues } from "../helper";
+import dayjs from "dayjs";
 
 const columns = [
   "Date",
@@ -31,19 +32,12 @@ export const MyAttendance = ({ filters }: any) => {
     const response = await attendanceApi.getMyAttendance(filters);
     const attendanceData = response.data.data;
 
-    let selectedMonth;
-    let selectedYear;
     let daysInMonth;
 
     if (filters.view === "day") {
-      const date = new Date(filters.date);
-      selectedMonth = date.getMonth() + 1; // getMonth() returns 0-based month
-      selectedYear = date.getFullYear();
       daysInMonth = 1; // Only one day to process
     } else {
-      selectedMonth = filters.month;
-      selectedYear = filters.year;
-      daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
+      daysInMonth = dayjs(filters.date).daysInMonth();
     }
 
     const attendanceList = [];
@@ -52,7 +46,7 @@ export const MyAttendance = ({ filters }: any) => {
       const currentViewingDate =
         filters.view === "day"
           ? new Date(filters.date)
-          : new Date(selectedYear, selectedMonth - 1, date);
+          : dayjs(filters.date).set("date", date);
 
       const attendanceValues = CellValues(attendanceData, currentViewingDate);
 

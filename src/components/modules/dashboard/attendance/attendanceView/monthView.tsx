@@ -16,17 +16,14 @@ import {
 import { RouterLink, Scrollbar } from "src/components/shared";
 import { paths } from "src/constants/paths";
 import { CellValues } from "../helper";
+import dayjs from "dayjs";
 
 export const MonthViewAttendance = ({
   employeesAttendance,
   filters,
   isLoading,
 }: any) => {
-  const getDaysInMonth = (month: number, year: number) => {
-    return new Date(year, month, 0).getDate();
-  };
-
-  const daysInMonth = getDaysInMonth(filters.month, filters.year);
+  const daysInMonth = dayjs(filters.date).daysInMonth();
   const theme = useTheme();
 
   return (
@@ -89,11 +86,9 @@ export const MonthViewAttendance = ({
                     </TableCell>
 
                     {[...Array(daysInMonth)].map((_, dayIndex) => {
-                      const date = new Date(
-                        filters.year,
-                        filters.month - 1,
-                        dayIndex + 1
-                      );
+                      const date = dayjs(filters.date)
+                        .set("date", dayIndex + 1)
+                        .toDate();
 
                       const attendanceValues = CellValues(item, date);
 

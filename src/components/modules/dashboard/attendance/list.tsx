@@ -14,6 +14,8 @@ import {
   MenuItem,
   IconButton,
   SvgIcon,
+  Tabs,
+  Tab,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -26,8 +28,6 @@ import {
 } from "react";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts/dashboard";
-import { TabContext, TabList, TabPanel } from "@mui/lab";
-import MuiTab, { TabProps } from "@mui/material/Tab";
 import { AllUserAttendance } from "./tabs/all-user-attendance";
 import { MyAttendance } from "./tabs/my-attendance";
 import { useAuth, useSettings } from "src/hooks";
@@ -42,22 +42,12 @@ import {
   LockOpenOutline,
 } from "mdi-material-ui";
 import dayjs from "dayjs";
+import { DateView } from "@mui/x-date-pickers";
 
 interface FiltersType {
   view: string;
   date: Date | null;
-  month: number;
-  year: number;
 }
-
-const Tab = styled(MuiTab)<TabProps>(({ theme }) => ({
-  [theme.breakpoints.down("md")]: {
-    minWidth: 100,
-  },
-  [theme.breakpoints.down("sm")]: {
-    minWidth: 67,
-  },
-}));
 
 const TabName = styled("span")(({ theme }) => ({
   lineHeight: 1.71,
@@ -68,19 +58,27 @@ const TabName = styled("span")(({ theme }) => ({
   },
 }));
 
+const TabStatus = [
+  {
+    label: "Employees Attendance",
+    icon: <AccountOutline />,
+    value: "employee_attendance",
+  },
+  {
+    label: "My Attendance",
+    icon: <LockOpenOutline />,
+    value: "my_attendance",
+  },
+];
+
 const AttendanceListComponent = () => {
   const settings = useSettings();
 
   const { user } = useAuth<AuthContextType>();
 
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
-
   const [filters, setFilters] = useState<FiltersType>({
     view: "month",
-    date: null,
-    month: currentMonth + 1,
-    year: currentYear,
+    date: new Date(),
   });
 
   const [tabValue, setTabValue] = useState<string | string[]>(
@@ -91,40 +89,13 @@ const AttendanceListComponent = () => {
     setTabValue(newValue);
   };
 
-  const handleViewChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>): void => {
-      e.target.value === "day"
-        ? setFilters((prev) => ({
-            ...prev,
-            view: e.target.value,
-            date: new Date(),
-            month: 0,
-            year: 0,
-          }))
-        : setFilters((prev) => ({
-            ...prev,
-            view: e.target.value,
-            date: null,
-            month: currentMonth + 1,
-            year: currentYear,
-          }));
-    },
-    [filters]
-  );
-
   const handleNext = () => {
     setFilters((prev) => {
       if (prev.view === "month") {
-        const newMonth = prev.month === 12 ? 1 : prev.month + 1;
-        const newYear = prev.month === 12 ? prev.year + 1 : prev.year;
-        return {
-          ...prev,
-          month: newMonth,
-          year: newYear,
-        };
+        const newDate = dayjs(prev.date).add(1, "month").toDate();
+        return { ...prev, date: newDate };
       } else {
-        const date = dayjs(prev.date);
-        const newDate = date.add(1, "day").toDate();
+        const newDate = dayjs(prev.date).add(1, "day").toDate();
         return { ...prev, date: newDate };
       }
     });
@@ -133,28 +104,38 @@ const AttendanceListComponent = () => {
   const handlePrevious = () => {
     setFilters((prev) => {
       if (prev.view === "month") {
-        const newMonth = prev.month === 1 ? 12 : prev.month - 1;
-        const newYear = prev.month === 1 ? prev.year - 1 : prev.year;
-        return {
-          ...prev,
-          month: newMonth,
-          year: newYear,
-        };
+        const newDate = dayjs(prev.date).subtract(1, "month").toDate();
+        return { ...prev, date: newDate };
       } else {
-        const date = dayjs(prev.date);
-        const newDate = date.subtract(1, "day").toDate();
+        const newDate = dayjs(prev.date).subtract(1, "day").toDate();
         return { ...prev, date: newDate };
       }
     });
   };
 
-  const getLocalFormattedDate = (date: Date | null) => {
-    if (date) {
-      return dayjs(date).format("DD MMMM YYYY");
+  const getLocalFormattedDate = (filters: any) => {
+    if (filters.view === "day") {
+      return dayjs(filters.date).format("DD MMMM YYYY");
     } else {
-      return `${monthOptions[filters.month - 1].label} ${filters.year}`;
+      return dayjs(filters.date).format("MMM YYYY");
     }
   };
+
+  const getPickerConfig = () => {
+    if (filters.view === "month") {
+      return {
+        DatePickerLabel: "Select Month",
+        DatePickerViews: ["year", "month"] as DateView[],
+      };
+    } else {
+      return {
+        DatePickerLabel: "Select Date",
+        DatePickerViews: ["year", "month", "day"] as DateView[],
+      };
+    }
+  };
+
+  const { DatePickerLabel, DatePickerViews } = getPickerConfig();
 
   return (
     <Box
@@ -186,7 +167,7 @@ const AttendanceListComponent = () => {
             sx={{ px: 3, marginTop: "14px !important" }}
           >
             <Typography variant="h5">
-              {getLocalFormattedDate(filters.date)}
+              {getLocalFormattedDate(filters)}
             </Typography>
 
             <Stack
@@ -215,7 +196,9 @@ const AttendanceListComponent = () => {
                 <TextField
                   label="View"
                   name="view"
-                  onChange={handleViewChange}
+                  onChange={(e) =>
+                    setFilters((prev) => ({ ...prev, view: e.target.value }))
+                  }
                   select
                   SelectProps={{
                     MenuProps: {
@@ -239,47 +222,22 @@ const AttendanceListComponent = () => {
                   ))}
                 </TextField>
 
-                {filters.view === "month" ? (
-                  <TextField
-                    select
-                    label="Select Month"
-                    value={filters.month}
-                    size="small"
-                    sx={{
-                      minWidth: 150,
-                    }}
-                    onChange={(e: any) =>
-                      setFilters((prev) => ({ ...prev, month: e.target.value }))
+                <DatePicker
+                  key={filters.view}
+                  value={filters.date}
+                  label={DatePickerLabel}
+                  views={DatePickerViews}
+                  openTo={filters.view === "month" ? "month" : "day"}
+                  minDate={new Date(2024, 0, 1)}
+                  maxDate={new Date(2030, 11, 31)}
+                  sx={{ width: 180 }}
+                  onChange={(date) => {
+                    if (date) {
+                      date.setHours(18, 0, 0, 0);
+                      setFilters((prev) => ({ ...prev, date }));
                     }
-                    SelectProps={{
-                      MenuProps: {
-                        PaperProps: {
-                          style: {
-                            maxHeight: "150px",
-                          },
-                        },
-                      },
-                    }}
-                  >
-                    {monthOptions.map((option: any) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                ) : (
-                  <DatePicker
-                    value={filters.date}
-                    label="Select Date"
-                    sx={{ width: 150 }}
-                    onChange={(date) => {
-                      if (date) {
-                        date.setHours(18, 0, 0, 0);
-                        setFilters((prev) => ({ ...prev, date }));
-                      }
-                    }}
-                  />
-                )}
+                  }}
+                />
               </Stack>
             </Stack>
           </Stack>
@@ -287,45 +245,34 @@ const AttendanceListComponent = () => {
           <Stack>
             <Card>
               <CardContent>
-                <TabContext value={tabValue as string}>
-                  {user?.role === ROLES.HR && (
-                    <TabList
-                      onChange={handleTabChange}
-                      aria-label="account-settings tabs"
-                      sx={{
-                        borderBottom: (theme) =>
-                          `1px solid ${theme.palette.divider}`,
-                      }}
-                    >
-                      <Tab
-                        value="employee_attendance"
-                        label={
-                          <Box sx={{ display: "flex", alignItems: "center" }}>
-                            <AccountOutline />
-                            <TabName>Employees Attendance</TabName>
-                          </Box>
-                        }
-                      />
-                      <Tab
-                        value="my_attendance"
-                        label={
-                          <Box sx={{ display: "flex", alignItems: "center" }}>
-                            <LockOpenOutline />
-                            <TabName>My Attendance</TabName>
-                          </Box>
-                        }
-                      />
-                    </TabList>
-                  )}
+                <Tabs
+                  indicatorColor="primary"
+                  onChange={handleTabChange}
+                  value={tabValue}
+                  sx={{
+                    borderBottom: 1,
+                    borderColor: "#ddd",
+                  }}
+                >
+                  {TabStatus.map((tab) => (
+                    <Tab
+                      key={tab.value}
+                      label={
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          {tab.icon}
+                          <TabName>{tab.label}</TabName>
+                        </Box>
+                      }
+                      value={tab.value}
+                    />
+                  ))}
+                </Tabs>
 
-                  <TabPanel sx={{ p: 0 }} value="employee_attendance">
-                    <AllUserAttendance filters={filters} />
-                  </TabPanel>
-
-                  <TabPanel sx={{ p: 0 }} value="my_attendance">
-                    <MyAttendance filters={filters} />
-                  </TabPanel>
-                </TabContext>
+                {tabValue === "employee_attendance" ? (
+                  <AllUserAttendance filters={filters} />
+                ) : (
+                  <MyAttendance filters={filters} />
+                )}
               </CardContent>
             </Card>
           </Stack>

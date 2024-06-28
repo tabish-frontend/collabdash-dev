@@ -186,7 +186,7 @@ const HolidaysListComponent = () => {
                             <img
                               width={isSmallScreen ? 200 : 460}
                               height={isSmallScreen ? 150 : 360}
-                              src="/images/pages/nodata-2.png"
+                              src="/images/pages/nodata.png"
                               alt="no-data-found"
                             />
                           </Stack>
