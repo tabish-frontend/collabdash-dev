@@ -71,7 +71,7 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
         my={2}
         justifyContent={"space-between"}
       >
-        {filters.month ? (
+        {filters.view === "month" ? (
           <Stack
             direction="row"
             spacing={1}

@@ -105,22 +105,36 @@ const EmployeeListComponent = () => {
           </Tabs>
 
           <Box>
-            <Scrollbar sx={{ maxHeight: 650, overflowY: "auto" }}>
+            <Scrollbar sx={{ maxHeight: 650, overflowY: "auto", py: 3 }}>
               <Grid container spacing={2}>
-                {isLoading
-                  ? [...Array(9)].map((index) => (
-                      <Grid item xs={12} xl={4} lg={6} key={index}>
-                        <EmployeeCard isLoading={isLoading} />
-                      </Grid>
-                    ))
-                  : employeesList.map((employee: Employee) => (
-                      <Grid item xs={12} xl={4} lg={6} key={employee._id}>
-                        <EmployeeCard
-                          employee={employee}
-                          isLoading={isLoading}
-                        />
-                      </Grid>
-                    ))}
+                {isLoading ? (
+                  [...Array(9)].map((index) => (
+                    <Grid item xs={12} xl={4} lg={6} key={index}>
+                      <EmployeeCard isLoading={isLoading} />
+                    </Grid>
+                  ))
+                ) : employeesList.length === 0 ? (
+                  <Grid item xs={12}>
+                    <Stack
+                      direction={"row"}
+                      justifyContent={"center"}
+                      alignItems={"center"}
+                    >
+                      <img
+                        width={isSmallScreen ? 200 : 460}
+                        height={isSmallScreen ? 150 : 360}
+                        src="/images/pages/nodata.png"
+                        alt="no-data-found"
+                      />
+                    </Stack>
+                  </Grid>
+                ) : (
+                  employeesList.map((employee: Employee) => (
+                    <Grid item xs={12} xl={4} lg={6} key={employee._id}>
+                      <EmployeeCard employee={employee} isLoading={isLoading} />
+                    </Grid>
+                  ))
+                )}
               </Grid>
             </Scrollbar>
           </Box>
