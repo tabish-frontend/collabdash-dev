@@ -10,6 +10,7 @@ import { DayViewAttendance } from "../attendanceView/dayView";
 import { MonthViewAttendance } from "../attendanceView/monthView";
 import { React } from "mdi-material-ui";
 import { statusMapping } from "src/constants/attendance-status";
+import { useRouter } from "next/router";
 
 interface AllUserAttendanceProps {
   filters: any;
@@ -18,16 +19,31 @@ interface AllUserAttendanceProps {
 export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
   filters,
 }) => {
+
+  const router = useRouter();
+  const { user } = router.query;
+
   const [isLoading, setIsLoading] = useState(true);
   const [employees, setEmployees] = useState<any[] | []>([]);
   const [employeesAttendance, setEmployeesAttendance] = useState<any[]>([]);
-  const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<any[]>([user]);
 
   const handleGetAttendances = useCallback(async () => {
     const response = await attendanceApi.getAllUserAttendance(filters);
     setEmployees(response.data);
     let filteredEmployees = response.data;
 
+    // if(router.query) {
+    //   const selectedEmployee = filteredEmployees.filter((emp: any) => 
+        
+    //     emp.username === username
+    //   )
+
+    //   console.log("selectedEmployee",selectedEmployee )
+    //   setSelectedUsers([selectedEmployee[0]._id])
+    // }
+
+    // console.log("selectedUsers", selectedUsers)
     if (selectedUsers.length > 0) {
       filteredEmployees = filteredEmployees.filter((employee: any) =>
         selectedUsers.includes(employee._id)
@@ -41,6 +57,7 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
   useEffect(() => {
     handleGetAttendances();
   }, [handleGetAttendances]);
+
 
   return (
     <>

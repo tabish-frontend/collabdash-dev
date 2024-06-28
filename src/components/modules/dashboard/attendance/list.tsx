@@ -42,6 +42,7 @@ import {
   LockOpenOutline,
 } from "mdi-material-ui";
 import dayjs from "dayjs";
+import { useRouter } from "next/router";
 
 interface FiltersType {
   view: string;
@@ -70,6 +71,9 @@ const TabName = styled("span")(({ theme }) => ({
 
 const AttendanceListComponent = () => {
   const settings = useSettings();
+  const router = useRouter();
+
+  const { date } = router.query;
 
   const { user } = useAuth<AuthContextType>();
 
