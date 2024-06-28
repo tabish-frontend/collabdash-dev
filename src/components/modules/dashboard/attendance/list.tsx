@@ -76,13 +76,14 @@ const AttendanceListComponent = () => {
   const settings = useSettings();
   const router = useRouter();
 
-  const { date } = router.query;
-
+  const { date: queryDate } = router.query;
   const { user } = useAuth<AuthContextType>();
+
+  const initialDate = queryDate ? new Date(queryDate as string) : new Date();
 
   const [filters, setFilters] = useState<FiltersType>({
     view: "month",
-    date: new Date(),
+    date: initialDate,
   });
 
   const [tabValue, setTabValue] = useState<string | string[]>(
