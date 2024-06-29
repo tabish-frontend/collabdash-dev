@@ -2,18 +2,28 @@ import Axios from "src/config/axios";
 import { Leaves } from "src/types";
 
 class LeavesAPI {
-  async getAllUserLeaves(params: any) {
+  async getAllUserLeaves(date: Date) {
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    const response = await Axios.get(`/leaves?month=${month}&year=${year}`);
+    return response.data;
+  }
+
+  async getUserLeaves(user_id: string, date: Date) {
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
     const response = await Axios.get(
-      `/leaves?month=${params.month}&year=${params.year}`
+      `/leaves/${user_id}?month=${month}&year=${year}`
     );
     return response.data;
   }
 
-  async getMyLeaves(params: any) {
+  async getMyLeaves(date: Date) {
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
     const response = await Axios.get(
-      `/users/getMyLeaves?month=${params.month}&year=${params.year}`
+      `/users/getMyLeaves?month=${month}&year=${year}`
     );
-
     return response.data;
   }
 

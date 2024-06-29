@@ -20,6 +20,7 @@ import {
   Skeleton,
   useMediaQuery,
   useTheme,
+  CardHeader,
 } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import { NextPage } from "next";
@@ -45,6 +46,7 @@ import {
 } from "src/components/shared";
 import { paths } from "src/constants/paths";
 import { LeavesStatus } from "src/constants/status";
+import { DatePicker } from "@mui/x-date-pickers";
 
 const employee_Screen = [
   "Leave Type",
@@ -65,21 +67,14 @@ const HR_Screen = [
   "Action",
 ];
 
-interface FiltersType {
-  month: number;
-  year: number;
-}
-
 const LeavesListComponent = () => {
   const settings = useSettings();
   const theme = useTheme();
 
+  const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
 
-  const [filters, setFilters] = useState<FiltersType>({
-    month: 5,
-    year: currentYear,
-  });
+  const [datePickerDate, setDatePickerDate] = useState<Date>(new Date());
 
   const { user } = useAuth<AuthContextType>();
 
@@ -101,14 +96,14 @@ const LeavesListComponent = () => {
   const getLeaves = useCallback(async () => {
     let response = [];
     if (user?.role === ROLES.HR || user?.role === ROLES.Admin) {
-      response = await leavesApi.getAllUserLeaves(filters);
+      response = await leavesApi.getAllUserLeaves(datePickerDate);
     } else {
-      response = await leavesApi.getMyLeaves(filters);
+      response = await leavesApi.getMyLeaves(datePickerDate);
     }
     setLeavesList(response);
     setIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters]);
+  }, [datePickerDate]);
 
   useEffect(() => {
     getLeaves();
@@ -144,6 +139,10 @@ const LeavesListComponent = () => {
       )
     );
   };
+  // const currentDate = new Date();
+
+  const minDate = new Date(currentYear - 3, 0, 1); // January 1st, 5 years ago
+  const maxDate = new Date(currentYear, 11, 31);
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -184,6 +183,23 @@ const LeavesListComponent = () => {
           </Stack>
 
           <Card>
+            <CardHeader
+              action={
+                <DatePicker
+                  label={"Month And Year"}
+                  views={["year", "month"]}
+                  openTo="month"
+                  minDate={minDate}
+                  maxDate={maxDate}
+                  value={datePickerDate}
+                  onChange={(date: Date | null) => {
+                    if (date) {
+                      setDatePickerDate(date);
+                    }
+                  }}
+                />
+              }
+            />
             <CardContent>
               <TableContainer
                 component={Paper}
