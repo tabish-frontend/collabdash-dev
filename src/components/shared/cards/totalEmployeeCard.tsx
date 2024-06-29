@@ -6,6 +6,8 @@ import CardContent from "@mui/material/CardContent";
 import { useEffect, useState } from "react";
 import { statisticsApi } from "src/api";
 import { Chart } from "../charts/style";
+import NoRecordFound from "../NoRecordFound";
+import { Skeleton, Stack } from "@mui/material";
 
 const chart: any = {
   options: {
@@ -38,11 +40,16 @@ const chart: any = {
 };
 
 export const TotalEmployees = () => {
-  const [chartSeries, setChartSeries] = useState([1, 0]);
+  const [chartSeries, setChartSeries] = useState<number[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleGetTotalEmployees = async () => {
     const response = await statisticsApi.getTotalUsers();
-    setChartSeries([response.data.man, response.data.women]);
+
+    if (response.data.man > 0 || response.data.women > 0) {
+      setChartSeries([response.data.man, response.data.women]);
+    }
+    setIsLoading(false)
   };
 
   useEffect(() => {
@@ -57,19 +64,30 @@ export const TotalEmployees = () => {
           alignItems: "center",
         }}
         action={
-          <Typography variant="h5">
-            {chartSeries[0] + chartSeries[1]}
-          </Typography>
+          chartSeries.length ? (
+            <Typography variant="h5">
+              {chartSeries[0] + chartSeries[1]}
+            </Typography>
+          ) : (
+            <Typography variant="subtitle1">{"No Employee Found"}</Typography>
+          )
         }
       />
 
       <CardContent>
-        <Chart
-          height={320}
-          options={chart.options}
-          series={chartSeries}
-          type="donut"
-        />
+        {isLoading ? (
+          <Stack height={300} justifyContent={"center"} alignItems={"center"} >
+          <Skeleton variant="circular" width={250} height={250} /></Stack>
+        ) : chartSeries.length === 0 ? (
+          <NoRecordFound />
+        ) : (
+          <Chart
+            height={320}
+            options={chart.options}
+            series={chartSeries}
+            type="donut"
+          />
+        )}
       </CardContent>
     </Card>
   );

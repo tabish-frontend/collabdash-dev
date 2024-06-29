@@ -24,6 +24,7 @@ import { employeesApi } from "src/api";
 import { useRouter } from "next/router";
 import { useSettings } from "src/hooks";
 import { AccountStatus } from "src/constants/status";
+import NoRecordFound from "src/components/shared/NoRecordFound";
 
 const EmployeeListComponent = () => {
   const router = useRouter();
@@ -115,7 +116,7 @@ const EmployeeListComponent = () => {
                   ))
                 ) : employeesList.length === 0 ? (
                   <Grid item xs={12}>
-                    <Stack
+                    {/* <Stack
                       direction={"row"}
                       justifyContent={"center"}
                       alignItems={"center"}
@@ -126,7 +127,9 @@ const EmployeeListComponent = () => {
                         src="/images/pages/nodata.png"
                         alt="no-data-found"
                       />
-                    </Stack>
+                    </Stack> */}
+
+                    <NoRecordFound />
                   </Grid>
                 ) : (
                   employeesList.map((employee: Employee) => (

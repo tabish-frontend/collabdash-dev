@@ -7,7 +7,8 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import { CellValues } from "../helper";
-import { Skeleton } from "@mui/material";
+import { Skeleton, Stack } from "@mui/material";
+import NoRecordFound from "src/components/shared/NoRecordFound";
 
 const columns = [
   "Full Name",
@@ -40,51 +41,57 @@ export const DayViewAttendance = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {isLoading
-              ? [...Array(5)].map((_, index) => (
-                  <TableRow key={`skeleton-${index}`}>
-                    {columns.map((col, colIndex) => (
-                      <TableCell key={colIndex} align="center">
-                        <Skeleton variant="rounded" width="100%" height={15} />
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              : employeesAttendance.map((attendance: any, index: number) => {
-                  const attendanceValues = CellValues(attendance, filters.date);
+            {isLoading ? (
+              [...Array(5)].map((_, index) => (
+                <TableRow key={`skeleton-${index}`}>
+                  {columns.map((col, colIndex) => (
+                    <TableCell key={colIndex} align="center">
+                      <Skeleton variant="rounded" width="100%" height={15} />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : employeesAttendance.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={columns.length}>
+                  <NoRecordFound />
+                </TableCell>
+              </TableRow>
+            ) : (
+              employeesAttendance.map((attendance: any, index: number) => {
+                const attendanceValues = CellValues(attendance, filters.date);
 
-                  return (
-                    <TableRow hover key={index}>
-                      <TableCell align="center">
-                        {attendance.full_name}
-                      </TableCell>
-                      <TableCell align="center">
-                        {attendanceValues.shift.type}
-                      </TableCell>
-                      <TableCell align="center">
-                        {attendanceValues.shift.start}
-                      </TableCell>
-                      <TableCell align="center">
-                        {attendanceValues.shift.end}
-                      </TableCell>
-                      <TableCell align="center">
-                        {attendanceValues.shift.hours}
-                      </TableCell>
-                      <TableCell align="center">
-                        {attendanceValues.attendance.clockIn}
-                      </TableCell>
-                      <TableCell align="center">
-                        {attendanceValues.attendance.clockOut}
-                      </TableCell>
-                      <TableCell align="center">
-                        {attendanceValues.attendance.duration}
-                      </TableCell>
-                      <TableCell align="center">
-                        {attendanceValues.status}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                return (
+                  <TableRow hover key={index}>
+                    <TableCell align="center">{attendance.full_name}</TableCell>
+                    <TableCell align="center">
+                      {attendanceValues.shift.type}
+                    </TableCell>
+                    <TableCell align="center">
+                      {attendanceValues.shift.start}
+                    </TableCell>
+                    <TableCell align="center">
+                      {attendanceValues.shift.end}
+                    </TableCell>
+                    <TableCell align="center">
+                      {attendanceValues.shift.hours}
+                    </TableCell>
+                    <TableCell align="center">
+                      {attendanceValues.attendance.clockIn}
+                    </TableCell>
+                    <TableCell align="center">
+                      {attendanceValues.attendance.clockOut}
+                    </TableCell>
+                    <TableCell align="center">
+                      {attendanceValues.attendance.duration}
+                    </TableCell>
+                    <TableCell align="center">
+                      {attendanceValues.status}
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
           </TableBody>
         </Table>
       </TableContainer>

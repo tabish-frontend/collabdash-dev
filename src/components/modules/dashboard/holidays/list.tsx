@@ -12,7 +12,12 @@ import {
   Button,
   Card,
   CardContent,
+  CardHeader,
   Container,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
   Skeleton,
   Stack,
   SvgIcon,
@@ -30,6 +35,7 @@ import { SquareEditOutline, TrashCanOutline } from "mdi-material-ui";
 import { useAuth, useSettings } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { ROLES } from "src/constants/roles";
+import NoRecordFound from "src/components/shared/NoRecordFound";
 
 const employee_Screen = ["Holiday Day", "Holiday Date", "Holiday Name"];
 const HR_Screen = [
@@ -40,16 +46,20 @@ const HR_Screen = [
   "Action",
 ];
 
-interface FiltersType {
-  year: number;
-}
 
 const HolidaysListComponent = () => {
   const currentYear = new Date().getFullYear();
 
-  const [filters, setFilters] = useState<FiltersType>({
-    year: currentYear,
-  });
+
+
+   // Create an array of the last 4 years
+   const lastFourYears = Array.from({ length: 4 }, (_, index) => currentYear - index);
+
+   const [selectedYear, setSelectedYear] = useState(currentYear);
+ 
+   const handleYearChange = (e : any) => {
+     setSelectedYear(e.target.value);
+   };
 
   const settings = useSettings();
   const theme = useTheme();
@@ -60,7 +70,7 @@ const HolidaysListComponent = () => {
       ? HR_Screen
       : employee_Screen;
 
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [holidayModal, setHolidayModal] = useState(false);
   const [holidayList, setHolidayList] = useState<any[]>([]);
   const [modalType, setModalType] = useState("");
@@ -71,16 +81,17 @@ const HolidaysListComponent = () => {
   });
 
   const getHoliday = useCallback(async () => {
+    setIsLoading(true)
     let response = [];
     if (user?.role === ROLES.HR || user?.role === ROLES.Admin) {
-      response = await holidaysApi.getAllUserHolidays(filters);
+      response = await holidaysApi.getAllUserHolidays(selectedYear);
     } else {
-      response = await holidaysApi.getMyHolidays(filters);
+      response = await holidaysApi.getMyHolidays(selectedYear);
     }
     setHolidayList(response);
     setIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters]);
+  }, [selectedYear]);
 
   useEffect(() => {
     getHoliday();
@@ -144,6 +155,22 @@ const HolidaysListComponent = () => {
             )}
           </Stack>
           <Card>
+            <CardHeader action={
+              <FormControl sx={{ m: 1, minWidth: 150 }}>
+              <InputLabel>Year</InputLabel>
+              <Select
+                value={selectedYear}
+                onChange={handleYearChange}
+                label="Year"
+              >
+                {lastFourYears.map((year) => (
+                  <MenuItem key={year} value={year}>
+                    {year}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            } />
             <CardContent>
               <TableContainer sx={{ maxHeight: 440 }}>
                 <Table stickyHeader aria-label="sticky table">
@@ -178,18 +205,7 @@ const HolidaysListComponent = () => {
                     ) : holidayList.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={columns.length}>
-                          <Stack
-                            direction={"row"}
-                            justifyContent={"center"}
-                            alignItems={"center"}
-                          >
-                            <img
-                              width={isSmallScreen ? 200 : 460}
-                              height={isSmallScreen ? 150 : 360}
-                              src="/images/pages/nodata.png"
-                              alt="no-data-found"
-                            />
-                          </Stack>
+                          <NoRecordFound />
                         </TableCell>
                       </TableRow>
                     ) : (
