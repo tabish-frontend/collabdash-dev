@@ -27,6 +27,8 @@ import { styled } from "@mui/material/styles";
 import { success } from "src/theme/colors";
 import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 import { leavesApi } from "src/api";
+import { formatDate } from "src/utils/helpers";
+import { LeavesStatus } from "src/constants/status";
 
 const columns = [
   "Leave Type",
@@ -112,7 +114,6 @@ export const LeavesCard = ({ employeeId }: { employeeId: string | any }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const getLeaves = useCallback(async () => {
-
     if (!employeeId) return;
     let response = await leavesApi.getUserLeaves(employeeId, "2024");
 
@@ -122,12 +123,21 @@ export const LeavesCard = ({ employeeId }: { employeeId: string | any }) => {
   }, [filter, employeeId]);
 
   useEffect(() => {
-    console.log("Filters: ", filter)
+    console.log("Filters: ", filter);
     getLeaves();
   }, [getLeaves]);
 
   const handleDateChange = (date: Date | null) => {
     setFilter(date);
+  };
+
+  const handleUpdateStatus = async (leave_id: string, status: string) => {
+    await leavesApi.updateLeaveStatus({ leave_id, status });
+    setLeavesList((prevList) =>
+      prevList.map((leave) =>
+        leave._id === leave_id ? { ...leave, status } : leave
+      )
+    );
   };
 
   const currentYear = currentDate.getFullYear();
@@ -175,25 +185,22 @@ export const LeavesCard = ({ employeeId }: { employeeId: string | any }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {
-                    isLoading ? (
-                      [...Array(5)].map((_, index) => (
-                        <TableRow key={`skeleton-${index}`}>
-                          {columns.map((col, colIndex) => (
-                            <TableCell key={colIndex} align="center">
-                              <Skeleton
-                                variant="rounded"
-                                width="100%"
-                                height={25}
-                              />
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      ))
-                    ) :
-                  leavesList.length === 0 ? (
-                  
-                  <TableRow>
+                  {isLoading ? (
+                    [...Array(5)].map((_, index) => (
+                      <TableRow key={`skeleton-${index}`}>
+                        {columns.map((col, colIndex) => (
+                          <TableCell key={colIndex} align="center">
+                            <Skeleton
+                              variant="rounded"
+                              width="100%"
+                              height={25}
+                            />
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : leavesList.length === 0 ? (
+                    <TableRow>
                       <TableCell colSpan={columns.length}>
                         <Stack
                           direction={"row"}
@@ -220,11 +227,13 @@ export const LeavesCard = ({ employeeId }: { employeeId: string | any }) => {
                           </TableCell>
                           <TableCell>
                             <Typography width={150}>
-                              {leave.startDate}
+                              {formatDate(leave.startDate)}
                             </Typography>
                           </TableCell>
                           <TableCell>
-                            <Typography width={150}>{leave.endDate}</Typography>
+                            <Typography width={150}>
+                              {formatDate(leave.endDate)}
+                            </Typography>
                           </TableCell>
                           <TableCell>
                             <HtmlTooltip
@@ -248,15 +257,15 @@ export const LeavesCard = ({ employeeId }: { employeeId: string | any }) => {
                                 <Tooltip title="Approved">
                                   <span>
                                     <IconButton
-                                      // onClick={() =>
-                                      //   handleUpdateStatus(
-                                      //     leave._id,
-                                      //     LeavesStatus.Approved
-                                      //   )
-                                      // }
-                                      // disabled={
-                                      //   leave.status === LeavesStatus.Approved
-                                      // }
+                                      onClick={() =>
+                                        handleUpdateStatus(
+                                          leave._id,
+                                          LeavesStatus.Approved
+                                        )
+                                      }
+                                      disabled={
+                                        leave.status === LeavesStatus.Approved
+                                      }
                                       sx={{
                                         "&:hover": {
                                           backgroundColor: "green",
@@ -273,15 +282,15 @@ export const LeavesCard = ({ employeeId }: { employeeId: string | any }) => {
                                 <Tooltip title="Rejected">
                                   <span>
                                     <IconButton
-                                      // onClick={() =>
-                                      //   handleUpdateStatus(
-                                      //     leave._id,
-                                      //     LeavesStatus.Rejected
-                                      //   )
-                                      // }
-                                      // disabled={
-                                      //   leave.status === LeavesStatus.Rejected
-                                      // }
+                                      onClick={() =>
+                                        handleUpdateStatus(
+                                          leave._id,
+                                          LeavesStatus.Rejected
+                                        )
+                                      }
+                                      disabled={
+                                        leave.status === LeavesStatus.Rejected
+                                      }
                                       sx={{
                                         "&:hover": {
                                           backgroundColor: "red",
