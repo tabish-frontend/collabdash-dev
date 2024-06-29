@@ -11,6 +11,7 @@ import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ConfirmationModal } from "src/components/shared";
 import { AttendanceChartCard } from "src/components/shared/cards/AttendanceChartCard";
+import { LeavesCard } from "src/components/shared/cards/LeavesCard";
 
 const EmployeeProfileComponent = () => {
   const settings = useSettings();
@@ -20,11 +21,13 @@ const EmployeeProfileComponent = () => {
 
   const [employeeData, setEmployeeData] = useState<Employee | undefined>();
   const [deleteModal, setDeleteModal] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false)
 
   // Memoize the handleGetEmployee function
   const handleGetEmployee = useCallback(async () => {
     if (!username) return;
 
+    // setIsLoading(true)
     const response = await employeesApi.getEmployee(username);
     setEmployeeData(response);
   }, [username]); // Memoize based on username
@@ -35,6 +38,7 @@ const EmployeeProfileComponent = () => {
     const response = await employeesApi.updateEmployee(username, UpdatedValues);
 
     setEmployeeData(response);
+
   };
 
   const handleDeleteEmployee = async (username: any) => {
@@ -99,6 +103,9 @@ const EmployeeProfileComponent = () => {
             <Grid item xs={12} md={4}>
                 <AttendanceChartCard employeeUsername={employeeData?._id} />
             </Grid>
+            <Grid item xs={12} md={8}>
+                <LeavesCard employeeId={employeeData?._id} />
+            </Grid>
           </Grid>
         </Stack>
       </Container>
@@ -109,7 +116,7 @@ const EmployeeProfileComponent = () => {
           warning_text={"Are you sure you want to delete the Employee ?"}
           button_text={"Delete"}
           modal={deleteModal}
-          onCancel={() => setDeleteModal(true)}
+          onCancel={() => setDeleteModal(false)}
           onConfirm={async () => {
             handleDeleteEmployee(username);
             setDeleteModal(false);

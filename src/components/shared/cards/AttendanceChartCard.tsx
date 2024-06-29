@@ -6,28 +6,22 @@ import { useRouter } from "next/router";
 import {
   Button,
   CardHeader,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   Stack,
-  TextField,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import GaugeChart from "../charts/GaugeChart";
+import { useState } from "react";
 import { Chart } from "../charts/style";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 const chart: any = {
   options: {
     labels: ["Present", "Absent"],
-    colors: ["#00A8AD", "#0089FA"],
+    colors: ["#2E7D32", "#C62828"],
     legend: {
       position: "bottom",
       fontSize: "14px",
       fontWeight: 600,
       labels: {
-        colors: ["#00A8AD", "#0089FA"], // Customize legend labels color
+        colors: ["#4CAF50", "#FFC107"], // Customize legend labels color
       },
     },
     states: {
@@ -52,33 +46,6 @@ const chart: any = {
     },
   },
 };
-
-const monthOptions = [
-  { value: 1, label: "January" },
-  { value: 2, label: "February" },
-  { value: 3, label: "March" },
-  { value: 4, label: "April" },
-  { value: 5, label: "May" },
-  { value: 6, label: "June" },
-  { value: 7, label: "July" },
-  { value: 8, label: "August" },
-  { value: 9, label: "September" },
-  { value: 10, label: "October" },
-  { value: 11, label: "November" },
-  { value: 12, label: "December" },
-];
-const yearOptions = [
-  { value: 2020, label: "2020" },
-  { value: 2021, label: "2021" },
-  { value: 2022, label: "2022" },
-  { value: 2023, label: "2023" },
-  { value: 2024, label: "2024" },
-];
-
-interface Filters {
-  month: number;
-  year: number;
-}
 
 export const AttendanceChartCard = ({
   employeeUsername,
@@ -113,7 +80,7 @@ export const AttendanceChartCard = ({
 
   return (
     <>
-      <Card sx={{ position: "relative" }}>
+      <Card sx={{ position: "relative", minHeight: "530px" }}>
         <CardHeader
           sx={{
             display: "flex",
