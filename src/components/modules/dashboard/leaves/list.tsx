@@ -66,6 +66,7 @@ const HR_Screen = [
 ];
 
 interface FiltersType {
+  month: number;
   year: number;
 }
 
@@ -76,6 +77,7 @@ const LeavesListComponent = () => {
   const currentYear = new Date().getFullYear();
 
   const [filters, setFilters] = useState<FiltersType>({
+    month: 5,
     year: currentYear,
   });
 

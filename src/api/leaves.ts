@@ -3,13 +3,16 @@ import { Leaves } from "src/types";
 
 class LeavesAPI {
   async getAllUserLeaves(params: any) {
-    const response = await Axios.get(`/leaves?year=${params.year}`);
-
+    const response = await Axios.get(
+      `/leaves?month=${params.month}&year=${params.year}`
+    );
     return response.data;
   }
 
   async getMyLeaves(params: any) {
-    const response = await Axios.get(`/users/getMyLeaves?year=${params.year}`);
+    const response = await Axios.get(
+      `/users/getMyLeaves?month=${params.month}&year=${params.year}`
+    );
 
     return response.data;
   }

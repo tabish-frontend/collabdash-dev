@@ -1,5 +1,3 @@
-// ** React Imports
-
 // ** MUI Imports
 import Card from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
@@ -9,11 +7,10 @@ import Grid from "@mui/material/Grid";
 
 // ** Types Imports
 import { Employee } from "src/types";
-import { Box, CardActions, Stack, SvgIcon } from "@mui/material";
+import { Box, Stack, SvgIcon } from "@mui/material";
 import { Cake, Cellphone, Email, MapMarker, Pencil } from "mdi-material-ui";
 import { formatDob } from "src/utils/helpers";
 import { useState } from "react";
-// import { UpdateEmployeeModal } from 'src/components/modules/dashboard/employees/update-modal'
 import { ImageAvatar } from "../image-avatar";
 import { UpdateEmployeeModal } from "src/components/modules/dashboard/employees/update-modal";
 
@@ -49,8 +46,8 @@ export const EmployeeDetails = ({
             <Pencil />
           </SvgIcon>
         </Box>
-        <Grid container spacing={6}>
-          <StyledGrid item md={4} xs={12}>
+        <Grid container spacing={1}>
+          <StyledGrid item md={3} xs={12}>
             <CardContent>
               <ImageAvatar
                 path={employeeData?.avatar || ""}
@@ -67,18 +64,7 @@ export const EmployeeDetails = ({
               </Typography>
             </CardContent>
           </StyledGrid>
-          <Grid
-            item
-            xs={12}
-            md={8}
-            sx={{
-              paddingLeft: [
-                "1.5rem !important",
-                "1.5rem !important",
-                "0 !important",
-              ],
-            }}
-          >
+          <Grid item md={9} xs={12}>
             <CardContent>
               <Typography variant="h6" sx={{ textTransform: "capitalize" }}>
                 {employeeData?.full_name}
@@ -93,9 +79,8 @@ export const EmployeeDetails = ({
                 {employeeData?.bio ||
                   "Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur saepe, quasi unde illo eum placeat harum vitae eos sapiente possimus quam assumenda quia"}
               </Typography>
-            </CardContent>
-            <CardActions>
-              <Grid container spacing={2}>
+
+              <Grid container spacing={2} mt={2}>
                 <Grid item xs={12} sm={6}>
                   <Stack direction="row" spacing={2}>
                     <Cellphone fontSize="small" />
@@ -133,7 +118,7 @@ export const EmployeeDetails = ({
                   </Stack>
                 </Grid>
               </Grid>
-            </CardActions>
+            </CardContent>
           </Grid>
         </Grid>
       </Card>

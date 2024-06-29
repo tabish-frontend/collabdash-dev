@@ -64,13 +64,18 @@ const EmployeeProfileComponent = () => {
         >
           <Grid container spacing={4}>
             <Grid item xs={12} sx={{ paddingBottom: 4 }}>
-              <Stack direction={"row"} justifyContent={"space-between"}>
+              <Stack
+                direction={"row"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+              >
                 <Typography variant="h5">{"Employee Profile"}</Typography>
 
                 <Button
                   variant="contained"
                   startIcon={<DeleteIcon />}
                   color="error"
+                  size="small"
                   onClick={() => setDeleteModal(true)}
                 >
                   Delete Employee
@@ -97,7 +102,7 @@ const EmployeeProfileComponent = () => {
             <Grid item xs={12} sm={5}></Grid>
 
             <Grid item xs={12} md={4}>
-                <AttendanceChartCard employeeUsername={employeeData?._id} />
+              <AttendanceChartCard employeeUsername={employeeData?._id} />
             </Grid>
           </Grid>
         </Stack>

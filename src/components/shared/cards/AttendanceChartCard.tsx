@@ -127,6 +127,7 @@ export const AttendanceChartCard = ({
             <DatePicker
               label={"Month And Year"}
               views={["year", "month"]}
+              sx={{ width: 180 }}
               openTo="month"
               minDate={minDate}
               maxDate={maxDate}
