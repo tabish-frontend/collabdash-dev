@@ -209,7 +209,10 @@ const AttendanceListComponent = () => {
                     minWidth: 150,
                   }}
                   onChange={(e) =>
-                    setFilters((prev) => ({ ...prev, view: e.target.value }))
+                    setFilters((prev) => ({
+                      date: new Date(),
+                      view: e.target.value,
+                    }))
                   }
                 >
                   {["month", "day"].map((option) => (

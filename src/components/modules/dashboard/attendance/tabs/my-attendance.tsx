@@ -8,14 +8,13 @@ import {
   TableRow,
   TableCell,
   Skeleton,
-  Stack,
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { attendanceApi } from "src/api";
 import { formatDate } from "src/utils/helpers";
 import { CellValues } from "../helper";
 import dayjs from "dayjs";
-import NoRecordFound from "src/components/shared/NoRecordFound";
+import { NoRecordFound } from "src/components/shared";
 
 const columns = [
   "Date",

@@ -1,50 +1,18 @@
-import { Stack, Typography } from "@mui/material";
-import Image from "next/image";
+import { Stack, useMediaQuery, useTheme } from "@mui/material";
+import React from "react";
 
-export const NoRecordData = ({
-  title,
-  text,
-  imageSize,
-  fontSize,
-  cardHeight,
-}: {
-  title?: boolean;
-  text?: string;
-  imageSize?: number;
-  fontSize?: string;
-  cardHeight?: string;
-}) => {
+export const NoRecordFound = () => {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
-    <Stack
-      sx={{
-        p: 3,
-        textAlign: "center",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: cardHeight,
-      }}
-    >
-      <Image
-        alt="Not found"
-        src="/assets/errors/error-404.svg"
-        width={imageSize}
-        height={0}
-        style={{ height: "auto" }}
+    <Stack direction={"row"} justifyContent={"center"} alignItems={"center"}>
+      <img
+        width={isSmallScreen ? 200 : 400}
+        height={isSmallScreen ? 150 : 300}
+        alt="error-illustration"
+        src="/images/pages/nodata.png"
       />
-      {title && (
-        <Typography
-          align="center"
-          sx={{
-            mt: 2,
-            fontSize: { fontSize },
-            fontWeight: "bold",
-          }}
-        >
-          {text}
-        </Typography>
-      )}
     </Stack>
   );
 };

@@ -10,7 +10,6 @@ import { useAuth } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { LoadingButton } from "@mui/lab";
 import { UserBankValidation } from "src/formik";
-import { useEffect } from "react";
 import { handleKeyPress } from "src/components/shared/form-fields";
 
 export const TabBank = () => {

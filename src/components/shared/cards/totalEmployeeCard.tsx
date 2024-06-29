@@ -6,8 +6,8 @@ import CardContent from "@mui/material/CardContent";
 import { useEffect, useState } from "react";
 import { statisticsApi } from "src/api";
 import { Chart } from "../charts/style";
-import NoRecordFound from "../NoRecordFound";
 import { Skeleton, Stack } from "@mui/material";
+import { NoRecordFound } from "src/components/shared";
 
 const chart: any = {
   options: {
@@ -49,7 +49,7 @@ export const TotalEmployees = () => {
     if (response.data.man > 0 || response.data.women > 0) {
       setChartSeries([response.data.man, response.data.women]);
     }
-    setIsLoading(false)
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -76,8 +76,9 @@ export const TotalEmployees = () => {
 
       <CardContent>
         {isLoading ? (
-          <Stack height={300} justifyContent={"center"} alignItems={"center"} >
-          <Skeleton variant="circular" width={250} height={250} /></Stack>
+          <Stack height={300} justifyContent={"center"} alignItems={"center"}>
+            <Skeleton variant="circular" width={250} height={250} />
+          </Stack>
         ) : chartSeries.length === 0 ? (
           <NoRecordFound />
         ) : (

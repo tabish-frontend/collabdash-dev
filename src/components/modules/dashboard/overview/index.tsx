@@ -11,8 +11,8 @@ import {
   EmployeesAvailability,
   TotalEmployees,
   AttendanceCard,
+  TopPerformers,
 } from "src/components/shared";
-import { TopPerformers } from "src/components/shared/cards/TopPerformers";
 
 const OverviewComponent = () => {
   const { user } = useAuth<AuthContextType>();

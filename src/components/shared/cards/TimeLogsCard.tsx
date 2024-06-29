@@ -141,7 +141,7 @@ export const TimeLogCard = () => {
 
                 {attendance && (
                   <Typography variant="body1">
-                    ClockIn: {attendance && formatTime(attendance?.timeIn)}
+                    Time in: {attendance && formatTime(attendance?.timeIn)}
                   </Typography>
                 )}
 

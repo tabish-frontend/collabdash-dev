@@ -41,6 +41,7 @@ import { formatDate } from "src/utils/helpers";
 import {
   ConfirmationModal,
   ImageAvatar,
+  NoRecordFound,
   RouterLink,
 } from "src/components/shared";
 import { paths } from "src/constants/paths";
@@ -48,7 +49,6 @@ import { LeavesStatus } from "src/constants/status";
 import { DatePicker } from "@mui/x-date-pickers";
 import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 import { styled } from "@mui/material/styles";
-import NoRecordFound from "src/components/shared/NoRecordFound";
 
 const employee_Screen = [
   "Leave Type",
@@ -304,7 +304,9 @@ const LeavesListComponent = () => {
                                 </Typography>
                               </HtmlTooltip>
                             </TableCell>
-                            <TableCell align="center">{leave.status.toUpperCase()}</TableCell>
+                            <TableCell align="center">
+                              {leave.status.toUpperCase()}
+                            </TableCell>
 
                             {(user?.role === ROLES.Admin ||
                               user?.role === ROLES.HR) && (

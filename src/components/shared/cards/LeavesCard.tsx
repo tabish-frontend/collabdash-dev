@@ -29,7 +29,7 @@ import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 import { leavesApi } from "src/api";
 import { formatDate } from "src/utils/helpers";
 import { LeavesStatus } from "src/constants/status";
-import NoRecordFound from "../NoRecordFound";
+import { NoRecordFound } from "../no-record";
 
 const columns = [
   "Leave Type",
@@ -149,18 +149,6 @@ export const LeavesCard = ({ employeeId }: { employeeId: string | any }) => {
                 ) : leavesList.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={columns.length}>
-                      {/* <Stack
-                        direction={"row"}
-                        justifyContent={"center"}
-                        alignItems={"center"}
-                      >
-                        <img
-                          width={isSmallScreen ? 200 : 400}
-                          height={isSmallScreen ? 150 : 300}
-                          alt="error-illustration"
-                          src="/images/pages/nodata.png"
-                        />
-                      </Stack> */}
                       <NoRecordFound />
                     </TableCell>
                   </TableRow>
