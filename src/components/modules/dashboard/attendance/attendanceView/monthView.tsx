@@ -29,73 +29,45 @@ export const MonthViewAttendance = ({
 
   return (
     <Scrollbar sx={{ maxHeight: 600, overflowY: "auto" }}>
-      
-      {!isLoading ? (
-        [...Array(5)].map((_, index) => (
-          <Stack direction={"row"} spacing={5} key={`skeleton-${index}`}>
-            <Skeleton
-              variant="rounded"
-              width={300}
-              height={25}
-              sx={{ mb: "10px" }}
-            />
-
-            {[...Array(daysInMonth)].map((_, dayIndex) => (
-              
-               
-                  <Skeleton variant="rounded" width={20} height={12} />
-              
-             
-            ))}
-              
-          </Stack>
-        ))
+      {isLoading ? (
+        <Stack height={300} mt={4}>
+          {[...Array(7)].map((_, index) => (
+            <Stack direction={"row"} spacing={1} key={`skeleton-${index}`}>
+              <Skeleton
+                variant="rounded"
+                width={200}
+                height={25}
+                sx={{ mb: "10px" }}
+              />
+              <Skeleton variant="text" width={"100%"} height={25} />
+            </Stack>
+          ))}
+        </Stack>
+      ) : employeesAttendance.length === 0 ? (
+        <NoRecordFound />
       ) : (
-        <></>
-      )}
-
-      {/* <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell
-                sx={{
-                  position: "sticky",
-                  left: 0,
-                }}
-              >
-                Employee
-              </TableCell>
-              {[...Array(daysInMonth)].map((_, index) => (
-                <TableCell key={`header-${index + 1}`}>
-                  <Typography variant="caption">{index + 1}</Typography>
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {!isLoading ? (
-              [...Array(5)].map((_, index) => (
-                <TableRow key={`skeleton-${index}`}>
-                  <TableCell>
-                    <Skeleton variant="rounded" width={150} height={25} />
-                  </TableCell>
-                  {[...Array(daysInMonth)].map((_, dayIndex) => (
-                    <TableCell key={`skeleton-day-${dayIndex}`}>
-                      <Skeleton variant="rounded" width="100%" height={25} />
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : employeesAttendance.length === 0 ? (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
               <TableRow>
-                <TableCell colSpan={daysInMonth}>
-                  <NoRecordFound />
+                <TableCell
+                  sx={{
+                    position: "sticky",
+                    left: 0,
+                  }}
+                >
+                  Employee
                 </TableCell>
+                {[...Array(daysInMonth)].map((_, index) => (
+                  <TableCell key={`header-${index + 1}`}>
+                    <Typography variant="caption">{index + 1}</Typography>
+                  </TableCell>
+                ))}
               </TableRow>
-            ) : (
-              employeesAttendance.map((item: any, index: number) => (
+            </TableHead>
+
+            <TableBody>
+              {employeesAttendance.map((item: any, index: number) => (
                 <TableRow key={index}>
                   <TableCell
                     sx={{
@@ -138,11 +110,11 @@ export const MonthViewAttendance = ({
                     );
                   })}
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer> */}
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </Scrollbar>
   );
 };
