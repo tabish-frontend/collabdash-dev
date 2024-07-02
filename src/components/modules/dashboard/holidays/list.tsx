@@ -160,7 +160,7 @@ const HolidaysListComponent = () => {
           <Card>
             <CardHeader
               action={
-                <FormControl sx={{ m: 1, minWidth: 150 }}>
+                <FormControl sx={{ minWidth: 150 }}>
                   <InputLabel>Year</InputLabel>
                   <Select
                     value={selectedYear}

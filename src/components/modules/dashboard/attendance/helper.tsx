@@ -67,6 +67,42 @@ export const CellValues = (employeeAttendance: any, date: any) => {
       : "--",
   };
 
+  if (isOnLeave(date, employeeAttendance.leaves)) {
+    return {
+      icon: <StatusIndicator status="Leave" />,
+      tooltip: "On Leave",
+      status: "On Leave",
+      shift: shiftValues,
+      attendance: attendanceValues,
+    };
+  }
+
+  if (isOnHoliday(date, employeeAttendance.holidays)) {
+    return {
+      icon: <StatusIndicator status="Holiday" />,
+      tooltip: "Holiday",
+      status: "Holiday",
+      shift: shiftValues,
+      attendance: attendanceValues,
+    };
+  }
+
+  if (
+    isOnWeekend(
+      date,
+      employeeAttendance.shift,
+      new Date(employeeAttendance.join_date)
+    )
+  ) {
+    return {
+      icon: <StatusIndicator status="Weekend" />,
+      tooltip: "Weekend",
+      status: "Weekend",
+      shift: shiftValues,
+      attendance: attendanceValues,
+    };
+  }
+
   if (isPastDate(date, new Date(employeeAttendance.join_date))) {
     return {
       icon: (
@@ -117,42 +153,6 @@ export const CellValues = (employeeAttendance: any, date: any) => {
         </div>
       ),
       status: title,
-      shift: shiftValues,
-      attendance: attendanceValues,
-    };
-  }
-
-  if (isOnLeave(date, employeeAttendance.leaves)) {
-    return {
-      icon: <StatusIndicator status="Leave" />,
-      tooltip: "On Leave",
-      status: "On Leave",
-      shift: shiftValues,
-      attendance: attendanceValues,
-    };
-  }
-
-  if (isOnHoliday(date, employeeAttendance.holidays)) {
-    return {
-      icon: <StatusIndicator status="Holiday" />,
-      tooltip: "Holiday",
-      status: "Holiday",
-      shift: shiftValues,
-      attendance: attendanceValues,
-    };
-  }
-
-  if (
-    isOnWeekend(
-      date,
-      employeeAttendance.shift,
-      new Date(employeeAttendance.join_date)
-    )
-  ) {
-    return {
-      icon: <StatusIndicator status="Weekend" />,
-      tooltip: "Weekend",
-      status: "Weekend",
       shift: shiftValues,
       attendance: attendanceValues,
     };

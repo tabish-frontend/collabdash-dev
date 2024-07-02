@@ -135,7 +135,7 @@ export const TimeLogCard = () => {
                         : handleTimeLog("clockIn")
                     }
                   >
-                    {attendance && attendance.timeIn ? "CHECK OUT" : "CHECK IN"}
+                    {attendance && attendance.timeIn ? "Time out" : "Time in"}
                   </Button>
                 )}
 
@@ -147,7 +147,7 @@ export const TimeLogCard = () => {
 
                 {attendance && attendance.timeOut !== null && (
                   <Typography variant="body1">
-                    ClockOut:
+                    Time out:
                     {attendance && formatTime(attendance?.timeOut)}
                   </Typography>
                 )}

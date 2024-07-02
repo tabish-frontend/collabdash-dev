@@ -63,11 +63,13 @@ const TabStatus = [
     label: "Employees Attendance",
     icon: <AccountOutline />,
     value: "employee_attendance",
+    roles: ["admin", "hr"], // Accessible by admin and HR
   },
   {
     label: "My Attendance",
     icon: <LockOpenOutline />,
     value: "my_attendance",
+    roles: ["employee", "hr"], // Accessible by employees and HR
   },
 ];
 
@@ -142,6 +144,10 @@ const AttendanceListComponent = () => {
   };
 
   const { DatePickerLabel, DatePickerViews } = getPickerConfig();
+
+  if (!user || !user.role) {
+    return null; // or some fallback UI
+  }
 
   return (
     <Box
@@ -254,18 +260,20 @@ const AttendanceListComponent = () => {
                     borderColor: "#ddd",
                   }}
                 >
-                  {TabStatus.map((tab) => (
-                    <Tab
-                      key={tab.value}
-                      label={
-                        <Box sx={{ display: "flex", alignItems: "center" }}>
-                          {tab.icon}
-                          <TabName>{tab.label}</TabName>
-                        </Box>
-                      }
-                      value={tab.value}
-                    />
-                  ))}
+                  {TabStatus.filter((tab) => tab.roles.includes(user.role)).map(
+                    (tab) => (
+                      <Tab
+                        key={tab.value}
+                        value={tab.value}
+                        label={
+                          <Box sx={{ display: "flex", alignItems: "center" }}>
+                            {tab.icon}
+                            <TabName>{tab.label}</TabName>
+                          </Box>
+                        }
+                      />
+                    )
+                  )}
                 </Tabs>
 
                 {tabValue === "employee_attendance" ? (

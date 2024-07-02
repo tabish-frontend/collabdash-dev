@@ -39,41 +39,14 @@ const validationSchema = Yup.object({
 });
 
 const ForgotPasswordComponent = () => {
-  const isMounted = useMounted();
-  // const router = useRouter();
-
   const formik = useFormik({
     initialValues,
     validationSchema,
     onSubmit: async (values, helpers): Promise<void> => {
-      try {
-        await authApi.forgotPassword(values);
-
-        if (isMounted()) {
-          toast.success("reset password link sent to your email!");
-        }
-      } catch (error) {
-        if (error.response) {
-          const htmlResponse = error.response.data;
-          const errorMessageStart = "Error: ";
-          const errorMessageEnd = "<br>";
-          const startIndex = htmlResponse.indexOf(errorMessageStart);
-          const endIndex = htmlResponse.indexOf(errorMessageEnd, startIndex);
-
-          if (startIndex !== -1 && endIndex !== -1) {
-            const errorMessage = htmlResponse.substring(
-              startIndex + errorMessageStart.length,
-              endIndex
-            );
-            toast.error(errorMessage);
-          }
-        }
-        if (isMounted()) {
-          helpers.setStatus({ success: false });
-          helpers.setErrors({ submit: error.message });
-          helpers.setSubmitting(false);
-        }
-      }
+      await authApi.forgotPassword(values);
+      toast.success("reset password link sent to your email!");
+      helpers.setStatus({ success: false });
+      helpers.setSubmitting(false);
     },
   });
 

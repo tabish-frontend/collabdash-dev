@@ -83,9 +83,7 @@ const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
 
 const LeavesListComponent = () => {
   const settings = useSettings();
-  const theme = useTheme();
 
-  const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
 
   const [datePickerDate, setDatePickerDate] = useState<Date>(new Date());
@@ -158,8 +156,6 @@ const LeavesListComponent = () => {
 
   const minDate = new Date(currentYear - 3, 0, 1); // January 1st, 5 years ago
   const maxDate = new Date(currentYear, 11, 31);
-
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <Box
