@@ -1,13 +1,8 @@
-// ** React Imports
-import { forwardRef } from "react";
-
 // ** MUI Imports
 import Grid from "@mui/material/Grid";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import CardContent from "@mui/material/CardContent";
-
-// ** Third Party Imports
 
 // ** Styled Components
 import { UserBasicInformation } from "src/types";
@@ -18,7 +13,10 @@ import { AuthContextType } from "src/contexts/auth";
 import { LoadingButton } from "@mui/lab";
 import { Countries, Languages } from "src/constants/list-items";
 import { DatePicker } from "@mui/x-date-pickers";
-import { MobileField, NationalIdentityField } from "src/components/shared";
+import {
+  MobileField,
+  NationalIdentityField,
+} from "src/components/shared/form-fields";
 
 export const TabInfo = () => {
   const { user, updateCurrentUser } = useAuth<AuthContextType>();

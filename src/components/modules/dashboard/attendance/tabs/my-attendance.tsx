@@ -14,6 +14,7 @@ import { attendanceApi } from "src/api";
 import { formatDate } from "src/utils/helpers";
 import { CellValues } from "../helper";
 import dayjs from "dayjs";
+import { NoRecordFound } from "src/components/shared";
 
 const columns = [
   "Date",
@@ -83,27 +84,35 @@ export const MyAttendance = ({ filters }: any) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {isLoading
-              ? [...Array(5)].map((_, index) => (
-                  <TableRow key={`skeleton-${index}`}>
-                    {columns.map((col, colIndex) => (
-                      <TableCell key={colIndex} align="center">
-                        <Skeleton variant="rounded" width="100%" height={15} />
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              : attendance.map((attendance, index) => (
-                  <TableRow hover role="checkbox" key={index}>
-                    <TableCell align="center">
-                      {formatDate(attendance.date)}
+            {isLoading ? (
+              [...Array(5)].map((_, index) => (
+                <TableRow key={`skeleton-${index}`}>
+                  {columns.map((col, colIndex) => (
+                    <TableCell key={colIndex} align="center">
+                      <Skeleton variant="rounded" width="100%" height={15} />
                     </TableCell>
-                    <TableCell align="center">{attendance.timeIn}</TableCell>
-                    <TableCell align="center">{attendance.timeOut}</TableCell>
-                    <TableCell align="center">{attendance.status}</TableCell>
-                    <TableCell align="center">{attendance.duration}</TableCell>
-                  </TableRow>
-                ))}
+                  ))}
+                </TableRow>
+              ))
+            ) : attendance.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={columns.length}>
+                  <NoRecordFound />
+                </TableCell>
+              </TableRow>
+            ) : (
+              attendance.map((attendance, index) => (
+                <TableRow hover role="checkbox" key={index}>
+                  <TableCell align="center">
+                    {formatDate(attendance.date)}
+                  </TableCell>
+                  <TableCell align="center">{attendance.timeIn}</TableCell>
+                  <TableCell align="center">{attendance.timeOut}</TableCell>
+                  <TableCell align="center">{attendance.status}</TableCell>
+                  <TableCell align="center">{attendance.duration}</TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>

@@ -1,10 +1,10 @@
 // ** React Imports
 import { Fragment, useCallback, useEffect, useState } from "react";
 
-import { Stack, Typography } from "@mui/material";
+import { Skeleton, Stack, Typography } from "@mui/material";
 
 import { attendanceApi } from "src/api";
-import { SelectMultipleUsers } from "src/components/shared";
+import { NoRecordFound, SelectMultipleUsers } from "src/components/shared";
 
 import { DayViewAttendance } from "../attendanceView/dayView";
 import { MonthViewAttendance } from "../attendanceView/monthView";
@@ -24,12 +24,13 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
 
   const initialUser = queryUser ? [queryUser] : [];
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [employees, setEmployees] = useState<any[] | []>([]);
   const [employeesAttendance, setEmployeesAttendance] = useState<any[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<any[]>(initialUser);
 
   const handleGetAttendances = useCallback(async () => {
+    setIsLoading(true);
     const response = await attendanceApi.getAllUserAttendance(filters);
     setEmployees(response.data);
     setEmployeesAttendance(response.data);
@@ -95,17 +96,31 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
         />
       </Stack>
 
-      {filters.view === "month" ? (
+      {isLoading ? (
+        <Stack height={300} mt={4}>
+          {[...Array(7)].map((_, index) => (
+            <Stack direction={"row"} spacing={1} key={`skeleton-${index}`}>
+              <Skeleton
+                variant="rounded"
+                width={200}
+                height={25}
+                sx={{ mb: "10px" }}
+              />
+              <Skeleton variant="text" width={"100%"} height={25} />
+            </Stack>
+          ))}
+        </Stack>
+      ) : employeesAttendance.length === 0 ? (
+        <NoRecordFound />
+      ) : filters.view === "month" ? (
         <MonthViewAttendance
           employeesAttendance={employeesAttendance}
           filters={filters}
-          isLoading={isLoading}
         />
       ) : (
         <DayViewAttendance
           employeesAttendance={employeesAttendance}
           filters={filters}
-          isLoading={isLoading}
         />
       )}
     </>

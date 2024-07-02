@@ -5,7 +5,7 @@ import CardContent from "@mui/material/CardContent";
 
 // ** Icons Imports
 
-import { PasswordField } from "src/components/shared";
+import { PasswordField } from "src/components/shared/form-fields";
 import { useFormik } from "formik";
 import { UpdateMyPassword, ResetPasswordValidation } from "src/formik";
 import { useAuth } from "src/hooks";

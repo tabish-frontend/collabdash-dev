@@ -16,7 +16,7 @@ import { Plus } from "mdi-material-ui";
 import { SyntheticEvent, useEffect, useState } from "react";
 
 // ** Demo Components Imports
-import { EmployeeCard, Scrollbar } from "src/components";
+import { EmployeeCard, NoRecordFound, Scrollbar } from "src/components";
 import { Employee } from "src/types";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts/dashboard";
@@ -115,18 +115,7 @@ const EmployeeListComponent = () => {
                   ))
                 ) : employeesList.length === 0 ? (
                   <Grid item xs={12}>
-                    <Stack
-                      direction={"row"}
-                      justifyContent={"center"}
-                      alignItems={"center"}
-                    >
-                      <img
-                        width={isSmallScreen ? 200 : 460}
-                        height={isSmallScreen ? 150 : 360}
-                        src="/images/pages/nodata.png"
-                        alt="no-data-found"
-                      />
-                    </Stack>
+                    <NoRecordFound />
                   </Grid>
                 ) : (
                   employeesList.map((employee: Employee) => (
