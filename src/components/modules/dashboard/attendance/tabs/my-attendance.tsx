@@ -8,6 +8,7 @@ import {
   TableRow,
   TableCell,
   Skeleton,
+  Typography,
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { attendanceApi } from "src/api";
@@ -103,13 +104,13 @@ export const MyAttendance = ({ filters }: any) => {
             ) : (
               attendance.map((attendance, index) => (
                 <TableRow hover role="checkbox" key={index}>
-                  <TableCell align="center">
-                    {formatDate(attendance.date)}
+                  <TableCell align="center" >
+                    <Typography minWidth={150}>{formatDate(attendance.date)}</Typography>
                   </TableCell>
-                  <TableCell align="center">{attendance.timeIn}</TableCell>
-                  <TableCell align="center">{attendance.timeOut}</TableCell>
-                  <TableCell align="center">{attendance.status}</TableCell>
-                  <TableCell align="center">{attendance.duration}</TableCell>
+                  <TableCell align="center"><Typography minWidth={150}>{attendance.timeIn}</Typography></TableCell>
+                  <TableCell align="center"><Typography minWidth={150}>{attendance.timeOut}</Typography></TableCell>
+                  <TableCell align="center"><Typography minWidth={150}>{attendance.status}</Typography></TableCell>
+                  <TableCell align="center"><Typography minWidth={150}>{attendance.duration}</Typography></TableCell>
                 </TableRow>
               ))
             )}

@@ -49,12 +49,14 @@ export const WelcomeCard = () => {
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-between",
+            alignItems: "center",
+            // flexWrap: "wrap"
           }}
         >
           <Typography
-            variant="h5"
-            style={{ whiteSpace: "pre" }}
-          >{`Good Morning!!  ${user?.full_name}`}</Typography>
+            
+            style={{ fontSize: "24px", fontWeight: "bold" }}
+          >{`Good Morning!! ${user?.full_name}`}</Typography>
 
           <IconButton color="secondary" onClick={handleNewQuote}>
             <RefreshIcon fontSize="large" />

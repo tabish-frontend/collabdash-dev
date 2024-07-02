@@ -57,7 +57,7 @@ export const TotalEmployees = () => {
   }, []);
 
   return (
-    <Card>
+    <Card style={{minHeight: 490}}>
       <CardHeader
         title="Total Employees"
         sx={{

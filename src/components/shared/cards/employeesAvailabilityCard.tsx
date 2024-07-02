@@ -29,12 +29,12 @@ export const EmployeesAvailability = () => {
   }, []);
 
   return (
-    <Card>
+    <Card style={{minHeight: 490}}>
       <CardHeader title="Employees Availability" />
       <CardContent>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
-            <Stack spacing={2} border={"1px solid #ddd"} p={1} borderRadius={1}>
+            <Stack spacing={2} border={"1px solid #ddd"} p={1} borderRadius={1} minHeight={160}>
               <CheckboxMarkedOutline
                 fontSize="large"
                 sx={{ fontWeight: 900 }}
@@ -48,7 +48,7 @@ export const EmployeesAvailability = () => {
             </Stack>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Stack spacing={2} border={"1px solid #ddd"} p={1} borderRadius={1}>
+            <Stack spacing={2} border={"1px solid #ddd"} p={1} borderRadius={1} minHeight={160}>
               <ClockTimeTwoOutline fontSize="large" sx={{ fontWeight: 900 }} />
               <Typography variant="subtitle1" fontWeight={600}>
                 Late Coming
@@ -59,7 +59,7 @@ export const EmployeesAvailability = () => {
             </Stack>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Stack spacing={2} border={"1px solid #ddd"} p={1} borderRadius={1}>
+            <Stack spacing={2} border={"1px solid #ddd"} p={1} borderRadius={1} minHeight={160}>
               <Cancel fontSize="large" sx={{ fontWeight: 900 }} />
               <Typography variant="subtitle1" fontWeight={600}>
                 Absent
@@ -70,7 +70,7 @@ export const EmployeesAvailability = () => {
             </Stack>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Stack spacing={2} border={"1px solid #ddd"} p={1} borderRadius={1}>
+            <Stack spacing={2} border={"1px solid #ddd"} p={1} borderRadius={1} minHeight={160}>
               <UmbrellaBeachOutline fontSize="large" sx={{ fontWeight: 900 }} />
               <Typography variant="subtitle1" fontWeight={600}>
                 Leave Apply

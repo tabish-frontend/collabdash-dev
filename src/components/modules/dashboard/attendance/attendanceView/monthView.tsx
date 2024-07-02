@@ -11,9 +11,15 @@ import {
   TableRow,
   Tooltip,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { NoRecordFound, RouterLink, Scrollbar } from "src/components/shared";
+import {
+  ImageAvatar,
+  NoRecordFound,
+  RouterLink,
+  Scrollbar,
+} from "src/components/shared";
 import { paths } from "src/constants/paths";
 import { CellValues } from "../helper";
 import dayjs from "dayjs";
@@ -21,6 +27,8 @@ import dayjs from "dayjs";
 export const MonthViewAttendance = ({ employeesAttendance, filters }: any) => {
   const daysInMonth = dayjs(filters.date).daysInMonth();
   const theme = useTheme();
+
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <Scrollbar sx={{ maxHeight: 600, overflowY: "auto" }}>
@@ -55,17 +63,54 @@ export const MonthViewAttendance = ({ employeesAttendance, filters }: any) => {
                     backgroundColor: theme.palette.background.paper,
                   }}
                 >
-                  <Stack direction="row" spacing={1} width={170}>
-                    <Link
-                      color="inherit"
-                      component={RouterLink}
-                      href={`${paths.employees}/${item.username}`}
-                      variant="subtitle2"
-                      sx={{ textTransform: "capitalize" }}
+                  {isSmallScreen ? (
+                    <Stack
+                      direction="row"
+                      justifyContent={"center"}
+                      spacing={1}
+                      width={80}
                     >
-                      {item.full_name}
-                    </Link>
-                  </Stack>
+                      <Tooltip title={item.full_name} arrow>
+                        <Link
+                          color="inherit"
+                          component={RouterLink}
+                          href={`${paths.employees}/${item.username}`}
+                        >
+                          <ImageAvatar
+                            path={item.avatar || ""}
+                            alt="user image"
+                            width={40}
+                            height={40}
+                          />
+                        </Link>
+                      </Tooltip>
+                    </Stack>
+                  ) : (
+                    <Stack
+                      alignItems={"center"}
+                      direction={"row"}
+                      justifyContent={"center"}
+                      spacing={1}
+                      width={150}
+                    >
+                      <ImageAvatar
+                        path={item.avatar || ""}
+                        alt="user image"
+                        width={40}
+                        height={40}
+                      />
+
+                      <Link
+                        color="inherit"
+                        component={RouterLink}
+                        href={`${paths.employees}/${item.username}`}
+                        variant="subtitle2"
+                        sx={{ textTransform: "capitalize" }}
+                      >
+                        {item.full_name}
+                      </Link>
+                    </Stack>
+                  )}
                 </TableCell>
 
                 {[...Array(daysInMonth)].map((_, dayIndex) => {

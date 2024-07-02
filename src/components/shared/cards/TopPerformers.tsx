@@ -44,12 +44,12 @@ export const TopPerformers = () => {
     <Card>
       <CardHeader title="Top Performers" />
       <CardContent>
-        <Stack direction="row" justifyContent="space-between" flexWrap="wrap">
+        <Stack direction="row" justifyContent="center" gap={3} flexWrap="wrap" >
           {cardDetails.map((card, index) => (
             <Card
               key={index}
               sx={{
-                minWidth: 300,
+                minWidth: 250,
                 textAlign: "center",
                 padding: 2,
                 marginBottom: 2,

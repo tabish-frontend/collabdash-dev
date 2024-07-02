@@ -217,16 +217,20 @@ const HolidaysListComponent = () => {
                       holidayList.map((holiday, index) => {
                         return (
                           <TableRow hover role="checkbox" key={index}>
-                            <TableCell align="center">
-                              {getDayFromDate(holiday.date)}
+                            <TableCell align="center" width={100}>
+                              <Typography width={100}>
+                                {getDayFromDate(holiday.date)}
+                              </Typography>
                             </TableCell>
 
                             <TableCell align="center">
-                              {formatDate(holiday.date)}
+                              <Typography minWidth={150}>
+                                {formatDate(holiday.date)}
+                              </Typography>
                             </TableCell>
 
-                            <TableCell align="center">
-                              {holiday.title}
+                            <TableCell align="center" width={150}>
+                              <Typography width={150}>{holiday.title}</Typography>
                             </TableCell>
 
                             {(user?.role === ROLES.Admin ||

@@ -232,7 +232,7 @@ const LeavesListComponent = () => {
                       [...Array(5)].map((_, index) => (
                         <TableRow key={`skeleton-${index}`}>
                           {columns.map((col, colIndex) => (
-                            <TableCell key={colIndex} align="center">
+                            <TableCell key={colIndex} align="center" width={150}>
                               <Skeleton
                                 variant="rounded"
                                 width="100%"
@@ -254,12 +254,13 @@ const LeavesListComponent = () => {
                           <TableRow hover role="checkbox" key={index}>
                             {(user?.role === ROLES.Admin ||
                               user?.role === ROLES.HR) && (
-                              <TableCell>
+                              <TableCell align="center" width={150}>
                                 <Stack
                                   alignItems={"center"}
                                   direction={"row"}
                                   justifyContent={"center"}
                                   spacing={1}
+                                  width={150}
                                 >
                                   <ImageAvatar
                                     path={leave.user.avatar || ""}
@@ -281,16 +282,22 @@ const LeavesListComponent = () => {
                               </TableCell>
                             )}
 
-                            <TableCell align="center">
-                              {leave.leave_type}
+                            {/* <TableCell align="center">
+                              <Typography >
+                                {leave.leave_type}
+                              </Typography>
                             </TableCell>
                             <TableCell align="center">
-                              {formatDate(leave.startDate)}
+                              <Typography>
+                                {formatDate(leave.startDate)}
+                              </Typography>
                             </TableCell>
                             <TableCell align="center">
-                              {formatDate(leave.endDate)}
+                              <Typography >
+                                {formatDate(leave.endDate)}
+                              </Typography>
                             </TableCell>
-                            <TableCell align="center" width={180}>
+                            <TableCell align="center">
                               <HtmlTooltip
                                 arrow
                                 title={<Typography>{leave.reason}</Typography>}
@@ -302,15 +309,47 @@ const LeavesListComponent = () => {
                             </TableCell>
                             <TableCell align="center">
                               {leave.status.toUpperCase()}
+                            </TableCell> */}
+
+                            <TableCell width={100} align="center">
+                              <Typography width={100}>
+                                {leave.leave_type}
+                              </Typography>
+                            </TableCell>
+                            <TableCell width={150} align="center">
+                              <Typography width={150}>
+                                {formatDate(leave.startDate)}
+                              </Typography>
+                            </TableCell>
+                            <TableCell width={150} align="center">
+                              <Typography width={150}>
+                                {formatDate(leave.endDate)}
+                              </Typography>
+                            </TableCell>
+                            <TableCell width={200} align="center">
+                              <HtmlTooltip
+                                arrow
+                                title={<Typography>{leave.reason}</Typography>}
+                              >
+                                <Typography width={200} noWrap>
+                                  {leave.reason}
+                                </Typography>
+                              </HtmlTooltip>
+                            </TableCell>
+                            <TableCell width={100} align="center">
+                              <Typography width={100}>
+                                {leave.status.toUpperCase()}
+                              </Typography>
                             </TableCell>
 
                             {(user?.role === ROLES.Admin ||
                               user?.role === ROLES.HR) && (
-                              <TableCell>
+                              <TableCell width={150}>
                                 <Stack
                                   direction={"row"}
                                   justifyContent={"center"}
                                   spacing={1}
+                                  width={150}
                                 >
                                   <Tooltip title="Approved">
                                     <span>

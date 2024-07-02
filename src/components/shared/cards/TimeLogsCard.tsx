@@ -104,7 +104,7 @@ export const TimeLogCard = () => {
 
   return (
     <>
-      <Card>
+      <Card style={{minHeight: 490}}>
         <CardHeader title="Attendance" />
         <CardContent>
           <Grid container>
