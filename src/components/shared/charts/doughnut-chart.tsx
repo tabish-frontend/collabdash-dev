@@ -13,7 +13,7 @@
 // } from "@mui/material";
 // import numeral from "numeral";
 // import { Box } from "@mui/system";
-// import { NoRecordFound } from "../no-record";
+// import { NoRecordData } from "../no-record";
 
 // const useChartOptions = (labels: string[]): ApexOptions => {
 //   const theme = useTheme();
