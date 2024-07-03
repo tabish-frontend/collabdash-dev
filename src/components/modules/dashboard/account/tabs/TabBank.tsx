@@ -93,7 +93,7 @@ export const TabBank = () => {
               required
               label="Account Number"
               name="account_number"
-              placeholder="9946 010 9864 896"
+              placeholder="502 5006 900 0969 019"
               value={formik.values.account_number}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}

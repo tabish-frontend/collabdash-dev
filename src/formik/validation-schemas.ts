@@ -63,8 +63,8 @@ export const UserBankValidation = Yup.object().shape({
   account_number: Yup.string()
     .required("Account number is required")
     .matches(
-      /^[0-9]{14,16}$/,
-      "Account number must be between 14 and 16 digits"
+      /^[0-9]{14,20}$/,
+      "Account number must be between 14 and 20 digits"
     ),
 });
 
