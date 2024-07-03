@@ -66,10 +66,11 @@ export const LeaveModal: FC<LeaveModalProps> = ({
   );
 
   const handleGetEmployees = async () => {
-    const response = await employeesApi.getAllEmployees(
-      "active",
-      "full_name,avatar"
-    );
+    const response = await employeesApi.getAllEmployees({
+      fields: "full_name,avatar",
+      account_status: "active",
+      search: "",
+    });
     setEmployees(response.users);
   };
 
