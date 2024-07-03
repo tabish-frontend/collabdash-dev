@@ -129,6 +129,7 @@ export const EmployeeDetails = ({
             designation: employeeData?.designation || "",
             account_status: employeeData?.account_status || "",
             username: employeeData?.username || "",
+            email: employeeData?.email || "",
           }}
           modal={updateModal}
           onCancel={() => setUpdateModal(false)}

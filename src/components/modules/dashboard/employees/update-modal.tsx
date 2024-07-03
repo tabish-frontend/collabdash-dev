@@ -1,3 +1,4 @@
+import { LoadingButton } from "@mui/lab";
 import {
   Dialog,
   DialogTitle,
@@ -14,7 +15,10 @@ import { useFormik } from "formik";
 import { CloseCircleOutline } from "mdi-material-ui";
 
 import { type FC } from "react";
+import { DesignationField, EmailField } from "src/components/shared";
 import { AccountStatus } from "src/constants/status";
+import { common_user_validation } from "src/formik";
+import * as Yup from "yup";
 
 interface ShiftModalProps {
   modal: boolean;
@@ -22,10 +26,16 @@ interface ShiftModalProps {
     username: string;
     designation: string;
     account_status: string;
+    email: string;
   };
   onConfirm: (values: any) => void;
   onCancel: () => void;
 }
+
+const UpdateEmployeeValidation = Yup.object().shape({
+  email: common_user_validation.email,
+  designation: common_user_validation.designation,
+});
 
 export const UpdateEmployeeModal: FC<ShiftModalProps> = ({
   modal,
@@ -34,12 +44,13 @@ export const UpdateEmployeeModal: FC<ShiftModalProps> = ({
   onConfirm,
 }) => {
   const formik = useFormik({
-    // initialValues: employeeValues,
     initialValues: employeeValues || {
       username: "",
       designation: "",
       account_status: "",
+      email: "",
     },
+    validationSchema: UpdateEmployeeValidation,
     onSubmit: async (values, helpers): Promise<void> => {
       await onConfirm(values);
       helpers.setStatus({ success: true });
@@ -47,42 +58,10 @@ export const UpdateEmployeeModal: FC<ShiftModalProps> = ({
     },
   });
 
-  // const getShiftDays = (weekends: string[]) => {
-  //   return weekDays.filter(day => !weekends.includes(day))
-  // }
-
-  // const handleweekendsChange = (event: SelectChangeEvent<string[]>) => {
-  //   const selectedweekends = event.target.value
-
-  //   formik.setFieldValue('weekends', selectedweekends)
-  //   const updatedShiftDays = formik.values.times.map(item => {
-  //     const filteredDays = item.days.filter(day => !selectedweekends.includes(day))
-
-  //     return { ...item, days: filteredDays }
-  //   })
-
-  //   formik.setFieldValue('times', updatedShiftDays)
-  // }
-
-  // const addShift = () => {
-  //   const newShiftValues = {
-  //     start: null,
-  //     end: null,
-  //     days: []
-  //   }
-
-  //   formik.setFieldValue('times', [...formik.values.times, newShiftValues])
-  // }
-
-  // const removeShift = (index: number) => {
-  //   const updatedShiftValues = [...formik.values.times.slice(0, index), ...formik.values.times.slice(index + 1)]
-  //   formik.setFieldValue('times', updatedShiftValues)
-  // }
-
   return (
     <Dialog fullWidth maxWidth={"sm"} open={modal} onClose={onCancel}>
       <form onSubmit={formik.handleSubmit}>
-        <Paper elevation={12} sx={{ py: 3 }}>
+        <Paper elevation={12}>
           <DialogTitle sx={{ m: 0, p: 3, fontSize: 24, fontWeight: 600 }}>
             Update Employee
           </DialogTitle>
@@ -101,17 +80,27 @@ export const UpdateEmployeeModal: FC<ShiftModalProps> = ({
 
           <Divider />
 
-          <Grid container spacing={4} p={4}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Designation"
-                name="designation"
-                fullWidth
-                value={formik.values.designation}
-                onChange={formik.handleChange}
+          <Grid container spacing={2} p={2}>
+            <Grid item xs={12}>
+              <EmailField
+                value={formik.values.email}
+                handleChange={formik.handleChange}
+                handleBlur={formik.handleBlur}
+                formikError={formik.errors.email}
+                formikTouched={formik.touched.email}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+
+            <Grid item xs={12}>
+              <DesignationField
+                value={formik.values.designation}
+                handleChange={formik.handleChange}
+                handleBlur={formik.handleBlur}
+                formikError={formik.errors.designation}
+                formikTouched={formik.touched.designation}
+              />
+            </Grid>
+            <Grid item xs={12}>
               <TextField
                 label="Account Status"
                 fullWidth
@@ -140,9 +129,18 @@ export const UpdateEmployeeModal: FC<ShiftModalProps> = ({
             <Button color="inherit" sx={{ mr: 2 }} onClick={onCancel}>
               Cancel
             </Button>
-            <Button variant="contained" type="submit">
+            <LoadingButton
+              loading={formik.isSubmitting}
+              loadingPosition="start"
+              startIcon={<></>}
+              type="submit"
+              variant="contained"
+              sx={{
+                pl: formik.isSubmitting ? "40px" : "16px",
+              }}
+            >
               Save
-            </Button>
+            </LoadingButton>
           </Box>
         </Paper>
       </form>

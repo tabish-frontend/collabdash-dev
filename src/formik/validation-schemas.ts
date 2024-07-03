@@ -1,6 +1,6 @@
 import * as Yup from "yup";
 
-const common_user_validation = {
+export const common_user_validation = {
   username: Yup.string()
     .required("Username is required")
     .min(3, "Minimum 6 Characters required"),

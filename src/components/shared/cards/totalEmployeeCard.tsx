@@ -11,8 +11,8 @@ import { NoRecordFound } from "src/components/shared";
 
 const chart: any = {
   options: {
-    labels: ["Man", "Women"],
-    colors: ["#00A8AD", "#0089FA"],
+    labels: ["Men", "Women"],
+    colors: ["#06AED4", "#9C27B0"],
     legend: {
       position: "bottom",
       fontSize: "14px",
@@ -57,7 +57,7 @@ export const TotalEmployees = () => {
   }, []);
 
   return (
-    <Card style={{minHeight: 490}}>
+    <Card style={{ minHeight: 490 }}>
       <CardHeader
         title="Total Employees"
         sx={{
