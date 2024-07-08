@@ -5,13 +5,11 @@ import { NextPage } from "next";
 import { Employee } from "src/types";
 import { useRouter } from "next/router";
 import { employeesApi } from "src/api";
-import { EmployeeDetails, ShiftDetails } from "src/components";
+import { EmployeeDetails, ShiftDetails, AttendanceChartCard, TaskCard, LeavesCard, ConfirmationModal } from "src/components/shared";
 import { useSettings } from "src/hooks";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { ConfirmationModal } from "src/components/shared";
-import { AttendanceChartCard } from "src/components/shared/cards/AttendanceChartCard";
-import { LeavesCard } from "src/components/shared/cards/LeavesCard";
+
 
 const EmployeeProfileComponent = () => {
   const settings = useSettings();
@@ -38,7 +36,6 @@ const EmployeeProfileComponent = () => {
     const response = await employeesApi.updateEmployee(username, UpdatedValues);
 
     setEmployeeData(response);
-
   };
 
   const handleDeleteEmployee = async (username: any) => {
@@ -87,29 +84,33 @@ const EmployeeProfileComponent = () => {
               </Stack>
             </Grid>
 
-            <Grid item xs={12} sm={7}>
-              <EmployeeDetails
-                employeeData={employeeData}
-                UpdateEmployee={handleUpdateEmployee}
-              />
+            <Grid item xs={12} md={7}>
+              <Grid item xs={12} sx={{mb: 3}}>
+                <EmployeeDetails
+                  employeeData={employeeData}
+                  UpdateEmployee={handleUpdateEmployee}
+                />
+              </Grid>
+
+              <Grid item xs={12} >
+                <ShiftDetails
+                  employeeID={employeeData?._id}
+                  shiftDetails={employeeData?.shift}
+                />
+              </Grid>
             </Grid>
 
-            <Grid item xs={12} sm={5}></Grid>
-
-            <Grid item xs={12} sm={7}>
-              <ShiftDetails
-                employeeID={employeeData?._id}
-                shiftDetails={employeeData?.shift}
-              />
+            <Grid item xs={12} md={5}>
+              <Grid item xs={12}>
+                <TaskCard />
+              </Grid>
             </Grid>
-
-            <Grid item xs={12} sm={5}></Grid>
 
             <Grid item xs={12} md={4}>
               <AttendanceChartCard employeeUsername={employeeData?._id} />
             </Grid>
             <Grid item xs={12} md={8}>
-                <LeavesCard employeeId={employeeData?._id} />
+              <LeavesCard employeeId={employeeData?._id} />
             </Grid>
           </Grid>
         </Stack>

@@ -11,3 +11,5 @@ export * from "./TopPerformers";
 export * from "./AttendanceChartCard";
 export * from "./LeavesCard";
 export * from "./TopPerformers";
+export * from "./TaskCard";
+export * from "./AttendanceCard"
