@@ -63,54 +63,28 @@ export const MonthViewAttendance = ({ employeesAttendance, filters }: any) => {
                     backgroundColor: theme.palette.background.paper,
                   }}
                 >
-                  {isSmallScreen ? (
-                    <Stack
-                      direction="row"
-                      justifyContent={"center"}
-                      spacing={1}
-                      width={80}
-                    >
-                      <Tooltip title={item.full_name} arrow>
-                        <Link
-                          color="inherit"
-                          component={RouterLink}
-                          href={`${paths.employees}/${item.username}`}
-                        >
-                          <ImageAvatar
-                            path={item.avatar || ""}
-                            alt="user image"
-                            width={40}
-                            height={40}
-                          />
-                        </Link>
-                      </Tooltip>
-                    </Stack>
-                  ) : (
-                    <Stack
-                      alignItems={"center"}
-                      direction={"row"}
-                      justifyContent={"center"}
-                      spacing={1}
-                      width={150}
-                    >
-                      <ImageAvatar
-                        path={item.avatar || ""}
-                        alt="user image"
-                        width={40}
-                        height={40}
-                      />
+                  <Stack
+                    direction={"row"}
+                    component={RouterLink}
+                    color="inherit"
+                    href={`${paths.employees}/${item.username}`}
+                    gap={1}
+                    width={isSmallScreen ? 80 : 150}
+                    alignItems={"center"}
+                  >
+                    <Tooltip title={item.full_name} arrow>
+                      <span>
+                        <ImageAvatar
+                          path={item.avatar || ""}
+                          alt="user image"
+                          width={30}
+                          height={30}
+                        />
+                      </span>
+                    </Tooltip>
 
-                      <Link
-                        color="inherit"
-                        component={RouterLink}
-                        href={`${paths.employees}/${item.username}`}
-                        variant="subtitle2"
-                        sx={{ textTransform: "capitalize" }}
-                      >
-                        {item.full_name}
-                      </Link>
-                    </Stack>
-                  )}
+                    {!isSmallScreen && item.full_name}
+                  </Stack>
                 </TableCell>
 
                 {[...Array(daysInMonth)].map((_, dayIndex) => {
@@ -125,6 +99,20 @@ export const MonthViewAttendance = ({ employeesAttendance, filters }: any) => {
                       key={`attendance-${index}-${dayIndex}`}
                       sx={{ p: 0, cursor: "pointer" }}
                       align="center"
+                      onClick={
+                        () => attendanceValues?.open && {}
+                        // setModal({
+                        //   open: true,
+                        //   classId: item._id,
+                        //   absent:
+                        //     durationToShow?.status ===
+                        //     "Absent",
+                        //   session:
+                        //     transformLogSession(
+                        //       __session
+                        //     ),
+                        // })
+                      }
                     >
                       <Tooltip title={attendanceValues?.tooltip} arrow>
                         <span>{attendanceValues.icon}</span>

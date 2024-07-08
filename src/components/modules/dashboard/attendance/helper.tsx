@@ -67,6 +67,25 @@ export const CellValues = (employeeAttendance: any, date: any) => {
       : "--",
   };
 
+  if (dayAttendance) {
+    const { icon, title } = getStatusDetails(dayAttendance.status);
+
+    return {
+      icon: icon,
+      tooltip: (
+        <div>
+          <h4>{title}</h4>
+          <p>Time In: {attendanceValues.clockIn}</p>
+          <p>Time Out: {attendanceValues.clockOut}</p>
+        </div>
+      ),
+      open: true,
+      status: title,
+      shift: shiftValues,
+      attendance: attendanceValues,
+    };
+  }
+
   if (isOnLeave(date, employeeAttendance.leaves)) {
     return {
       icon: <StatusIndicator status="Leave" />,
@@ -136,23 +155,6 @@ export const CellValues = (employeeAttendance: any, date: any) => {
         </div>
       ),
       status: "Future Date",
-      shift: shiftValues,
-      attendance: attendanceValues,
-    };
-  }
-  if (dayAttendance) {
-    const { icon, title } = getStatusDetails(dayAttendance.status);
-
-    return {
-      icon: icon,
-      tooltip: (
-        <div>
-          <h4>{title}</h4>
-          <p>Time In: {attendanceValues.clockIn}</p>
-          <p>Time Out: {attendanceValues.clockOut}</p>
-        </div>
-      ),
-      status: title,
       shift: shiftValues,
       attendance: attendanceValues,
     };

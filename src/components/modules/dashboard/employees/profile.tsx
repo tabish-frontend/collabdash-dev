@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, Container, Grid, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Container,
+  Grid,
+  Stack,
+  SvgIcon,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { DashboardLayout } from "src/layouts/dashboard";
 import { NextPage } from "next";
 import { Employee } from "src/types";
@@ -12,6 +20,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { ConfirmationModal } from "src/components/shared";
 import { AttendanceChartCard } from "src/components/shared/cards/AttendanceChartCard";
 import { LeavesCard } from "src/components/shared/cards/LeavesCard";
+import ArrowLeftIcon from "@untitled-ui/icons-react/build/esm/ArrowLeft";
 
 const EmployeeProfileComponent = () => {
   const settings = useSettings();
@@ -38,7 +47,6 @@ const EmployeeProfileComponent = () => {
     const response = await employeesApi.updateEmployee(username, UpdatedValues);
 
     setEmployeeData(response);
-
   };
 
   const handleDeleteEmployee = async (username: any) => {
@@ -73,7 +81,20 @@ const EmployeeProfileComponent = () => {
                 justifyContent={"space-between"}
                 alignItems={"center"}
               >
-                <Typography variant="h5">{"Employee Profile"}</Typography>
+                <Box display="flex" alignItems={"center"}>
+                  <Tooltip title="Back">
+                    <Button
+                      onClick={() => router.back()}
+                      color="inherit"
+                      size="small"
+                    >
+                      <SvgIcon>
+                        <ArrowLeftIcon />
+                      </SvgIcon>
+                    </Button>
+                  </Tooltip>
+                  <Typography variant="h5">{"Employee Profile"}</Typography>
+                </Box>
 
                 <Button
                   variant="contained"
@@ -109,7 +130,7 @@ const EmployeeProfileComponent = () => {
               <AttendanceChartCard employeeUsername={employeeData?._id} />
             </Grid>
             <Grid item xs={12} md={8}>
-                <LeavesCard employeeId={employeeData?._id} />
+              <LeavesCard employeeId={employeeData?._id} />
             </Grid>
           </Grid>
         </Stack>

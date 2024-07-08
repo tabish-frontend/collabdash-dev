@@ -176,16 +176,16 @@ const LeavesListComponent = () => {
             <Typography variant="h4">Leaves</Typography>
 
             <Button
-              onClick={() => {
-                setLeaveModal(true);
-                setModalType("create");
-              }}
+              variant="contained"
               startIcon={
                 <SvgIcon>
                   <Plus />
                 </SvgIcon>
               }
-              variant="contained"
+              onClick={() => {
+                setLeaveModal(true);
+                setModalType("create");
+              }}
             >
               {user?.role === ROLES.Admin || user?.role === ROLES.HR
                 ? "Add Leave"
@@ -221,7 +221,7 @@ const LeavesListComponent = () => {
                   <TableHead>
                     <TableRow>
                       {columns.map((column, index) => (
-                        <TableCell key={index} align="center">
+                        <TableCell key={index}>
                           <span style={{ fontWeight: 700 }}>{column}</span>
                         </TableCell>
                       ))}
@@ -232,7 +232,11 @@ const LeavesListComponent = () => {
                       [...Array(5)].map((_, index) => (
                         <TableRow key={`skeleton-${index}`}>
                           {columns.map((col, colIndex) => (
-                            <TableCell key={colIndex} align="center" width={150}>
+                            <TableCell
+                              key={colIndex}
+                              align="center"
+                              width={150}
+                            >
                               <Skeleton
                                 variant="rounded"
                                 width="100%"
@@ -254,7 +258,7 @@ const LeavesListComponent = () => {
                           <TableRow hover role="checkbox" key={index}>
                             {(user?.role === ROLES.Admin ||
                               user?.role === ROLES.HR) && (
-                              <TableCell align="center" width={150}>
+                              <TableCell>
                                 <Stack
                                   alignItems={"center"}
                                   direction={"row"}
@@ -282,51 +286,23 @@ const LeavesListComponent = () => {
                               </TableCell>
                             )}
 
-                            {/* <TableCell align="center">
-                              <Typography >
-                                {leave.leave_type}
-                              </Typography>
+                            <TableCell>
+                              <Typography>{leave.leave_type}</Typography>
                             </TableCell>
-                            <TableCell align="center">
-                              <Typography>
-                                {formatDate(leave.startDate)}
-                              </Typography>
-                            </TableCell>
-                            <TableCell align="center">
-                              <Typography >
-                                {formatDate(leave.endDate)}
-                              </Typography>
-                            </TableCell>
-                            <TableCell align="center">
-                              <HtmlTooltip
-                                arrow
-                                title={<Typography>{leave.reason}</Typography>}
-                              >
-                                <Typography width={180} noWrap>
-                                  {leave.reason}
-                                </Typography>
-                              </HtmlTooltip>
-                            </TableCell>
-                            <TableCell align="center">
-                              {leave.status.toUpperCase()}
-                            </TableCell> */}
 
-                            <TableCell width={100} align="center">
-                              <Typography width={100}>
-                                {leave.leave_type}
-                              </Typography>
-                            </TableCell>
-                            <TableCell width={150} align="center">
+                            <TableCell>
                               <Typography width={150}>
                                 {formatDate(leave.startDate)}
                               </Typography>
                             </TableCell>
-                            <TableCell width={150} align="center">
+
+                            <TableCell>
                               <Typography width={150}>
                                 {formatDate(leave.endDate)}
                               </Typography>
                             </TableCell>
-                            <TableCell width={200} align="center">
+
+                            <TableCell>
                               <HtmlTooltip
                                 arrow
                                 title={<Typography>{leave.reason}</Typography>}
@@ -336,20 +312,20 @@ const LeavesListComponent = () => {
                                 </Typography>
                               </HtmlTooltip>
                             </TableCell>
-                            <TableCell width={100} align="center">
-                              <Typography width={100}>
+
+                            <TableCell>
+                              <Typography>
                                 {leave.status.toUpperCase()}
                               </Typography>
                             </TableCell>
 
                             {(user?.role === ROLES.Admin ||
                               user?.role === ROLES.HR) && (
-                              <TableCell width={150}>
+                              <TableCell>
                                 <Stack
                                   direction={"row"}
                                   justifyContent={"center"}
                                   spacing={1}
-                                  width={150}
                                 >
                                   <Tooltip title="Approved">
                                     <span>
@@ -403,12 +379,9 @@ const LeavesListComponent = () => {
                                 </Stack>
                               </TableCell>
                             )}
+
                             <TableCell>
-                              <Stack
-                                direction={"row"}
-                                justifyContent={"center"}
-                                spacing={1}
-                              >
+                              <Stack direction={"row"} spacing={1}>
                                 <Tooltip title="Edit">
                                   <span>
                                     <SquareEditOutline

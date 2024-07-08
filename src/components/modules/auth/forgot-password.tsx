@@ -44,7 +44,6 @@ const ForgotPasswordComponent = () => {
     validationSchema,
     onSubmit: async (values, helpers): Promise<void> => {
       await authApi.forgotPassword(values);
-      toast.success("reset password link sent to your email!");
       helpers.setStatus({ success: false });
       helpers.setSubmitting(false);
     },
