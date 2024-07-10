@@ -122,6 +122,7 @@ export const HolidayModal: FC<HolidayModalProps> = ({
               <TextField
                 fullWidth
                 label="Title"
+                required
                 value={formik.values.title}
                 name="title"
                 onChange={formik.handleChange}
@@ -134,6 +135,11 @@ export const HolidayModal: FC<HolidayModalProps> = ({
                 views={["year", "month", "day"]}
                 sx={{ width: "100%" }}
                 value={formik.values.date}
+                slotProps={{
+                  textField: {
+                    required: true,
+                  },
+                }}
                 onChange={(date) => {
                   if (date) {
                     date.setHours(23, 0, 0, 0);
@@ -167,6 +173,7 @@ export const HolidayModal: FC<HolidayModalProps> = ({
                 setFieldValue={(value: any) =>
                   formik.setFieldValue("users", value)
                 }
+                isRequired={!formik.values.users.length}
               />
             </Grid>
           </Grid>

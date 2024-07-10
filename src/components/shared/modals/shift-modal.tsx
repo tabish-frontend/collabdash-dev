@@ -132,7 +132,7 @@ export const ShiftModal: FC<ShiftModalProps> = ({
 
           <Divider />
 
-          <Grid container spacing={4} p={2}>
+          <Grid container spacing={2} p={2}>
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Shift Type"
@@ -152,7 +152,7 @@ export const ShiftModal: FC<ShiftModalProps> = ({
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
+              <FormControl fullWidth required>
                 <InputLabel>weekends</InputLabel>
                 <Select
                   multiple
@@ -176,12 +176,17 @@ export const ShiftModal: FC<ShiftModalProps> = ({
                 const fieldName = `times[${index}]`;
 
                 return (
-                  <Grid container spacing={4} p={2} key={index}>
+                  <Grid container spacing={2} p={2} key={index}>
                     <Grid item xs={12} sm={3}>
                       <TimePicker
                         sx={{ width: "100%" }}
                         label="Start Time"
                         value={input.start}
+                        slotProps={{
+                          textField: {
+                            required: true,
+                          },
+                        }}
                         onChange={(time) => {
                           formik.setFieldValue(`${fieldName}.start`, time);
                         }}
@@ -192,13 +197,18 @@ export const ShiftModal: FC<ShiftModalProps> = ({
                         sx={{ width: "100%" }}
                         label="End Time"
                         value={input.end}
+                        slotProps={{
+                          textField: {
+                            required: true,
+                          },
+                        }}
                         onChange={(time) => {
                           formik.setFieldValue(`${fieldName}.end`, time);
                         }}
                       />
                     </Grid>
                     <Grid item xs={12} sm={5}>
-                      <FormControl fullWidth>
+                      <FormControl fullWidth required>
                         <InputLabel>Days</InputLabel>
                         <Select
                           multiple
@@ -259,6 +269,7 @@ export const ShiftModal: FC<ShiftModalProps> = ({
             <Grid item xs={12} sm={6} ml={2}>
               <TextField
                 type="number"
+                required
                 label="Hours Per Day"
                 name="hours"
                 onChange={formik.handleChange}

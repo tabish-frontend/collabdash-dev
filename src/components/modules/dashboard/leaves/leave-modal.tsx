@@ -128,10 +128,15 @@ export const LeaveModal: FC<LeaveModalProps> = ({
 
             <Grid item xs={12} sm={6}>
               <DatePicker
-                label="Leave From Date"
+                label="Leave From"
                 views={["year", "month", "day"]}
                 sx={{ width: "100%" }}
                 value={formik.values.startDate}
+                slotProps={{
+                  textField: {
+                    required: true,
+                  },
+                }}
                 onChange={(date) => {
                   if (date) {
                     date.setHours(23, 0, 0, 0);
@@ -144,11 +149,16 @@ export const LeaveModal: FC<LeaveModalProps> = ({
 
             <Grid item xs={12} sm={6}>
               <DatePicker
-                label="Leave to Date"
+                label="Leave to"
                 sx={{ width: "100%" }}
                 minDate={formik.values.startDate || new Date()}
                 views={["year", "month", "day"]}
                 value={formik.values.endDate}
+                slotProps={{
+                  textField: {
+                    required: true,
+                  },
+                }}
                 onChange={(date) => {
                   if (date) {
                     // Set the time to 11 PM
