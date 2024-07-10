@@ -25,6 +25,7 @@ import { useAuth } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { ROLES } from "src/constants/roles";
 import { DatePicker } from "@mui/x-date-pickers";
+import { LoadingButton } from "@mui/lab";
 
 interface LeaveModalProps {
   modal: boolean;
@@ -223,9 +224,19 @@ export const LeaveModal: FC<LeaveModalProps> = ({
             <Button color="inherit" sx={{ mr: 2 }} onClick={onCancel}>
               Cancel
             </Button>
-            <Button variant="contained" type="submit">
+
+            <LoadingButton
+              loading={formik.isSubmitting}
+              loadingPosition="start"
+              startIcon={<></>}
+              type="submit"
+              variant="contained"
+              sx={{
+                pl: formik.isSubmitting ? "40px" : "16px",
+              }}
+            >
               Save
-            </Button>
+            </LoadingButton>
           </Box>
         </Paper>
       </form>

@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { attendanceApi } from "src/api";
-import { formatDate } from "src/utils/helpers";
+import { formatDate, formatTime } from "src/utils/helpers";
 import { CellValues } from "../helper";
 import dayjs from "dayjs";
 import { NoRecordFound } from "src/components/shared";
@@ -120,10 +120,16 @@ export const MyAttendance = ({ filters }: any) => {
                     </Typography>
                   </TableCell>
                   <TableCell align="center">
-                    <Typography minWidth={150}>{attendance.timeIn}</Typography>
+                    <Typography minWidth={150}>
+                      {attendance.timeIn ? formatTime(attendance.timeIn) : "--"}
+                    </Typography>
                   </TableCell>
                   <TableCell align="center">
-                    <Typography minWidth={150}>{attendance.timeOut}</Typography>
+                    <Typography minWidth={150}>
+                      {attendance.timeOut
+                        ? formatTime(attendance.timeOut)
+                        : "--"}
+                    </Typography>
                   </TableCell>
                   <TableCell align="center">
                     <Typography minWidth={150}>{attendance.status}</Typography>

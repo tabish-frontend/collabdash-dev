@@ -38,6 +38,7 @@ import {
   SelectMultipleDepartments,
   SelectMultipleUsers,
 } from "src/components/shared";
+import { LoadingButton } from "@mui/lab";
 
 interface HolidayModalProps {
   modal: boolean;
@@ -181,9 +182,19 @@ export const HolidayModal: FC<HolidayModalProps> = ({
             <Button color="inherit" sx={{ mr: 2 }} onClick={onCancel}>
               Cancel
             </Button>
-            <Button variant="contained" type="submit">
+
+            <LoadingButton
+              loading={formik.isSubmitting}
+              loadingPosition="start"
+              startIcon={<></>}
+              type="submit"
+              variant="contained"
+              sx={{
+                pl: formik.isSubmitting ? "40px" : "16px",
+              }}
+            >
               Save
-            </Button>
+            </LoadingButton>
           </Box>
         </Paper>
       </form>

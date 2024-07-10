@@ -26,6 +26,7 @@ import { shiftInitialValues } from "src/formik";
 import { weekDays } from "src/constants/days";
 import { TimePicker } from "@mui/x-date-pickers";
 import { Shift } from "src/types";
+import { LoadingButton } from "@mui/lab";
 
 interface ShiftModalProps {
   modal: boolean;
@@ -283,9 +284,19 @@ export const ShiftModal: FC<ShiftModalProps> = ({
             <Button color="inherit" sx={{ mr: 2 }} onClick={onCancel}>
               Cancel
             </Button>
-            <Button variant="contained" type="submit">
+
+            <LoadingButton
+              loading={formik.isSubmitting}
+              loadingPosition="start"
+              startIcon={<></>}
+              type="submit"
+              variant="contained"
+              sx={{
+                pl: formik.isSubmitting ? "40px" : "16px",
+              }}
+            >
               Save
-            </Button>
+            </LoadingButton>
           </Box>
         </Paper>
       </form>

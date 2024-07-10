@@ -17,6 +17,7 @@ import {
   Link,
   SvgIcon,
 } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 
 interface Values {
   password: string;
@@ -103,16 +104,19 @@ const ResetPasswordComponent = () => {
               values={formik.values.password_confirm}
             />
           </Stack>
-          <Button
-            fullWidth
-            size="large"
-            sx={{ mt: 3 }}
+
+          <LoadingButton
+            loading={formik.isSubmitting}
+            loadingPosition="start"
+            startIcon={<></>}
             type="submit"
             variant="contained"
-            disabled={formik.isSubmitting}
+            sx={{
+              pl: formik.isSubmitting ? "40px" : "16px",
+            }}
           >
             Reset
-          </Button>
+          </LoadingButton>
         </form>
       </CardContent>
     </Card>

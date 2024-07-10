@@ -17,6 +17,7 @@ import { useEffect, type FC } from "react";
 import { TimePicker } from "@mui/x-date-pickers";
 import * as Yup from "yup";
 import dayjs, { Dayjs } from "dayjs";
+import { LoadingButton } from "@mui/lab";
 
 interface EditAttendanceModalProps {
   attendanceValues: any;
@@ -151,9 +152,19 @@ export const EditAttendanceModal: FC<EditAttendanceModalProps> = ({
                 <Button color="inherit" sx={{ mr: 2 }} onClick={onCancel}>
                   Cancel
                 </Button>
-                <Button variant="contained" type="submit">
+
+                <LoadingButton
+                  loading={formik.isSubmitting}
+                  loadingPosition="start"
+                  startIcon={<></>}
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    pl: formik.isSubmitting ? "40px" : "16px",
+                  }}
+                >
                   Save
-                </Button>
+                </LoadingButton>
               </Box>
             </Grid>
           </Grid>
