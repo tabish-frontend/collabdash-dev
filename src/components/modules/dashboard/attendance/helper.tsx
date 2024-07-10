@@ -54,18 +54,49 @@ export const CellValues = (employeeAttendance: any, date: any) => {
   );
 
   const attendanceValues = {
-    clockIn: dayAttendance ? formatTime(dayAttendance.timeIn) : "--",
+    clockIn: dayAttendance ? formatTime(dayAttendance.timeIn) : null,
     clockOut: dayAttendance
-      ? dayAttendance.timeOut
+      && dayAttendance.timeOut
         ? formatTime(dayAttendance.timeOut)
-        : "--"
-      : "--",
+        
+      : null,
     duration: dayAttendance
       ? dayAttendance?.duration
         ? formatDuration(dayAttendance?.duration)
         : "--"
       : "--",
   };
+
+  if (dayAttendance) {
+    const { icon, title } = getStatusDetails(dayAttendance.status);
+
+    return {
+      icon: icon,
+      tooltip: (
+        <div>
+          <h4>{title}</h4>
+          <p>Time In: {attendanceValues.clockIn}</p>
+          <p>Time Out: {attendanceValues.clockOut}</p>
+        </div>
+      ),
+      open: true,
+      status: title,
+      shift: shiftValues,
+      attendance: {
+        id: dayAttendance ? dayAttendance._id : "",
+        clockIn: dayAttendance ? dayAttendance.timeIn : null,
+        clockOut: (dayAttendance && dayAttendance.timeOut)
+            ? dayAttendance.timeOut
+            : null,
+     
+        duration: dayAttendance
+          ? dayAttendance?.duration
+            ? formatDuration(dayAttendance?.duration)
+            : "--"
+          : "--",
+      },
+    };
+  }
 
   if (isOnLeave(date, employeeAttendance.leaves)) {
     return {
@@ -136,23 +167,6 @@ export const CellValues = (employeeAttendance: any, date: any) => {
         </div>
       ),
       status: "Future Date",
-      shift: shiftValues,
-      attendance: attendanceValues,
-    };
-  }
-  if (dayAttendance) {
-    const { icon, title } = getStatusDetails(dayAttendance.status);
-
-    return {
-      icon: icon,
-      tooltip: (
-        <div>
-          <h4>{title}</h4>
-          <p>Time In: {attendanceValues.clockIn}</p>
-          <p>Time Out: {attendanceValues.clockOut}</p>
-        </div>
-      ),
-      status: title,
       shift: shiftValues,
       attendance: attendanceValues,
     };

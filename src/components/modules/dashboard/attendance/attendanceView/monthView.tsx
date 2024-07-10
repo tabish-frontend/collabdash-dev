@@ -23,10 +23,37 @@ import {
 import { paths } from "src/constants/paths";
 import { CellValues } from "../helper";
 import dayjs from "dayjs";
+import { useState } from "react";
+import { EditAttendanceModal } from "./edit-attendance";
+import { boolean } from "yup";
 
-export const MonthViewAttendance = ({ employeesAttendance, filters }: any) => {
+interface ModalValuesTypes {
+  open: boolean;
+  attendance: {
+    id: string;
+    clockInTime: null | Date;
+    clockOutTime: null | Date;
+  };
+}
+
+export const MonthViewAttendance = ({
+  employeesAttendance,
+  filters,
+  handleEditAttendance,
+}: any) => {
+  const modalnitialValues = {
+    open: false,
+    attendance: {
+      id: "",
+      clockInTime: null,
+      clockOutTime: null,
+    },
+  };
+
   const daysInMonth = dayjs(filters.date).daysInMonth();
   const theme = useTheme();
+  const [modalValues, setModalValues] =
+    useState<ModalValuesTypes>(modalnitialValues);
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -63,54 +90,28 @@ export const MonthViewAttendance = ({ employeesAttendance, filters }: any) => {
                     backgroundColor: theme.palette.background.paper,
                   }}
                 >
-                  {isSmallScreen ? (
-                    <Stack
-                      direction="row"
-                      justifyContent={"center"}
-                      spacing={1}
-                      width={80}
-                    >
-                      <Tooltip title={item.full_name} arrow>
-                        <Link
-                          color="inherit"
-                          component={RouterLink}
-                          href={`${paths.employees}/${item.username}`}
-                        >
-                          <ImageAvatar
-                            path={item.avatar || ""}
-                            alt="user image"
-                            width={40}
-                            height={40}
-                          />
-                        </Link>
-                      </Tooltip>
-                    </Stack>
-                  ) : (
-                    <Stack
-                      alignItems={"center"}
-                      direction={"row"}
-                      justifyContent={"center"}
-                      spacing={1}
-                      width={150}
-                    >
-                      <ImageAvatar
-                        path={item.avatar || ""}
-                        alt="user image"
-                        width={40}
-                        height={40}
-                      />
+                  <Stack
+                    direction={"row"}
+                    component={RouterLink}
+                    color="inherit"
+                    href={`${paths.employees}/${item.username}`}
+                    gap={1}
+                    width={isSmallScreen ? 80 : 150}
+                    alignItems={"center"}
+                  >
+                    <Tooltip title={item.full_name} arrow>
+                      <span>
+                        <ImageAvatar
+                          path={item.avatar || ""}
+                          alt="user image"
+                          width={30}
+                          height={30}
+                        />
+                      </span>
+                    </Tooltip>
 
-                      <Link
-                        color="inherit"
-                        component={RouterLink}
-                        href={`${paths.employees}/${item.username}`}
-                        variant="subtitle2"
-                        sx={{ textTransform: "capitalize" }}
-                      >
-                        {item.full_name}
-                      </Link>
-                    </Stack>
-                  )}
+                    {!isSmallScreen && item.full_name}
+                  </Stack>
                 </TableCell>
 
                 {[...Array(daysInMonth)].map((_, dayIndex) => {
@@ -120,11 +121,29 @@ export const MonthViewAttendance = ({ employeesAttendance, filters }: any) => {
 
                   const attendanceValues = CellValues(item, date);
 
+                  console.log("Date: ", attendanceValues.attendance.clockOut);
+
                   return (
                     <TableCell
                       key={`attendance-${index}-${dayIndex}`}
                       sx={{ p: 0, cursor: "pointer" }}
                       align="center"
+                      onClick={() =>
+                        attendanceValues?.open &&
+                        setModalValues({
+                          open: true,
+                          attendance: {
+                            id: attendanceValues.attendance.id,
+                            
+                            clockInTime:
+                              new Date(attendanceValues.attendance.clockIn) ||
+                              null,
+                            clockOutTime: attendanceValues.attendance.clockOut
+                              ? new Date(attendanceValues.attendance.clockOut)
+                              : null,
+                          },
+                        })
+                      }
                     >
                       <Tooltip title={attendanceValues?.tooltip} arrow>
                         <span>{attendanceValues.icon}</span>
@@ -137,6 +156,17 @@ export const MonthViewAttendance = ({ employeesAttendance, filters }: any) => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {modalValues.open && (
+        <EditAttendanceModal
+          attendanceValues={modalValues.attendance}
+          modal={modalValues.open}
+          onCancel={() => {
+            setModalValues(modalnitialValues);
+          }}
+          onConfirm={handleEditAttendance}
+        />
+      )}
     </Scrollbar>
   );
 };

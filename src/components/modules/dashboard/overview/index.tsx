@@ -61,9 +61,9 @@ const OverviewComponent = () => {
                 <AttendanceCard />
               </Grid>
 
-              <Grid xs={12}>
+              {/* <Grid xs={12}>
                 <TopPerformers />
-              </Grid>
+              </Grid> */}
             </>
           )}
         </Grid>

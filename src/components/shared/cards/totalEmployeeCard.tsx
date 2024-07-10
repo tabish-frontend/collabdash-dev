@@ -1,4 +1,3 @@
-// ** MUI Imports
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import Typography from "@mui/material/Typography";
@@ -8,36 +7,7 @@ import { statisticsApi } from "src/api";
 import { Chart } from "../charts/style";
 import { Skeleton, Stack } from "@mui/material";
 import { NoRecordFound } from "src/components/shared";
-
-const chart: any = {
-  options: {
-    labels: ["Man", "Women"],
-    colors: ["#00A8AD", "#0089FA"],
-    legend: {
-      position: "bottom",
-      fontSize: "14px",
-      fontWeight: 600,
-      labels: {
-        colors: ["#00A8AD", "#0089FA"], // Customize legend labels color
-      },
-    },
-    states: {
-      hover: {
-        filter: {
-          type: "none",
-        },
-      },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    hover: { mode: null },
-    tooltip: {
-      enabled: true,
-      theme: "dark",
-    },
-  },
-};
+import { ApexOptions } from "apexcharts";
 
 export const TotalEmployees = () => {
   const [chartSeries, setChartSeries] = useState<number[]>([]);
@@ -56,8 +26,38 @@ export const TotalEmployees = () => {
     handleGetTotalEmployees();
   }, []);
 
+  const chartOptions: ApexOptions = {
+    labels: ["Men", "Women"],
+    colors: ["#06AED4", "#9C27B0"],
+    legend: {
+      position: "bottom",
+      fontSize: "14px",
+      fontWeight: 600,
+      labels: {
+        colors: ["#00A8AD", "#0089FA"],
+      },
+      formatter: function (val, opts) {
+        return `${val} - ${chartSeries[opts.seriesIndex]}`;
+      },
+    },
+    states: {
+      hover: {
+        filter: {
+          type: "none",
+        },
+      },
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    tooltip: {
+      enabled: true,
+      theme: "dark",
+    },
+  };
+
   return (
-    <Card style={{minHeight: 490}}>
+    <Card style={{ minHeight: 490 }}>
       <CardHeader
         title="Total Employees"
         sx={{
@@ -84,7 +84,7 @@ export const TotalEmployees = () => {
         ) : (
           <Chart
             height={320}
-            options={chart.options}
+            options={chartOptions}
             series={chartSeries}
             type="donut"
           />

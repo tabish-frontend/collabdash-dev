@@ -6,6 +6,7 @@ import {
   TimerSandEmpty,
 } from "mdi-material-ui";
 import { Box, Typography } from "@mui/material";
+import { amber } from '@mui/material/colors';
 
 type StatusMapping = {
   [key: string]: {
@@ -43,7 +44,7 @@ export const statusMapping: StatusMapping = {
     title: "Full Day Absent",
   },
   half_day_present: {
-    icon: <ClockTimeThreeOutline sx={{ fontSize: 16 }} color="warning" />,
+    icon: <ClockTimeThreeOutline sx={{ fontSize: 16, color: amber[800] }}  />,
     title: "Half Day Present",
   },
   full_day_present: {

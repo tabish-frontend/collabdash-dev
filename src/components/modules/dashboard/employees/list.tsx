@@ -9,13 +9,15 @@ import {
   Tab,
   useMediaQuery,
   useTheme,
+  OutlinedInput,
+  InputAdornment,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { Plus } from "mdi-material-ui";
 import { SyntheticEvent, useEffect, useState } from "react";
+import SearchMdIcon from "@untitled-ui/icons-react/build/esm/SearchMd";
 
-// ** Demo Components Imports
 import { EmployeeCard, NoRecordFound, Scrollbar } from "src/components";
 import { Employee } from "src/types";
 import { NextPage } from "next";
@@ -24,6 +26,13 @@ import { employeesApi } from "src/api";
 import { useRouter } from "next/router";
 import { useSettings } from "src/hooks";
 import { AccountStatus } from "src/constants/status";
+import { useDebouncedCallback } from "use-debounce";
+
+interface FiltersType {
+  fields: string;
+  account_status: string;
+  search: string;
+}
 
 const EmployeeListComponent = () => {
   const router = useRouter();
@@ -33,15 +42,23 @@ const EmployeeListComponent = () => {
   const [employeesList, setEmployeesList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [statusValue, setStatusValue] = useState<string | string[]>("active");
+  const [filters, setFilters] = useState<FiltersType>({
+    fields: "",
+    account_status: "active",
+    search: "",
+  });
 
   const handleStatusChange = (event: SyntheticEvent, newValue: string) => {
-    setStatusValue(newValue);
+    setFilters((prev) => ({ ...prev, account_status: newValue }));
   };
+
+  const debouncedSearch = useDebouncedCallback((search: string) => {
+    setFilters((prev) => ({ ...prev, search }));
+  }, 500);
 
   const handleGetEmployees = async () => {
     setIsLoading(true);
-    const response = await employeesApi.getAllEmployees(statusValue);
+    const response = await employeesApi.getAllEmployees(filters);
     setEmployeesList(response.users);
     setIsLoading(false);
   };
@@ -49,7 +66,7 @@ const EmployeeListComponent = () => {
   useEffect(() => {
     handleGetEmployees();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statusValue]);
+  }, [filters]);
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -88,7 +105,7 @@ const EmployeeListComponent = () => {
           <Tabs
             indicatorColor="primary"
             onChange={handleStatusChange}
-            value={statusValue}
+            value={filters.account_status}
             sx={{
               borderBottom: 1,
               borderColor: "#ddd",
@@ -104,29 +121,45 @@ const EmployeeListComponent = () => {
             ))}
           </Tabs>
 
-          <Box>
-            <Scrollbar sx={{ maxHeight: 650, overflowY: "auto", py: 3 }}>
-              <Grid container spacing={2}>
-                {isLoading ? (
-                  [...Array(9)].map((_, index) => (
-                    <Grid item xs={12} xl={4} lg={6} key={index}>
-                      <EmployeeCard isLoading={isLoading} />
-                    </Grid>
-                  ))
-                ) : employeesList.length === 0 ? (
-                  <Grid item xs={12}>
-                    <NoRecordFound />
-                  </Grid>
-                ) : (
-                  employeesList.map((employee: Employee) => (
-                    <Grid item xs={12} xl={4} lg={6} key={employee._id}>
-                      <EmployeeCard employee={employee} isLoading={isLoading} />
-                    </Grid>
-                  ))
-                )}
-              </Grid>
-            </Scrollbar>
+          <Box component="form" sx={{ flexGrow: 1 }}>
+            <OutlinedInput
+              defaultValue=""
+              fullWidth
+              onChange={(e) => {
+                debouncedSearch(e.target.value.trim());
+              }}
+              placeholder="Search with name, designation and department"
+              startAdornment={
+                <InputAdornment position="start">
+                  <SvgIcon>
+                    <SearchMdIcon />
+                  </SvgIcon>
+                </InputAdornment>
+              }
+            />
           </Box>
+
+          <Scrollbar sx={{ maxHeight: 650, overflowY: "auto", py: 2, px: 2 }}>
+            <Grid container spacing={2}>
+              {isLoading ? (
+                [...Array(9)].map((_, index) => (
+                  <Grid item xs={12} xl={4} lg={6} key={index}>
+                    <EmployeeCard isLoading={isLoading} />
+                  </Grid>
+                ))
+              ) : employeesList.length === 0 ? (
+                <Grid item xs={12}>
+                  <NoRecordFound />
+                </Grid>
+              ) : (
+                employeesList.map((employee: Employee) => (
+                  <Grid item xs={12} xl={4} lg={6} key={employee._id}>
+                    <EmployeeCard employee={employee} isLoading={isLoading} />
+                  </Grid>
+                ))
+              )}
+            </Grid>
+          </Scrollbar>
         </Stack>
       </Container>
     </Box>

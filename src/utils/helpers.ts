@@ -386,14 +386,16 @@ export const isFutureDate = (date: Date, currentDate: Date): boolean =>
 export const isOnLeave = (date: Date, leaves: any[]): boolean =>
   leaves.some(
     (leave) =>
-      new Date(leave.startDate).toDateString() <= date.toDateString() &&
-      date.toDateString() <= new Date(leave.endDate).toDateString() &&
+      new Date(leave.startDate).toDateString() <=
+        new Date(date).toDateString() &&
+      new Date(date).toDateString() <= new Date(leave.endDate).toDateString() &&
       leave.status === LeavesStatus.Approved
   );
 
 export const isOnHoliday = (date: Date, holidays: any[]): boolean =>
   holidays.some(
-    (holiday) => new Date(holiday.date).toDateString() === date.toDateString()
+    (holiday) =>
+      new Date(holiday.date).toDateString() === new Date(date).toDateString()
   );
 
 export const isOnWeekend = (date: Date, shift: any, joinDate: Date): boolean =>

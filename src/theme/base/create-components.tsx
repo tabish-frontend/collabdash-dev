@@ -191,7 +191,7 @@ export const createComponents = (): Components => {
           "&::placeholder": {
             opacity: 1,
             fontSize: 12,
-            letterSpacing: 3,
+            letterSpacing: 1,
           },
         },
       },

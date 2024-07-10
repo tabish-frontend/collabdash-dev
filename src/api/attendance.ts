@@ -72,6 +72,12 @@ class AttendanceApi {
 
     return response;
   }
+
+  async updateAttendance(attendanceId: string, body: any) {
+    const response = await Axios.patch(`/attendance/${attendanceId}`, body);
+
+    return response;
+  }
 }
 
 export const attendanceApi = new AttendanceApi();

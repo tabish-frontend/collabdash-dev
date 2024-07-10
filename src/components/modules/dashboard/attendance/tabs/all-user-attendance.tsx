@@ -39,7 +39,11 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
 
   useEffect(() => {
     handleGetAttendances();
-  }, [handleGetAttendances]);
+  }, []);
+
+  useEffect(() => {
+    console.log("isLoading", isLoading)
+  }, [filters])
 
   const handleFilterEmployees = useCallback(async () => {
     let filteredEmployees = employees;
@@ -57,6 +61,13 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
     handleFilterEmployees();
   }, [handleFilterEmployees]);
 
+  const handleEditAttendance = async (editedValues: any) => {
+
+    const {id, clockInTime, clockOutTime} = editedValues;
+    await attendanceApi.updateAttendance(id, {timeIn : clockInTime, timeOut: clockOutTime})
+    console.log("editedValues: ", editedValues);
+    handleGetAttendances();
+  };
   return (
     <>
       <Stack
@@ -116,11 +127,13 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
         <MonthViewAttendance
           employeesAttendance={employeesAttendance}
           filters={filters}
+          handleEditAttendance={handleEditAttendance}
         />
       ) : (
         <DayViewAttendance
           employeesAttendance={employeesAttendance}
           filters={filters}
+          handleEditAttendance={handleEditAttendance}
         />
       )}
     </>

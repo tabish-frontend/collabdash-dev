@@ -20,4 +20,12 @@ export interface Employee {
   national_identity_number?: number | undefined;
   shift?: Shift;
   Today_Status?: string;
+  bank_details?: {
+    bank_name: string;
+    account_holder_name: string;
+    account_number: number | undefined;
+    iban_number: number | undefined;
+    city: string;
+    branch: string;
+  };
 }

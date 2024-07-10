@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, Container, Grid, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Container,
+  Grid,
+  Stack,
+  SvgIcon,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { DashboardLayout } from "src/layouts/dashboard";
 import { NextPage } from "next";
 import { Employee } from "src/types";
@@ -10,6 +18,7 @@ import { useSettings } from "src/hooks";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 
+import ArrowLeftIcon from "@untitled-ui/icons-react/build/esm/ArrowLeft";
 
 const EmployeeProfileComponent = () => {
   const settings = useSettings();
@@ -70,7 +79,20 @@ const EmployeeProfileComponent = () => {
                 justifyContent={"space-between"}
                 alignItems={"center"}
               >
-                <Typography variant="h5">{"Employee Profile"}</Typography>
+                <Box display="flex" alignItems={"center"}>
+                  <Tooltip title="Back">
+                    <Button
+                      onClick={() => router.back()}
+                      color="inherit"
+                      size="small"
+                    >
+                      <SvgIcon>
+                        <ArrowLeftIcon />
+                      </SvgIcon>
+                    </Button>
+                  </Tooltip>
+                  <Typography variant="h5">{"Employee Profile"}</Typography>
+                </Box>
 
                 <Button
                   variant="contained"

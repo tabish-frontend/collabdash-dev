@@ -35,11 +35,17 @@ export const MyAttendance = ({ filters }: any) => {
     const attendanceData = response.data.data;
 
     let daysInMonth;
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+    const filterMonth = new Date(filters.date).getMonth();
+    const filterYear = new Date(filters.date).getFullYear();
 
     if (filters.view === "day") {
       daysInMonth = 1; // Only one day to process
+    } else if (filterMonth === currentMonth && filterYear === currentYear) {
+      daysInMonth = new Date().getDate(); // Up to today if it's the current month
     } else {
-      daysInMonth = dayjs(filters.date).daysInMonth();
+      daysInMonth = dayjs(filters.date).daysInMonth(); // Full month
     }
 
     const attendanceList = [];
@@ -66,6 +72,10 @@ export const MyAttendance = ({ filters }: any) => {
     setAttendance(attendanceList.reverse());
     setIsLoading(false);
   }, [filters]);
+
+  useEffect(() => {
+    fetchAndProcessData();
+  }, [fetchAndProcessData]);
 
   useEffect(() => {
     fetchAndProcessData();
@@ -104,13 +114,25 @@ export const MyAttendance = ({ filters }: any) => {
             ) : (
               attendance.map((attendance, index) => (
                 <TableRow hover role="checkbox" key={index}>
-                  <TableCell align="center" >
-                    <Typography minWidth={150}>{formatDate(attendance.date)}</Typography>
+                  <TableCell align="center">
+                    <Typography minWidth={150}>
+                      {formatDate(attendance.date)}
+                    </Typography>
                   </TableCell>
-                  <TableCell align="center"><Typography minWidth={150}>{attendance.timeIn}</Typography></TableCell>
-                  <TableCell align="center"><Typography minWidth={150}>{attendance.timeOut}</Typography></TableCell>
-                  <TableCell align="center"><Typography minWidth={150}>{attendance.status}</Typography></TableCell>
-                  <TableCell align="center"><Typography minWidth={150}>{attendance.duration}</Typography></TableCell>
+                  <TableCell align="center">
+                    <Typography minWidth={150}>{attendance.timeIn}</Typography>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Typography minWidth={150}>{attendance.timeOut}</Typography>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Typography minWidth={150}>{attendance.status}</Typography>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Typography minWidth={150}>
+                      {attendance.duration}
+                    </Typography>
+                  </TableCell>
                 </TableRow>
               ))
             )}

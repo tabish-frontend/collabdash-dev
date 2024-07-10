@@ -1,14 +1,37 @@
 // ** MUI Imports
-import Card from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
-import Typography from "@mui/material/Typography";
-import CardContent from "@mui/material/CardContent";
+
 import Grid from "@mui/material/Grid";
 
 // ** Types Imports
 import { Employee } from "src/types";
-import { Box, Stack, SvgIcon } from "@mui/material";
-import { Cake, Cellphone, Email, MapMarker, Pencil } from "mdi-material-ui";
+import {
+  Box,
+  Stack,
+  SvgIcon,
+  Card,
+  CardContent,
+  Typography,
+  Tooltip,
+  IconButton,
+} from "@mui/material";
+import {
+  Account,
+  AccountCircle,
+  ArrowCollapseDown,
+  ArrowCollapseUp,
+  Bank,
+  Cake,
+  CardAccountDetails,
+  Cellphone,
+  CreditCard,
+  Domain,
+  Email,
+  MapMarker,
+  MapMarkerAlert,
+  Pencil,
+  School,
+} from "mdi-material-ui";
 import { formatDob } from "src/utils/helpers";
 import { useState } from "react";
 import { ImageAvatar } from "../image-avatar";
@@ -34,6 +57,8 @@ export const EmployeeDetails = ({
   UpdateEmployee: (values: Employee) => void;
 }) => {
   const [updateModal, setUpdateModal] = useState(false);
+
+  const [extandable, setExtandable] = useState(false);
 
   return (
     <>
@@ -81,43 +106,174 @@ export const EmployeeDetails = ({
               </Typography>
 
               <Grid container spacing={2} mt={2}>
-                <Grid item xs={12} sm={6}>
-                  <Stack direction="row" spacing={2}>
-                    <Cellphone fontSize="small" />
-                    <Typography variant="subtitle2">
-                      {employeeData?.mobile}
-                    </Typography>
-                  </Stack>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Stack direction="row" spacing={2}>
-                    <Email fontSize="small" />
-                    <Typography variant="subtitle2">
-                      {employeeData?.email}
-                    </Typography>
-                  </Stack>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Stack direction="row" spacing={2}>
+                <Grid item sm={12} md={6}>
+                  <Box display={"flex"} flexDirection={"row"} gap={1}>
                     <Cake fontSize="small" />
                     <Typography variant="subtitle2">
                       {employeeData?.dob &&
                         formatDob(new Date(employeeData?.dob))}
                     </Typography>
-                  </Stack>
+                  </Box>
+
+                  <Box display={"flex"} flexDirection={"row"} gap={1} mt={1}>
+                    <Cellphone fontSize="small" />
+                    <Typography variant="subtitle2">
+                      {employeeData?.mobile}
+                    </Typography>
+                  </Box>
+
+                  {extandable && (
+                    <>
+                      <Box
+                        display={"flex"}
+                        flexDirection={"row"}
+                        gap={1}
+                        mt={1}
+                      >
+                        <CardAccountDetails fontSize="small" />
+                        <Typography variant="subtitle2">
+                          {employeeData?.national_identity_number}
+                        </Typography>
+                      </Box>
+
+                      <Box
+                        display={"flex"}
+                        flexDirection={"row"}
+                        gap={1}
+                        mt={1}
+                      >
+                        <Domain fontSize="small" />
+                        <Typography variant="subtitle2">
+                          {employeeData?.company}
+                        </Typography>
+                      </Box>
+                    </>
+                  )}
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Stack direction="row" spacing={2}>
-                    <MapMarker fontSize="small" />
+
+                <Grid item sm={12} md={6}>
+                  <Box display={"flex"} flexDirection={"row"} gap={1}>
+                    <Account fontSize="small" />
                     <Typography
                       variant="subtitle2"
                       textTransform={"capitalize"}
                     >
-                      {employeeData?.country}
+                      {employeeData?.gender}
                     </Typography>
-                  </Stack>
+                  </Box>
+
+                  <Box display={"flex"} flexDirection={"row"} gap={1} mt={1}>
+                    <Email fontSize="small" />
+                    <Typography variant="subtitle2" noWrap>
+                      {employeeData?.email}
+                    </Typography>
+                  </Box>
+
+                  {extandable && (
+                    <>
+                      <Box
+                        display={"flex"}
+                        flexDirection={"row"}
+                        gap={1}
+                        mt={1}
+                      >
+                        <School fontSize="small" />
+                        <Typography variant="subtitle2">
+                          {employeeData?.qualification}
+                        </Typography>
+                      </Box>
+
+                      <Box
+                        display={"flex"}
+                        flexDirection={"row"}
+                        gap={1}
+                        mt={1}
+                      >
+                        <MapMarker fontSize="small" />
+                        <Typography variant="subtitle2">
+                          {employeeData?.country}
+                        </Typography>
+                      </Box>
+                    </>
+                  )}
                 </Grid>
               </Grid>
+
+              {extandable && (
+                <>
+                  <Typography
+                    variant="subtitle1"
+                    mt={2}
+                    fontWeight={600}
+                    color={"Highlight"}
+                  >
+                    Bank Details
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid item sm={12} md={6}>
+                      <Box
+                        display={"flex"}
+                        flexDirection={"row"}
+                        gap={1}
+                        mt={1}
+                      >
+                        <Bank fontSize="small" />
+                        <Typography variant="subtitle2">
+                          {employeeData?.bank_details?.bank_name}
+                        </Typography>
+                      </Box>
+
+                      <Box
+                        display={"flex"}
+                        flexDirection={"row"}
+                        gap={1}
+                        mt={1}
+                      >
+                        <AccountCircle fontSize="small" />
+                        <Typography variant="subtitle2">
+                          {employeeData?.bank_details?.account_holder_name}
+                        </Typography>
+                      </Box>
+                    </Grid>
+
+                    <Grid item sm={12} md={6}>
+                      <Box
+                        display={"flex"}
+                        flexDirection={"row"}
+                        gap={1}
+                        mt={1}
+                      >
+                        <MapMarkerAlert fontSize="small" />
+                        <Typography variant="subtitle2">
+                          {employeeData?.bank_details?.bank_name}
+                        </Typography>
+                      </Box>
+
+                      <Box
+                        display={"flex"}
+                        flexDirection={"row"}
+                        gap={1}
+                        mt={1}
+                      >
+                        <CreditCard fontSize="small" />
+                        <Typography variant="subtitle2">
+                          {employeeData?.bank_details?.account_number}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </>
+              )}
+
+              <Stack direction={"row"} justifyContent={"flex-end"}>
+                <Tooltip title={extandable ? "Collapse" : "Extend"} arrow>
+                  <span>
+                    <IconButton onClick={() => setExtandable(!extandable)}>
+                      {extandable ? <ArrowCollapseUp /> : <ArrowCollapseDown />}
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              </Stack>
             </CardContent>
           </Grid>
         </Grid>
@@ -129,6 +285,7 @@ export const EmployeeDetails = ({
             designation: employeeData?.designation || "",
             account_status: employeeData?.account_status || "",
             username: employeeData?.username || "",
+            email: employeeData?.email || "",
           }}
           modal={updateModal}
           onCancel={() => setUpdateModal(false)}

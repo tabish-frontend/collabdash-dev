@@ -1,12 +1,9 @@
 import Axios from "src/config/axios";
 
 class EmployeesApi {
-  async getAllEmployees(
-    account_status: string | string[] | undefined = "active",
-    fields = ""
-  ) {
+  async getAllEmployees(filters: any) {
     const response = await Axios.get(
-      `/employees?account_status=${account_status}&fields=${fields}`
+      `/employees?fields=${filters.fields}&account_status=${filters.account_status}&search=${filters.search}`
     );
 
     return response.data;
@@ -30,9 +27,9 @@ class EmployeesApi {
     return response.data;
   }
 
-  async deleteEmployee(username: string){
+  async deleteEmployee(username: string) {
     const response = await Axios.delete(`/employees/${username}`);
-    return response.data
+    return response.data;
   }
 }
 

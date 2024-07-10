@@ -9,6 +9,10 @@ import TableContainer from "@mui/material/TableContainer";
 import { CellValues } from "../helper";
 import { Skeleton, Stack } from "@mui/material";
 import { NoRecordFound } from "src/components/shared";
+import { useState } from "react";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import { EditAttendanceModal } from "./edit-attendance";
+import { formatTime } from "src/utils";
 
 const columns = [
   "Full Name",
@@ -22,7 +26,34 @@ const columns = [
   "Status",
 ];
 
-export const DayViewAttendance = ({ employeesAttendance, filters }: any) => {
+interface ModalValuesTypes {
+  open: boolean;
+  attendance: {
+    id: string;
+    clockInTime: null | Date;
+    clockOutTime: null | Date;
+  };
+}
+
+export const DayViewAttendance = ({
+  employeesAttendance,
+  filters,
+  handleEditAttendance,
+}: any) => {
+  const modalnitialValues = {
+    open: false,
+    attendance: {
+      id: "",
+      clockInTime: null,
+      clockOutTime: null,
+    },
+  };
+
+  const [modalValues, setModalValues] =
+    useState<ModalValuesTypes>(modalnitialValues);
+
+    console.log("employeesAttendance" ,employeesAttendance)
+
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
       <TableContainer sx={{ maxHeight: 440 }}>
@@ -40,6 +71,8 @@ export const DayViewAttendance = ({ employeesAttendance, filters }: any) => {
             {employeesAttendance.map((attendance: any, index: number) => {
               const attendanceValues = CellValues(attendance, filters.date);
 
+              console.log("attendanceVAlue", attendanceValues)
+
               return (
                 <TableRow hover key={index}>
                   <TableCell align="center">{attendance.full_name}</TableCell>
@@ -56,16 +89,47 @@ export const DayViewAttendance = ({ employeesAttendance, filters }: any) => {
                     {attendanceValues.shift.hours}
                   </TableCell>
                   <TableCell align="center">
-                    {attendanceValues.attendance.clockIn}
+                    {/* {attendanceValues.attendance.clockIn  } */}
+                    {attendanceValues.attendance.clockIn ? formatTime(attendanceValues.attendance.clockIn) : "--"}
                   </TableCell>
                   <TableCell align="center">
-                    {attendanceValues.attendance.clockOut}
+                    {attendanceValues.attendance.clockOut ? formatTime(attendanceValues.attendance.clockOut) : "--"}
                   </TableCell>
                   <TableCell align="center">
                     {attendanceValues.attendance.duration}
                   </TableCell>
                   <TableCell align="center">
-                    {attendanceValues.status}
+                    {attendanceValues.open ? (
+                      <Stack
+                        direction={"row"}
+                        justifyContent={"center"}
+                        gap={1}
+                      >
+                        {attendanceValues.status}
+                        
+                          <EditOutlinedIcon sx={{cursor: 'pointer'}} onClick={() =>
+                            setModalValues({
+                              open: true,
+                              attendance: {
+                                id: attendanceValues.attendance.id,
+                                clockInTime:
+                                  new Date(
+                                    attendanceValues.attendance.clockIn
+                                  ) || null,
+                                clockOutTime: attendanceValues.attendance
+                                  .clockOut
+                                  ? new Date(
+                                      attendanceValues.attendance.clockOut
+                                    )
+                                  : null,
+                              },
+                            })
+                          }/>
+                      
+                      </Stack>
+                    ) : (
+                      attendanceValues.status
+                    )}
                   </TableCell>
                 </TableRow>
               );
@@ -73,6 +137,17 @@ export const DayViewAttendance = ({ employeesAttendance, filters }: any) => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {modalValues.open && (
+        <EditAttendanceModal
+          attendanceValues={modalValues.attendance}
+          modal={modalValues.open}
+          onCancel={() => {
+            setModalValues(modalnitialValues);
+          }}
+          onConfirm={handleEditAttendance}
+        />
+      )}
     </Paper>
   );
 };
