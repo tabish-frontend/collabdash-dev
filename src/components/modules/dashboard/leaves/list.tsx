@@ -322,11 +322,7 @@ const LeavesListComponent = () => {
                             {(user?.role === ROLES.Admin ||
                               user?.role === ROLES.HR) && (
                               <TableCell>
-                                <Stack
-                                  direction={"row"}
-                                  justifyContent={"center"}
-                                  spacing={1}
-                                >
+                                <Stack direction={"row"}>
                                   <Tooltip title="Approved">
                                     <span>
                                       <IconButton

@@ -50,6 +50,12 @@ class AttendanceApi {
     return response;
   }
 
+  async updateAttendance(attendanceId: string, body: any) {
+    const response = await Axios.patch(`/attendance/${attendanceId}`, body);
+
+    return response;
+  }
+
   async getMyAttendance(filters: any) {
     const date = new Date(filters.date);
     const month = date.getMonth() + 1; // getMonth() returns 0-11, add 1 for 1-12
@@ -69,12 +75,6 @@ class AttendanceApi {
     const response = await Axios.get(
       `/users/getMyallAttendance?view=${query.view}&month=${query.month}&year=${query.year}&date=${query.date}`
     );
-
-    return response;
-  }
-
-  async updateAttendance(attendanceId: string, body: any) {
-    const response = await Axios.patch(`/attendance/${attendanceId}`, body);
 
     return response;
   }

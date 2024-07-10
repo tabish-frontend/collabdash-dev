@@ -52,8 +52,6 @@ export const DayViewAttendance = ({
   const [modalValues, setModalValues] =
     useState<ModalValuesTypes>(modalnitialValues);
 
-    console.log("employeesAttendance" ,employeesAttendance)
-
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
       <TableContainer sx={{ maxHeight: 440 }}>
@@ -71,8 +69,6 @@ export const DayViewAttendance = ({
             {employeesAttendance.map((attendance: any, index: number) => {
               const attendanceValues = CellValues(attendance, filters.date);
 
-              console.log("attendanceVAlue", attendanceValues)
-
               return (
                 <TableRow hover key={index}>
                   <TableCell align="center">{attendance.full_name}</TableCell>
@@ -89,11 +85,14 @@ export const DayViewAttendance = ({
                     {attendanceValues.shift.hours}
                   </TableCell>
                   <TableCell align="center">
-                    {/* {attendanceValues.attendance.clockIn  } */}
-                    {attendanceValues.attendance.clockIn ? formatTime(attendanceValues.attendance.clockIn) : "--"}
+                    {attendanceValues.attendance.clockIn
+                      ? formatTime(attendanceValues.attendance.clockIn)
+                      : "--"}
                   </TableCell>
                   <TableCell align="center">
-                    {attendanceValues.attendance.clockOut ? formatTime(attendanceValues.attendance.clockOut) : "--"}
+                    {attendanceValues.attendance.clockOut
+                      ? formatTime(attendanceValues.attendance.clockOut)
+                      : "--"}
                   </TableCell>
                   <TableCell align="center">
                     {attendanceValues.attendance.duration}
@@ -106,8 +105,10 @@ export const DayViewAttendance = ({
                         gap={1}
                       >
                         {attendanceValues.status}
-                        
-                          <EditOutlinedIcon sx={{cursor: 'pointer'}} onClick={() =>
+
+                        <EditOutlinedIcon
+                          sx={{ cursor: "pointer" }}
+                          onClick={() =>
                             setModalValues({
                               open: true,
                               attendance: {
@@ -124,8 +125,8 @@ export const DayViewAttendance = ({
                                   : null,
                               },
                             })
-                          }/>
-                      
+                          }
+                        />
                       </Stack>
                     ) : (
                       attendanceValues.status

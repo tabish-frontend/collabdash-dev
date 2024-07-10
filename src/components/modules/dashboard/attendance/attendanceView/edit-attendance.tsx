@@ -9,13 +9,14 @@ import {
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import { useFormik } from "formik";
+import { FormikValues, useFormik } from "formik";
 import { CloseCircleOutline } from "mdi-material-ui";
 import ClearIcon from "@mui/icons-material/Clear";
 import { useEffect, type FC } from "react";
 
 import { TimePicker } from "@mui/x-date-pickers";
 import * as Yup from "yup";
+import dayjs, { Dayjs } from "dayjs";
 
 interface EditAttendanceModalProps {
   attendanceValues: any;
@@ -25,12 +26,12 @@ interface EditAttendanceModalProps {
 }
 
 const validationSchema = Yup.object({
-  clockInTime: Yup.date().required("Start Time is required"),
+  clockInTime: Yup.date().required("clockIn Time is required"),
   clockOutTime: Yup.date()
     .nullable()
     .test(
       "is-greater",
-      "End Time must be later than Start Time",
+      "clockOut time must be greater than clockIn Time",
       function (value) {
         const { clockInTime } = this.parent;
         return !value || (clockInTime && value > clockInTime);
@@ -54,19 +55,24 @@ export const EditAttendanceModal: FC<EditAttendanceModalProps> = ({
     },
   });
 
-  useEffect(() => {
-    console.log("formik values", formik.values);
-  }, [formik.values]);
+  const handleTimeChange = (field: string) => (time: Date | null) => {
+    if (time) {
+      const originalDate =
+        field === "clockOutTime" && formik.values.clockOutTime
+          ? dayjs(formik.values.clockOutTime)
+          : dayjs(formik.values.clockInTime);
 
-  // console.log("attendanceValues", attendanceValues);
+      const dayjsTime = dayjs(time);
 
-  const combineDateAndTime = (originalDate: Date, newTime: Date): Date => {
-    const updatedDate = new Date(originalDate);
-    updatedDate.setHours(newTime.getHours());
-    updatedDate.setMinutes(newTime.getMinutes());
-    updatedDate.setSeconds(newTime.getSeconds());
-    updatedDate.setMilliseconds(newTime.getMilliseconds());
-    return updatedDate;
+      const combinedDateTime = originalDate
+        .hour(dayjsTime.hour())
+        .minute(dayjsTime.minute())
+        .second(dayjsTime.second())
+        .millisecond(dayjsTime.millisecond())
+        .toDate();
+
+      formik.setFieldValue(field, combinedDateTime);
+    }
   };
 
   return (
@@ -97,54 +103,33 @@ export const EditAttendanceModal: FC<EditAttendanceModalProps> = ({
                 sx={{ width: "100%" }}
                 label="Start Time"
                 value={formik.values.clockInTime}
-                onChange={(time: Date | null) => {
-                  if (time) {
-                    const originalDate = new Date(formik.values.clockInTime);
-                    const combinedDateTime = combineDateAndTime(
-                      originalDate,
-                      time
-                    );
-                    formik.setFieldValue("clockInTime", combinedDateTime);
-                  }
-                }}
+                onChange={handleTimeChange("clockInTime")}
               />
+
               {!!(formik.touched.clockInTime && formik.errors.clockInTime) && (
                 <FormHelperText error>
                   {formik.errors.clockInTime as string}
                 </FormHelperText>
               )}
             </Grid>
-            <Grid item xs={12}>
-              <Grid item xs={12} sx={{ position: "relative" }}>
-                <TimePicker
-                  sx={{ width: "100%" }}
-                  label="End Time"
-                  value={formik.values.clockOutTime}
-                  onChange={(time: Date | null) => {
-                    if (time) {
-                      const originalDate = formik.values.clockOutTime
-                        ? new Date(formik.values.clockOutTime)
-                        : new Date(formik.values.clockInTime);
-                      const combinedDateTime = combineDateAndTime(
-                        originalDate,
-                        time
-                      );
-                      formik.setFieldValue("clockOutTime", combinedDateTime);
-                    }
-                  }}
-                />
-                {formik.values.clockOutTime && (
-                  <IconButton
-                    sx={{ position: "absolute", right: "40px", top: "21%" }}
-                    edge="end"
-                    size="small"
-                    onClick={() => formik.setFieldValue("clockOutTime", null)}
-                  >
-                    <CloseCircleOutline />
-                  </IconButton>
-                )}
-                {/* <ClearIcon /> */}
-              </Grid>
+
+            <Grid item xs={12} sx={{ position: "relative" }}>
+              <TimePicker
+                sx={{ width: "100%" }}
+                label="End Time"
+                value={formik.values.clockOutTime}
+                onChange={handleTimeChange("clockOutTime")}
+              />
+
+              {formik.values.clockOutTime && (
+                <IconButton
+                  color="error"
+                  sx={{ position: "absolute", right: 45, top: 23 }}
+                  onClick={() => formik.setFieldValue("clockOutTime", null)}
+                >
+                  <CloseCircleOutline />
+                </IconButton>
+              )}
 
               {!!(
                 formik.touched.clockOutTime && formik.errors.clockOutTime
@@ -154,6 +139,7 @@ export const EditAttendanceModal: FC<EditAttendanceModalProps> = ({
                 </FormHelperText>
               )}
             </Grid>
+
             <Grid item xs={12}>
               <Box
                 sx={{
