@@ -20,7 +20,7 @@ export const FullNameField: React.FC<FullNameFieldProps> = ({
     <TextField
       fullWidth
       required
-      label="Name"
+      label="Full Name"
       name="full_name"
       value={value}
       onChange={handleChange}

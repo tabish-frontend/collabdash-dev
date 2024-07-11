@@ -16,6 +16,7 @@ import {
   RadioGroup,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts/dashboard";
@@ -88,22 +89,22 @@ const CreateEmployeeComponent = () => {
                       </Grid> */}
 
                       <Grid item xs={12} sm={4}>
-                        <UsernameField
-                          value={formik.values.username}
-                          handleChange={formik.handleChange}
-                          handleBlur={formik.handleBlur}
-                          formikError={formik.errors.username}
-                          formikTouched={formik.touched.username}
-                        />
-                      </Grid>
-
-                      <Grid item xs={12} sm={4}>
                         <FullNameField
                           value={formik.values.full_name}
                           handleChange={formik.handleChange}
                           handleBlur={formik.handleBlur}
                           formikError={formik.errors.full_name}
                           formikTouched={formik.touched.full_name}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} sm={4}>
+                        <UsernameField
+                          value={formik.values.username}
+                          handleChange={formik.handleChange}
+                          handleBlur={formik.handleBlur}
+                          formikError={formik.errors.username}
+                          formikTouched={formik.touched.username}
                         />
                       </Grid>
 
@@ -180,6 +181,12 @@ const CreateEmployeeComponent = () => {
                           formikTouched={formik.touched.designation}
                         />
                       </Grid>
+
+                      {/* <Grid item xs={12}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          2. Shift Details
+                        </Typography>
+                      </Grid> */}
                     </Grid>
                   </CardContent>
                   <Divider sx={{ margin: 0 }} />

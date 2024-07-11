@@ -29,12 +29,18 @@ export const EmployeesAvailability = () => {
   }, []);
 
   return (
-    <Card style={{minHeight: 490}}>
+    <Card style={{ minHeight: 490 }}>
       <CardHeader title="Employees Availability" />
       <CardContent>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
-            <Stack spacing={2} border={"1px solid #ddd"} p={1} borderRadius={1} minHeight={160}>
+            <Stack
+              spacing={2}
+              border={"1px solid #ddd"}
+              p={1}
+              borderRadius={1}
+              minHeight={160}
+            >
               <CheckboxMarkedOutline
                 fontSize="large"
                 sx={{ fontWeight: 900 }}
@@ -43,40 +49,58 @@ export const EmployeesAvailability = () => {
                 Present
               </Typography>
               <Typography variant="subtitle1">
-                {employeesAvailbiity.present}
+                {employeesAvailbiity.present.length}
               </Typography>
             </Stack>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Stack spacing={2} border={"1px solid #ddd"} p={1} borderRadius={1} minHeight={160}>
+            <Stack
+              spacing={2}
+              border={"1px solid #ddd"}
+              p={1}
+              borderRadius={1}
+              minHeight={160}
+            >
               <ClockTimeTwoOutline fontSize="large" sx={{ fontWeight: 900 }} />
               <Typography variant="subtitle1" fontWeight={600}>
                 Late Coming
               </Typography>
               <Typography variant="subtitle1">
-                {employeesAvailbiity.on_late}
+                {employeesAvailbiity.on_late.length}
               </Typography>
             </Stack>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Stack spacing={2} border={"1px solid #ddd"} p={1} borderRadius={1} minHeight={160}>
+            <Stack
+              spacing={2}
+              border={"1px solid #ddd"}
+              p={1}
+              borderRadius={1}
+              minHeight={160}
+            >
               <Cancel fontSize="large" sx={{ fontWeight: 900 }} />
               <Typography variant="subtitle1" fontWeight={600}>
                 Absent
               </Typography>
               <Typography variant="subtitle1">
-                {employeesAvailbiity.absent}
+                {employeesAvailbiity.absent.length}
               </Typography>
             </Stack>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Stack spacing={2} border={"1px solid #ddd"} p={1} borderRadius={1} minHeight={160}>
+            <Stack
+              spacing={2}
+              border={"1px solid #ddd"}
+              p={1}
+              borderRadius={1}
+              minHeight={160}
+            >
               <UmbrellaBeachOutline fontSize="large" sx={{ fontWeight: 900 }} />
               <Typography variant="subtitle1" fontWeight={600}>
                 Leave Apply
               </Typography>
               <Typography variant="subtitle1">
-                {employeesAvailbiity.leave}
+                {employeesAvailbiity.leave.length}
               </Typography>
             </Stack>
           </Grid>
