@@ -12,6 +12,7 @@ import { ImageAvatar } from "./image-avatar";
 import { RouterLink } from "./router-link";
 import { paths } from "src/constants/paths";
 import { useState } from "react";
+import { UsersListPopover } from "./lists";
 
 export const UserAvatarGroup = ({ users }: { users: Employee[] }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -48,30 +49,6 @@ export const UserAvatarGroup = ({ users }: { users: Employee[] }) => {
     </Avatar>
   );
 
-  const popoverContent = (
-    <Box p={1}>
-      {users.slice(2).map((user) => (
-        <Stack
-          key={user._id}
-          direction="row"
-          alignItems="center"
-          gap={2}
-          p={0.5}
-        >
-          <Avatar src={user.avatar || ""} alt={user.full_name} />
-          <Link
-            color="inherit"
-            component={RouterLink}
-            href={`${paths.employees}/${user.username}`}
-            variant="subtitle1"
-          >
-            {user.full_name}
-          </Link>
-        </Stack>
-      ))}
-    </Box>
-  );
-
   return (
     <>
       <AvatarGroup style={{ justifyContent: "center" }}>
@@ -86,7 +63,7 @@ export const UserAvatarGroup = ({ users }: { users: Employee[] }) => {
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         transformOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        {popoverContent}
+        <UsersListPopover users={users.slice(2)} />
       </Popover>
     </>
   );

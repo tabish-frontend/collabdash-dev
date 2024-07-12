@@ -1,5 +1,12 @@
 // ** MUI Imports
-import { CardContent, Grid, Stack, Typography } from "@mui/material";
+import {
+  CardContent,
+  Grid,
+  Icon,
+  Stack,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import {
@@ -10,76 +17,93 @@ import {
 } from "mdi-material-ui";
 import { useEffect, useState } from "react";
 import { statisticsApi } from "src/api";
+import { UsersListPopover } from "../lists";
 
 export const EmployeesAvailability = () => {
-  const [employeesAvailbiity, setEmployeesAvailbiity] = useState<any>({
-    present: 0,
-    absent: 0,
-    leave: 0,
-    on_late: 0,
-  });
+  const [employeesAvailability, setEmployeesAvailability] = useState<any>([
+    {
+      key: "present",
+      title: "Present",
+      icon: CheckboxMarkedOutline,
+      values: [],
+    },
+    {
+      key: "on_late",
+      title: "Late Coming",
+      icon: ClockTimeTwoOutline,
+      values: [],
+    },
+    {
+      key: "absent",
+      title: "Absent",
+      icon: Cancel,
+      values: [],
+    },
+    {
+      key: "leave",
+      title: "Leave Apply",
+      icon: UmbrellaBeachOutline,
+      values: [],
+    },
+  ]);
 
-  const handleGetTodayAvailibility = async () => {
+  const handleGetTodayAvailability = async () => {
     const response = await statisticsApi.getAllUserAvailability();
-    setEmployeesAvailbiity(response.data);
+    const updatedAvailability = employeesAvailability.map(
+      (availability: any) => ({
+        ...availability,
+        values: response.data[availability.key] || [],
+      })
+    );
+    setEmployeesAvailability(updatedAvailability);
   };
 
   useEffect(() => {
-    handleGetTodayAvailibility();
+    handleGetTodayAvailability();
   }, []);
 
   return (
-    <Card style={{minHeight: 490}}>
+    <Card style={{ minHeight: 490 }}>
       <CardHeader title="Employees Availability" />
       <CardContent>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <Stack spacing={2} border={"1px solid #ddd"} p={1} borderRadius={1} minHeight={160}>
-              <CheckboxMarkedOutline
-                fontSize="large"
-                sx={{ fontWeight: 900 }}
-              />
-              <Typography variant="subtitle1" fontWeight={600}>
-                Present
-              </Typography>
-              <Typography variant="subtitle1">
-                {employeesAvailbiity.present}
-              </Typography>
-            </Stack>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Stack spacing={2} border={"1px solid #ddd"} p={1} borderRadius={1} minHeight={160}>
-              <ClockTimeTwoOutline fontSize="large" sx={{ fontWeight: 900 }} />
-              <Typography variant="subtitle1" fontWeight={600}>
-                Late Coming
-              </Typography>
-              <Typography variant="subtitle1">
-                {employeesAvailbiity.on_late}
-              </Typography>
-            </Stack>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Stack spacing={2} border={"1px solid #ddd"} p={1} borderRadius={1} minHeight={160}>
-              <Cancel fontSize="large" sx={{ fontWeight: 900 }} />
-              <Typography variant="subtitle1" fontWeight={600}>
-                Absent
-              </Typography>
-              <Typography variant="subtitle1">
-                {employeesAvailbiity.absent}
-              </Typography>
-            </Stack>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Stack spacing={2} border={"1px solid #ddd"} p={1} borderRadius={1} minHeight={160}>
-              <UmbrellaBeachOutline fontSize="large" sx={{ fontWeight: 900 }} />
-              <Typography variant="subtitle1" fontWeight={600}>
-                Leave Apply
-              </Typography>
-              <Typography variant="subtitle1">
-                {employeesAvailbiity.leave}
-              </Typography>
-            </Stack>
-          </Grid>
+          {employeesAvailability.map((availability: any, index: number) => {
+            const employees = availability.values;
+            const Icon = availability.icon;
+            return (
+              <Grid item xs={12} sm={6}>
+                <Tooltip
+                  arrow
+                  placement={
+                    index === 0 || index === 2 ? "left-start" : "right-start"
+                  }
+                  title={
+                    employees.length ? (
+                      <UsersListPopover users={employees} />
+                    ) : (
+                      ""
+                    )
+                  }
+                >
+                  <Stack
+                    spacing={2}
+                    border={"1px solid #ddd"}
+                    p={1}
+                    borderRadius={1}
+                    minHeight={160}
+                  >
+                    <Icon fontSize="large" sx={{ fontWeight: 900 }} />
+                    <Typography variant="subtitle1" fontWeight={600}>
+                      {availability.title}
+                    </Typography>
+                    <Typography variant="subtitle1">
+                      {employees.length}
+                    </Typography>
+                  </Stack>
+                </Tooltip>
+              </Grid>
+            );
+          })}
         </Grid>
       </CardContent>
     </Card>
