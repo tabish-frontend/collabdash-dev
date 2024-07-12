@@ -43,17 +43,19 @@ const OverviewComponent = () => {
             <PerformanceCard />
           </Grid>
 
-          <Grid xs={12} md={4} lg={4}>
-            <TimeLogCard />
-          </Grid>
+          {user?.role !== "admin" && (
+            <Grid xs={12} md={4} lg={4}>
+              <TimeLogCard />
+            </Grid>
+          )}
 
           {(user?.role === "admin" || user?.role === "hr") && (
             <>
-              <Grid xs={12} md={4} lg={4}>
+              <Grid xs={12} md={4} lg={user?.role === "admin" ? 6 : 4}>
                 <EmployeesAvailability />
               </Grid>
 
-              <Grid xs={12} md={4} lg={4}>
+              <Grid xs={12} md={4} lg={user?.role === "admin" ? 6 : 4}>
                 <TotalEmployees />
               </Grid>
 
