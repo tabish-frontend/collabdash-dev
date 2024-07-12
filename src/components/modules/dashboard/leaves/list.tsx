@@ -71,15 +71,16 @@ const HR_Screen = [
 
 const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
-))(({ theme }) => ({
-  [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: "#f5f5f9",
-    color: "rgba(0, 0, 0, 0.87)",
-    maxWidth: 220,
-    fontSize: theme.typography.pxToRem(12),
-    border: "1px solid #dadde9",
-  },
-}));
+))(({ theme }) => {
+  const darkMode = theme.palette.mode === "dark";
+  return {
+    [`& .${tooltipClasses.tooltip}`]: {
+      backgroundColor: darkMode ? "#ffffff" : "",
+      color: darkMode ? "rgba(0, 0, 0, 0.87)" : "",
+      padding: 11,
+    },
+  };
+});
 
 const LeavesListComponent = () => {
   const settings = useSettings();
