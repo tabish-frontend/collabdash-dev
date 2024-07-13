@@ -171,7 +171,7 @@ export const createComponents = ({ palette }: Config): Components => {
       styleOverrides: {
         tooltip: {
           backdropFilter: "blur(6px)",
-          background: alpha(palette.neutral![900], 0.8),
+          background: alpha(palette.neutral![400], 0.8),
         },
       },
     },

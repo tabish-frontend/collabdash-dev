@@ -47,8 +47,7 @@ import {
 import { paths } from "src/constants/paths";
 import { LeavesStatus } from "src/constants/status";
 import { DatePicker } from "@mui/x-date-pickers";
-import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
-import { styled } from "@mui/material/styles";
+import Tooltip from "@mui/material/Tooltip";
 
 const employee_Screen = [
   "Leave Type",
@@ -68,19 +67,6 @@ const HR_Screen = [
   "Manage Leave",
   "Action",
 ];
-
-const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
-  <Tooltip {...props} classes={{ popper: className }} />
-))(({ theme }) => {
-  const darkMode = theme.palette.mode === "dark";
-  return {
-    [`& .${tooltipClasses.tooltip}`]: {
-      backgroundColor: darkMode ? "#ffffff" : "",
-      color: darkMode ? "rgba(0, 0, 0, 0.87)" : "",
-      padding: 11,
-    },
-  };
-});
 
 const LeavesListComponent = () => {
   const settings = useSettings();
@@ -304,14 +290,14 @@ const LeavesListComponent = () => {
                             </TableCell>
 
                             <TableCell>
-                              <HtmlTooltip
+                              <Tooltip
                                 arrow
                                 title={<Typography>{leave.reason}</Typography>}
                               >
                                 <Typography width={200} noWrap>
                                   {leave.reason}
                                 </Typography>
-                              </HtmlTooltip>
+                              </Tooltip>
                             </TableCell>
 
                             <TableCell>
