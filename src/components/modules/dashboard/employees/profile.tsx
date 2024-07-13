@@ -13,7 +13,14 @@ import { NextPage } from "next";
 import { Employee } from "src/types";
 import { useRouter } from "next/router";
 import { employeesApi } from "src/api";
-import { EmployeeDetails, ShiftDetails, AttendanceChartCard, TaskCard, LeavesCard, ConfirmationModal } from "src/components/shared";
+import {
+  EmployeeDetails,
+  ShiftDetails,
+  AttendanceChartCard,
+  TaskCard,
+  LeavesCard,
+  ConfirmationModal,
+} from "src/components/shared";
 import { useSettings } from "src/hooks";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -107,14 +114,14 @@ const EmployeeProfileComponent = () => {
             </Grid>
 
             <Grid item xs={12} md={7}>
-              <Grid item xs={12} sx={{mb: 3}}>
+              <Grid item xs={12} sx={{ mb: 3 }}>
                 <EmployeeDetails
                   employeeData={employeeData}
                   UpdateEmployee={handleUpdateEmployee}
                 />
               </Grid>
 
-              <Grid item xs={12} >
+              <Grid item xs={12}>
                 <ShiftDetails
                   employeeID={employeeData?._id}
                   shiftDetails={employeeData?.shift}

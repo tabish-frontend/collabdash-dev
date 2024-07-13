@@ -1,3 +1,5 @@
+import { Shift } from "./shift";
+
 export interface UserAccountDetails {
   username: string;
   full_name: string;
@@ -50,4 +52,5 @@ export interface User {
   department: string;
   designation?: string;
   qualification_certificates?: string[];
+  shift: Shift;
 }

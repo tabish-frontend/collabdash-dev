@@ -54,17 +54,14 @@ export const CellValues = (employeeAttendance: any, date: any) => {
   );
 
   const attendanceValues = {
-    clockIn: dayAttendance ? formatTime(dayAttendance.timeIn) : null,
-    clockOut: dayAttendance
-      && dayAttendance.timeOut
-        ? formatTime(dayAttendance.timeOut)
-        
-      : null,
-    duration: dayAttendance
-      ? dayAttendance?.duration
+    id: dayAttendance ? dayAttendance._id : "",
+    clockIn: dayAttendance ? dayAttendance.timeIn : null,
+    clockOut:
+      dayAttendance && dayAttendance.timeOut ? dayAttendance.timeOut : null,
+    duration:
+      dayAttendance && dayAttendance?.duration
         ? formatDuration(dayAttendance?.duration)
-        : "--"
-      : "--",
+        : "--",
   };
 
   if (dayAttendance) {
@@ -75,26 +72,26 @@ export const CellValues = (employeeAttendance: any, date: any) => {
       tooltip: (
         <div>
           <h4>{title}</h4>
-          <p>Time In: {attendanceValues.clockIn}</p>
-          <p>Time Out: {attendanceValues.clockOut}</p>
+          <p>
+            {`Time In: ${
+              attendanceValues.clockIn
+                ? formatTime(attendanceValues.clockIn)
+                : "--"
+            }`}
+          </p>
+          <p>
+            {`Time Out: ${
+              attendanceValues.clockOut
+                ? formatTime(attendanceValues.clockOut)
+                : "--"
+            }`}
+          </p>
         </div>
       ),
       open: true,
       status: title,
       shift: shiftValues,
-      attendance: {
-        id: dayAttendance ? dayAttendance._id : "",
-        clockIn: dayAttendance ? dayAttendance.timeIn : null,
-        clockOut: (dayAttendance && dayAttendance.timeOut)
-            ? dayAttendance.timeOut
-            : null,
-     
-        duration: dayAttendance
-          ? dayAttendance?.duration
-            ? formatDuration(dayAttendance?.duration)
-            : "--"
-          : "--",
-      },
+      attendance: attendanceValues,
     };
   }
 

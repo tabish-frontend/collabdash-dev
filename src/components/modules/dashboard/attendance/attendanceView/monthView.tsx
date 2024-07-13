@@ -121,8 +121,6 @@ export const MonthViewAttendance = ({
 
                   const attendanceValues = CellValues(item, date);
 
-                  console.log("Date: ", attendanceValues.attendance.clockOut);
-
                   return (
                     <TableCell
                       key={`attendance-${index}-${dayIndex}`}
@@ -134,7 +132,6 @@ export const MonthViewAttendance = ({
                           open: true,
                           attendance: {
                             id: attendanceValues.attendance.id,
-                            
                             clockInTime:
                               new Date(attendanceValues.attendance.clockIn) ||
                               null,

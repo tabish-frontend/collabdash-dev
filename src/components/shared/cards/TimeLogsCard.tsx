@@ -36,25 +36,39 @@ import { AuthContextType } from "src/contexts/auth";
 import ReactApexChart from "react-apexcharts";
 import { Chart } from "../charts/style";
 
+export interface workingProgressTypes {
+  percentage: number;
+  shiftDuration: number;
+  attendanceDuration: number;
+}
+
 export const TimeLogCard = () => {
   const theme = useTheme();
 
-  const { attendance, updateAttendanceLog } = useAuth<AuthContextType>();
-
-  const [percentageWorked, setPercentageWorked] = useState<number>(0);
+  const { user, attendance, updateAttendanceLog } = useAuth<AuthContextType>();
   const [clockOutModal, setClockOutModal] = useState(false);
+  const [workingProgress, setWorkingProgress] = useState<workingProgressTypes>({
+    percentage: 0,
+    shiftDuration: 0,
+    attendanceDuration: 0,
+  });
 
   useEffect(() => {
     if (attendance) {
-      setPercentageWorked(
-        calculateWorkingPercentage(
-          attendance.timeIn,
-          attendance.timeOut,
-          attendance.breaks
-        )
+      const { workingTime, shiftDuration }: any = calculateWorkingPercentage(
+        user?.shift,
+        attendance.timeIn,
+        attendance.timeOut,
+        attendance.breaks
       );
+
+      setWorkingProgress({
+        percentage: (workingTime / shiftDuration) * 100,
+        shiftDuration: shiftDuration,
+        attendanceDuration: workingTime,
+      });
     }
-  }, [attendance]);
+  }, [user, attendance]);
 
   const handleTimeLog = async (action: string) => {
     await updateAttendanceLog(action);
@@ -91,7 +105,7 @@ export const TimeLogCard = () => {
             show: true,
             label: isOnBreak ? "Break" : "Working",
             color: theme.palette.text.primary,
-            formatter: () => `${percentageWorked.toFixed(2)}%`,
+            formatter: () => `${workingProgress.percentage.toFixed(2)}%`,
           },
         },
       },
@@ -100,11 +114,11 @@ export const TimeLogCard = () => {
     labels: ["Progress"],
   };
 
-  const series = [percentageWorked];
+  const series = [workingProgress.percentage];
 
   return (
     <>
-      <Card style={{minHeight: 490}}>
+      <Card style={{ minHeight: 490 }}>
         <CardHeader title="Attendance" />
         <CardContent>
           <Grid container>
@@ -230,7 +244,7 @@ export const TimeLogCard = () => {
               >
                 <Chart
                   options={options as any}
-                  series={[percentageWorked]}
+                  series={[workingProgress.percentage]}
                   type="radialBar"
                   height={280}
                   key={series[0]}
@@ -245,6 +259,11 @@ export const TimeLogCard = () => {
         <ConfirmationModal
           warning_title={"Clock Out"}
           warning_text={"Are you sure you want to Clock Out ?"}
+          // warning_text={`Your shiftDuration is ${formatDuration(
+          //   workingProgress.shiftDuration
+          // )} and you completed your ${formatDuration(
+          //   workingProgress.attendanceDuration
+          // )} .....Are you sure you want to Clock Out ?`}
           button_text={"Yes"}
           modal={clockOutModal}
           onCancel={() => {

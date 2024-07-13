@@ -39,11 +39,8 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
 
   useEffect(() => {
     handleGetAttendances();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    console.log("isLoading", isLoading)
-  }, [filters])
 
   const handleFilterEmployees = useCallback(async () => {
     let filteredEmployees = employees;
@@ -62,10 +59,11 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
   }, [handleFilterEmployees]);
 
   const handleEditAttendance = async (editedValues: any) => {
-
-    const {id, clockInTime, clockOutTime} = editedValues;
-    await attendanceApi.updateAttendance(id, {timeIn : clockInTime, timeOut: clockOutTime})
-    console.log("editedValues: ", editedValues);
+    const { id, clockInTime, clockOutTime } = editedValues;
+    await attendanceApi.updateAttendance(id, {
+      timeIn: clockInTime,
+      timeOut: clockOutTime,
+    });
     handleGetAttendances();
   };
   return (

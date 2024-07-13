@@ -16,12 +16,14 @@ interface SelectMultipleUsersProps {
   employees: any[];
   formikUsers: Employee[];
   setFieldValue: (value: any) => void;
+  isRequired?: boolean;
 }
 
 export const SelectMultipleUsers: React.FC<SelectMultipleUsersProps> = ({
   employees,
   formikUsers,
   setFieldValue,
+  isRequired = false,
 }) => {
   const [selectAll, setSelectAll] = useState(false);
 
@@ -147,7 +149,7 @@ export const SelectMultipleUsers: React.FC<SelectMultipleUsersProps> = ({
       renderInput={(params) => (
         <TextField
           {...params}
-          required={!formikUsers.length}
+          required={isRequired}
           label="Users"
           name="users"
         />

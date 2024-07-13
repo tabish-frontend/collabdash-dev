@@ -71,7 +71,7 @@ export const EmployeesAvailability = () => {
             const employees = availability.values;
             const Icon = availability.icon;
             return (
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} key={employeesAvailability.key}>
                 <Tooltip
                   arrow
                   placement={

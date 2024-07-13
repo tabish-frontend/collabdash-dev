@@ -114,13 +114,34 @@ export const formatTime = (timeString: Date | null) => {
 };
 
 export const calculateWorkingPercentage = (
+  shift: Shift | undefined,
   timeIn: string,
   timeOut: string | null,
   breaks: { start: string; end: string | null }[]
 ) => {
   if (!timeIn) return 0;
 
-  const shiftDuration = 8 * 60 * 60 * 1000; // 8 hours in milliseconds
+  const currentDate = new Date();
+  const currentDay = currentDate.toLocaleDateString("en-US", {
+    weekday: "long",
+  });
+
+  let shiftDuration = 9 * 60 * 60 * 1000; // Default to 9 hours in milliseconds
+
+  if (shift) {
+    if (shift.shift_type === "Fixed") {
+      const shiftTime = shift.times.find((time) =>
+        time.days.includes(currentDay)
+      );
+      if (shiftTime) {
+        const start = shiftTime.start ? new Date(shiftTime.start).getTime() : 0;
+        const end = shiftTime.end ? new Date(shiftTime.end).getTime() : 0;
+        shiftDuration = end - start;
+      }
+    } else if (shift.shift_type === "Flexible") {
+      shiftDuration = shift.hours * 60 * 60 * 1000; // Convert hours to milliseconds
+    }
+  }
 
   const start = new Date(timeIn).getTime();
   const end = timeOut ? new Date(timeOut).getTime() : Date.now();
@@ -146,7 +167,11 @@ export const calculateWorkingPercentage = (
     workingTime -= breakDuration;
   }
 
-  return (workingTime / shiftDuration) * 100;
+  // return (workingTime / shiftDuration) * 100;
+  return {
+    workingTime,
+    shiftDuration,
+  };
 };
 
 export const getAbbreviatedDays = (days: string[]): string[] => {
