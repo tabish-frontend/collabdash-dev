@@ -9,14 +9,7 @@ import {
   CardHeader,
   Container,
   Divider,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
   Stack,
-  TextField,
-  Typography,
 } from "@mui/material";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts/dashboard";
@@ -26,7 +19,6 @@ import { employeesApi } from "src/api";
 import { useRouter } from "next/router";
 import { LoadingButton } from "@mui/lab";
 import { useSettings } from "src/hooks";
-import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
 import {
   CompanyField,
@@ -99,12 +91,19 @@ const CreateEmployeeComponent = () => {
                       </Grid>
 
                       <Grid item xs={12} sm={4}>
-                        <UsernameField
-                          value={formik.values.username}
-                          handleChange={formik.handleChange}
+                        <EmailField
+                          value={formik.values.email}
+                          handleChange={(e: any) => {
+                            const value = e.target.value.trim();
+                            formik.setFieldValue("email", value);
+                            formik.setFieldValue(
+                              "username",
+                              value.split("@")[0]
+                            );
+                          }}
                           handleBlur={formik.handleBlur}
-                          formikError={formik.errors.username}
-                          formikTouched={formik.touched.username}
+                          formikError={formik.errors.email}
+                          formikTouched={formik.touched.email}
                         />
                       </Grid>
 
@@ -131,12 +130,12 @@ const CreateEmployeeComponent = () => {
                       </Grid>
 
                       <Grid item xs={12} sm={4}>
-                        <EmailField
-                          value={formik.values.email}
+                        <UsernameField
+                          value={formik.values.username}
                           handleChange={formik.handleChange}
                           handleBlur={formik.handleBlur}
-                          formikError={formik.errors.email}
-                          formikTouched={formik.touched.email}
+                          formikError={formik.errors.username}
+                          formikTouched={formik.touched.username}
                         />
                       </Grid>
 
