@@ -95,11 +95,17 @@ export const CellValues = (employeeAttendance: any, date: any) => {
     };
   }
 
-  if (isOnLeave(date, employeeAttendance.leaves)) {
+  if (
+    isOnWeekend(
+      date,
+      employeeAttendance.shift,
+      new Date(employeeAttendance.join_date)
+    )
+  ) {
     return {
-      icon: <StatusIndicator status="Leave" />,
-      tooltip: "On Leave",
-      status: "On Leave",
+      icon: <StatusIndicator status="Weekend" />,
+      tooltip: "Weekend",
+      status: "Weekend",
       shift: shiftValues,
       attendance: attendanceValues,
     };
@@ -115,17 +121,11 @@ export const CellValues = (employeeAttendance: any, date: any) => {
     };
   }
 
-  if (
-    isOnWeekend(
-      date,
-      employeeAttendance.shift,
-      new Date(employeeAttendance.join_date)
-    )
-  ) {
+  if (isOnLeave(date, employeeAttendance.leaves)) {
     return {
-      icon: <StatusIndicator status="Weekend" />,
-      tooltip: "Weekend",
-      status: "Weekend",
+      icon: <StatusIndicator status="Leave" />,
+      tooltip: "On Leave",
+      status: "On Leave",
       shift: shiftValues,
       attendance: attendanceValues,
     };

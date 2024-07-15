@@ -39,8 +39,7 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
 
   useEffect(() => {
     handleGetAttendances();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [handleGetAttendances]);
 
   const handleFilterEmployees = useCallback(async () => {
     let filteredEmployees = employees;

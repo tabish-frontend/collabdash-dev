@@ -54,7 +54,7 @@ export const MyAttendance = ({ filters }: any) => {
       const currentViewingDate =
         filters.view === "day"
           ? new Date(filters.date)
-          : dayjs(filters.date).set("date", date);
+          : dayjs(filters.date).set("date", date).toDate();
 
       const attendanceValues = CellValues(attendanceData, currentViewingDate);
 
@@ -72,10 +72,6 @@ export const MyAttendance = ({ filters }: any) => {
     setAttendance(attendanceList.reverse());
     setIsLoading(false);
   }, [filters]);
-
-  useEffect(() => {
-    fetchAndProcessData();
-  }, [fetchAndProcessData]);
 
   useEffect(() => {
     fetchAndProcessData();
@@ -116,7 +112,7 @@ export const MyAttendance = ({ filters }: any) => {
                 <TableRow hover role="checkbox" key={index}>
                   <TableCell align="center">
                     <Typography minWidth={150}>
-                      {formatDate(attendance.date)}
+                      {formatDate(attendance.date, true)}
                     </Typography>
                   </TableCell>
                   <TableCell align="center">
