@@ -16,16 +16,8 @@ import {
   SvgIcon,
   Tabs,
   Tab,
-  useMediaQuery,
-  useTheme,
 } from "@mui/material";
-import {
-  ChangeEvent,
-  SyntheticEvent,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { SyntheticEvent, useState } from "react";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts/dashboard";
 import { AllUserAttendance } from "./tabs/all-user-attendance";

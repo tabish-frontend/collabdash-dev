@@ -2,6 +2,7 @@ import { inputLabelClasses } from "@mui/material/InputLabel";
 import { tableCellClasses } from "@mui/material/TableCell";
 import type { Components } from "@mui/material/styles/components";
 import { createTheme } from "@mui/material/styles";
+import { fontWeight } from "@mui/system";
 
 // Used only to create transitions
 const muiTheme = createTheme();
@@ -327,6 +328,9 @@ export const createComponents = (): Components => {
           textTransform: "none",
           "& + &": {
             marginLeft: 24,
+          },
+          "&.Mui-selected": {
+            fontWeight: 600,
           },
         },
       },
