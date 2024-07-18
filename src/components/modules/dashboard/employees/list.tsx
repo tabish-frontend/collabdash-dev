@@ -18,7 +18,7 @@ import { Plus } from "mdi-material-ui";
 import { SyntheticEvent, useEffect, useState } from "react";
 import SearchMdIcon from "@untitled-ui/icons-react/build/esm/SearchMd";
 
-import { EmployeeCard, NoRecordFound, Scrollbar } from "src/components";
+import { EmployeeCard, NoRecordFound, Scrollbar } from "src/components/shared";
 import { Employee } from "src/types";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts/dashboard";
