@@ -103,20 +103,20 @@ const ResetPasswordComponent = () => {
               name={"password_confirm"}
               values={formik.values.password_confirm}
             />
-          </Stack>
 
-          <LoadingButton
-            loading={formik.isSubmitting}
-            loadingPosition="start"
-            startIcon={<></>}
-            type="submit"
-            variant="contained"
-            sx={{
-              pl: formik.isSubmitting ? "40px" : "16px",
-            }}
-          >
-            Reset
-          </LoadingButton>
+            <LoadingButton
+              fullWidth
+              size="large"
+              variant="contained"
+              type="submit"
+              loadingPosition="start"
+              loading={formik.isSubmitting}
+              startIcon={<></>}
+              sx={{ pl: formik.isSubmitting ? "40px" : "16px" }}
+            >
+              Reset
+            </LoadingButton>
+          </Stack>
         </form>
       </CardContent>
     </Card>

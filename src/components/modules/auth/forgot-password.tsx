@@ -86,13 +86,14 @@ const ForgotPasswordComponent = () => {
             value={formik.values.email}
           />
           <LoadingButton
-            loading={formik.isSubmitting}
             fullWidth
             size="large"
-            loadingPosition="start"
-            type="submit"
-            sx={{ mt: 3 }}
             variant="contained"
+            type="submit"
+            loadingPosition="start"
+            loading={formik.isSubmitting}
+            startIcon={<></>}
+            sx={{ pl: formik.isSubmitting ? "40px" : "16px" }}
           >
             Send reset link
           </LoadingButton>

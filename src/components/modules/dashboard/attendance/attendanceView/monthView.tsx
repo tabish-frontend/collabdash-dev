@@ -61,7 +61,7 @@ export const MonthViewAttendance = ({
     <Scrollbar sx={{ maxHeight: 600, overflowY: "auto" }}>
       <TableContainer component={Paper}>
         <Table>
-          <TableHead>
+          <TableHead sx={{ borderBottom: 1 }}>
             <TableRow>
               <TableCell
                 sx={{
@@ -71,11 +71,24 @@ export const MonthViewAttendance = ({
               >
                 Employee
               </TableCell>
-              {[...Array(daysInMonth)].map((_, index) => (
-                <TableCell key={`header-${index + 1}`}>
-                  <Typography variant="caption">{index + 1}</Typography>
-                </TableCell>
-              ))}
+              {[...Array(daysInMonth)].map((_, index) => {
+                const isToday = dayjs(filters.date)
+                  .set("date", index + 1)
+                  .isSame(dayjs(new Date()), "day");
+
+                return (
+                  <TableCell
+                    key={`header-${index + 1}`}
+                    sx={{
+                      backgroundColor: isToday
+                        ? `${theme.palette.info.alpha50} !important`
+                        : "inherit",
+                    }}
+                  >
+                    <Typography variant="caption">{index + 1}</Typography>
+                  </TableCell>
+                );
+              })}
             </TableRow>
           </TableHead>
 
@@ -115,6 +128,10 @@ export const MonthViewAttendance = ({
                 </TableCell>
 
                 {[...Array(daysInMonth)].map((_, dayIndex) => {
+                  const isToday = dayjs(filters.date)
+                    .set("date", dayIndex + 1)
+                    .isSame(dayjs(new Date()), "day");
+
                   const date = dayjs(filters.date)
                     .set("date", dayIndex + 1)
                     .toDate();
@@ -124,7 +141,13 @@ export const MonthViewAttendance = ({
                   return (
                     <TableCell
                       key={`attendance-${index}-${dayIndex}`}
-                      sx={{ p: 0, cursor: "pointer" }}
+                      sx={{
+                        p: 0,
+                        cursor: "pointer",
+                        backgroundColor: isToday
+                          ? theme.palette.info.alpha50
+                          : "inherit",
+                      }}
                       align="center"
                       onClick={() =>
                         attendanceValues?.open &&
