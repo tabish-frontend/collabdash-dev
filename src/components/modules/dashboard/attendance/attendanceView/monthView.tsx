@@ -23,9 +23,8 @@ import {
 import { paths } from "src/constants/paths";
 import { CellValues } from "../helper";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { EditAttendanceModal } from "./edit-attendance";
-import { boolean } from "yup";
 
 interface ModalValuesTypes {
   open: boolean;
@@ -57,9 +56,33 @@ export const MonthViewAttendance = ({
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const today = dayjs();
+  const todayDate = today.date();
+  const todayMonth = today.month();
+  const todayYear = today.year();
+
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const scrollToToday = () => {
+      if (scrollRef.current) {
+        const todayColumn = document.getElementById("today-column");
+        if (todayColumn) {
+          scrollRef.current.scrollLeft =
+            todayColumn.offsetLeft - scrollRef.current.offsetLeft;
+        }
+      }
+    };
+    scrollToToday();
+  }, []);
+
   return (
     <Scrollbar sx={{ maxHeight: 600, overflowY: "auto" }}>
-      <TableContainer component={Paper}>
+      <TableContainer
+        component={Paper}
+        sx={{ overflowX: "auto" }}
+        ref={scrollRef}
+      >
         <Table>
           <TableHead sx={{ borderBottom: 1 }}>
             <TableRow>
@@ -72,16 +95,21 @@ export const MonthViewAttendance = ({
                 Employee
               </TableCell>
               {[...Array(daysInMonth)].map((_, index) => {
-                const isToday = dayjs(filters.date)
-                  .set("date", index + 1)
-                  .isSame(dayjs(new Date()), "day");
+                const cellDate = dayjs(filters.date).set("date", index + 1);
+                const isToday =
+                  cellDate.date() === todayDate &&
+                  cellDate.month() === todayMonth &&
+                  cellDate.year() === todayYear;
 
                 return (
                   <TableCell
                     key={`header-${index + 1}`}
+                    id={isToday ? "today-column" : undefined}
                     sx={{
                       backgroundColor: isToday
-                        ? `${theme.palette.info.alpha50} !important`
+                        ? theme.palette.mode === "dark"
+                          ? "HighlightText !important"
+                          : `${theme.palette.info.alpha50} !important`
                         : "inherit",
                     }}
                   >
@@ -128,15 +156,13 @@ export const MonthViewAttendance = ({
                 </TableCell>
 
                 {[...Array(daysInMonth)].map((_, dayIndex) => {
-                  const isToday = dayjs(filters.date)
-                    .set("date", dayIndex + 1)
-                    .isSame(dayjs(new Date()), "day");
+                  const date = dayjs(filters.date).set("date", dayIndex + 1);
+                  const isToday =
+                    date.date() === todayDate &&
+                    date.month() === todayMonth &&
+                    date.year() === todayYear;
 
-                  const date = dayjs(filters.date)
-                    .set("date", dayIndex + 1)
-                    .toDate();
-
-                  const attendanceValues = CellValues(item, date);
+                  const attendanceValues = CellValues(item, date.toDate());
 
                   return (
                     <TableCell
@@ -145,7 +171,9 @@ export const MonthViewAttendance = ({
                         p: 0,
                         cursor: "pointer",
                         backgroundColor: isToday
-                          ? theme.palette.info.alpha50
+                          ? theme.palette.mode === "dark"
+                            ? "HighlightText"
+                            : theme.palette.info.alpha50
                           : "inherit",
                       }}
                       align="center"
