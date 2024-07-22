@@ -44,6 +44,11 @@ interface SettingsProviderProps {
 export const SettingsProvider: FC<SettingsProviderProps> = (props) => {
   const { children } = props;
   const [state, setState] = useState<State>(initialState);
+  const [workspaceeModal, setWorkspaceModal] = useState(false);
+
+  const handleUpdateWorkspaceState = (value: boolean) => {
+    setWorkspaceModal(value);
+  };
 
   useEffect(() => {
     const restored = restoreSettings();
@@ -93,6 +98,8 @@ export const SettingsProvider: FC<SettingsProviderProps> = (props) => {
         ...state,
         handleUpdate,
         isCustom,
+        handleUpdateWorkspaceState,
+        workspaceeModal,
       }}
     >
       {children}

@@ -12,6 +12,7 @@ import {
   CardAccountDetailsStarOutline,
   BallotRecountOutline,
 } from "mdi-material-ui";
+import LineChartUp04 from "src/icons/untitled-ui/duocolor/line-chart-up-04";
 
 export interface Item {
   disabled?: boolean;
@@ -61,6 +62,30 @@ const navItems: Item[] = [
   //   icon: <SvgIcon component={FileTreeOutline} />,
   //   path: paths.tasks,
   // },
+
+  {
+    title: "Workspaces",
+    path: paths.attendance,
+    icon: (
+      <SvgIcon fontSize="small">
+        <LineChartUp04 />
+      </SvgIcon>
+    ),
+    items: [
+      {
+        title: "Attendance",
+        // path: paths.attendance,
+      },
+      {
+        title: "Holidays",
+        // path: paths.holidays,
+      },
+      {
+        title: "Leaves",
+        // path: paths.leaves,
+      },
+    ],
+  },
 ];
 
 export const useSections = (): Section[] => {
