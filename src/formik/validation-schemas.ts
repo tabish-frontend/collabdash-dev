@@ -78,6 +78,6 @@ export const employeeValidation = Yup.object().shape({
   national_identity_number: Yup.string()
     .required("National Identity Number is required")
     .matches(/^[0-9]+$/, "National Identity Number must contain only numbers")
-    .min(13, "National Identity Number must be at least 13 digits")
     .max(15, "National Identity Number must be no more than 15 digits"),
+  // .min(13, "National Identity Number must be at least 13 digits")
 });
