@@ -40,19 +40,23 @@ import {
 } from "src/components/shared";
 import { LoadingButton } from "@mui/lab";
 
-interface WorkspaceModalProps {
+interface BoardsModalProps {
   modal: boolean;
+  modalType: string;
+  modalValues: any;
   onCancel: () => void;
 }
 
-export const WorkspaceModal: FC<WorkspaceModalProps> = ({
+export const BoardsModal: FC<BoardsModalProps> = ({
   modal,
+  modalType,
+  modalValues,
   onCancel,
 }) => {
   const [departments, setDepartments] = useState<string[]>([]);
 
   const formik = useFormik({
-    initialValues: { title: "", users: [] },
+    initialValues: { title: "", description: "", users: [] },
 
     enableReinitialize: true,
     onSubmit: async (values, helpers): Promise<void> => {
@@ -86,11 +90,10 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
       onClose={onCancel}
       sx={{ "& .MuiPaper-root": { overflowY: "unset" } }}
     >
-      {/* <h1>Ehllo</h1> */}
       <form onSubmit={formik.handleSubmit}>
         <Paper elevation={12}>
           <DialogTitle sx={{ m: 0, p: 3, fontSize: 24, fontWeight: 600 }}>
-            Create Workspace
+            {modalType === "create" ? "Add Board" : "Update Board"}
           </DialogTitle>
           <IconButton
             aria-label="close"
@@ -111,22 +114,23 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Title"
+                label="Board Name"
                 required
                 value={formik.values.title}
-                name="title"
+                name="boardname"
                 onChange={formik.handleChange}
               />
             </Grid>
-
-            {/* <Grid item xs={12}>
-              <SelectMultipleDepartments
-                departments={departments}
-                handleChange={(event: any, value: any[]) => {
-                  setDepartments(value);
-                }}
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Description"
+                required
+                value={formik.values.description}
+                name="description"
+                onChange={formik.handleChange}
               />
-            </Grid> */}
+            </Grid>
 
             <Grid item xs={12}>
               <SelectMultipleUsers

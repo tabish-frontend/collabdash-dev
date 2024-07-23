@@ -13,6 +13,7 @@ import {
   BallotRecountOutline,
 } from "mdi-material-ui";
 import LineChartUp04 from "src/icons/untitled-ui/duocolor/line-chart-up-04";
+import { WorkSpaces } from "src/constants/dummyJson";
 
 export interface Item {
   disabled?: boolean;
@@ -71,20 +72,24 @@ const navItems: Item[] = [
         <LineChartUp04 />
       </SvgIcon>
     ),
-    items: [
-      {
-        title: "Attendance",
-        // path: paths.attendance,
-      },
-      {
-        title: "Holidays",
-        // path: paths.holidays,
-      },
-      {
-        title: "Leaves",
-        // path: paths.leaves,
-      },
-    ],
+    items: WorkSpaces.map((item) => ({
+      title: item.title,
+      path: `${paths.workspaces}/${item.slug}`,
+    })),
+    // items: [
+    //   {
+    //     title: "Attendance",
+    //     // path: `paths.workkspaces/${}`
+    //   },
+    //   {
+    //     title: "Holidays",
+    //     // path: paths.holidays,
+    //   },
+    //   {
+    //     title: "Leaves",
+    //     // path: paths.leaves,
+    //   },
+    // ],
   },
 ];
 
