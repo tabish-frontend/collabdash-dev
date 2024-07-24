@@ -58,7 +58,22 @@ export const ShiftModal: FC<ShiftModalProps> = ({
         }
       : shiftInitialValues,
     onSubmit: async (values, helpers): Promise<void> => {
-      onConfirm(values);
+      const processedValues = { ...values };
+      processedValues.times = values.times.map((time) => {
+        const startTime = time.start ? new Date(time.start) : new Date();
+        let endTime = time.end ? new Date(time.end) : new Date();
+
+        if (endTime < startTime) {
+          endTime.setDate(endTime.getDate() + 1);
+        }
+
+        return {
+          ...time,
+          end: endTime,
+        };
+      });
+
+      onConfirm(processedValues);
       helpers.setStatus({ success: true });
       helpers.setSubmitting(false);
     },
@@ -109,6 +124,10 @@ export const ShiftModal: FC<ShiftModalProps> = ({
     ];
     formik.setFieldValue("times", updatedShiftValues);
   };
+
+  useEffect(() => {
+    console.log("formik values", formik.values);
+  }, [formik.values]);
 
   return (
     <Dialog fullWidth maxWidth={"md"} open={modal} onClose={onCancel}>
@@ -188,6 +207,7 @@ export const ShiftModal: FC<ShiftModalProps> = ({
                           },
                         }}
                         onChange={(time) => {
+                          console.log("Start time", new Date(time));
                           formik.setFieldValue(`${fieldName}.start`, time);
                         }}
                       />
@@ -202,18 +222,9 @@ export const ShiftModal: FC<ShiftModalProps> = ({
                             required: true,
                           },
                         }}
-                        onChange={(time) => {
-                          const startTime = input.start;
-                          let endTime = time;
-
-                          if (endTime < startTime) {
-                            endTime = new Date(
-                              endTime.getTime() + 24 * 60 * 60 * 1000
-                            );
-                          }
-
-                          formik.setFieldValue(`${fieldName}.end`, endTime);
-                        }}
+                        onChange={(time) =>
+                          formik.setFieldValue(`${fieldName}.end`, time)
+                        }
                       />
                     </Grid>
                     <Grid item xs={12} sm={5}>
