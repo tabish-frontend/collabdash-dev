@@ -54,6 +54,7 @@ const BoardsComponent = () => {
 
   useEffect(() => {
     handleGetBoards();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workspace_slug]);
 
   return (
