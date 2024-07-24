@@ -55,7 +55,7 @@ export const SelectMultipleDepartments: React.FC<
         },
       }}
       renderOption={(props, option) => (
-        <>
+        <div key={option}>
           {option === DepartmentNames[0] && (
             <MenuItem>
               <FormControlLabel
@@ -70,7 +70,6 @@ export const SelectMultipleDepartments: React.FC<
             </MenuItem>
           )}
           <MenuItem
-            key={option}
             value={option}
             sx={{ justifyContent: "space-between" }}
             {...props}
@@ -78,7 +77,7 @@ export const SelectMultipleDepartments: React.FC<
             <Checkbox checked={departments.indexOf(option) > -1} />
             <ListItemText primary={option} />
           </MenuItem>
-        </>
+        </div>
       )}
       renderInput={(params) => (
         <TextField {...params} label="Select Department" />

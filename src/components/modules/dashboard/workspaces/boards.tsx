@@ -1,8 +1,6 @@
 import {
   Box,
   Button,
-  Card,
-  CardMedia,
   Container,
   Grid,
   Stack,
@@ -11,7 +9,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useAuth, useSettings } from "src/hooks";
+import { useSettings } from "src/hooks";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts";
 import { useRouter } from "next/router";

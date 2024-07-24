@@ -1,43 +1,20 @@
 import {
-  Autocomplete,
-  Badge,
-  Checkbox,
   Dialog,
   DialogTitle,
   Divider,
   Grid,
   IconButton,
-  ListItemText,
-  MenuItem,
   TextField,
   Paper,
-  Avatar,
-  Stack,
-  Typography,
-  FormControlLabel,
-  FormControl,
-  InputLabel,
-  Select,
-  Popper,
-  styled,
-  OutlinedInput,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { useFormik } from "formik";
 import { CloseCircleOutline } from "mdi-material-ui";
-
-import { forwardRef, useEffect, useState, type FC } from "react";
-import { holidayInitialValues } from "src/formik";
-
+import { useEffect, useState, type FC } from "react";
 import { employeesApi } from "src/api";
-import { Employee, Holiday } from "src/types";
-import { DatePicker } from "@mui/x-date-pickers";
-import { DepartmentNames } from "src/constants/departments";
-import {
-  SelectMultipleDepartments,
-  SelectMultipleUsers,
-} from "src/components/shared";
+import { Employee } from "src/types";
+import { SelectMultipleUsers } from "src/components/shared";
 import { LoadingButton } from "@mui/lab";
 
 interface WorkspaceModalProps {
@@ -49,8 +26,6 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
   modal,
   onCancel,
 }) => {
-  const [departments, setDepartments] = useState<string[]>([]);
-
   const formik = useFormik({
     initialValues: { title: "", users: [] },
 
@@ -86,7 +61,6 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
       onClose={onCancel}
       sx={{ "& .MuiPaper-root": { overflowY: "unset" } }}
     >
-      {/* <h1>Ehllo</h1> */}
       <form onSubmit={formik.handleSubmit}>
         <Paper elevation={12}>
           <DialogTitle sx={{ m: 0, p: 3, fontSize: 24, fontWeight: 600 }}>
@@ -119,24 +93,9 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
               />
             </Grid>
 
-            {/* <Grid item xs={12}>
-              <SelectMultipleDepartments
-                departments={departments}
-                handleChange={(event: any, value: any[]) => {
-                  setDepartments(value);
-                }}
-              />
-            </Grid> */}
-
             <Grid item xs={12}>
               <SelectMultipleUsers
-                employees={
-                  departments.length
-                    ? employees.filter((employee) =>
-                        departments.includes(employee.department)
-                      )
-                    : employees
-                }
+                employees={employees}
                 formikUsers={formik.values.users}
                 setFieldValue={(value: any) =>
                   formik.setFieldValue("users", value)

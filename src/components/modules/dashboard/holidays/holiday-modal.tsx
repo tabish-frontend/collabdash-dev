@@ -1,39 +1,21 @@
 import {
-  Autocomplete,
-  Badge,
-  Checkbox,
   Dialog,
   DialogTitle,
   Divider,
   Grid,
   IconButton,
-  ListItemText,
-  MenuItem,
   TextField,
   Paper,
-  Avatar,
-  Stack,
-  Typography,
-  FormControlLabel,
-  FormControl,
-  InputLabel,
-  Select,
-  Popper,
-  styled,
-  OutlinedInput,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { useFormik } from "formik";
 import { CloseCircleOutline } from "mdi-material-ui";
-
-import { forwardRef, useEffect, useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import { holidayInitialValues } from "src/formik";
-
 import { employeesApi } from "src/api";
 import { Employee, Holiday } from "src/types";
 import { DatePicker } from "@mui/x-date-pickers";
-import { DepartmentNames } from "src/constants/departments";
 import {
   SelectMultipleDepartments,
   SelectMultipleUsers,
