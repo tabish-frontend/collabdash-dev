@@ -7,7 +7,13 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import { CellValues } from "../helper";
-import { Skeleton, Stack } from "@mui/material";
+import {
+  MenuItem,
+  Skeleton,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { NoRecordFound } from "src/components/shared";
 import { useState } from "react";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
@@ -22,6 +28,7 @@ const columns = [
   "Working Hours",
   "ClockIn Time",
   "ClockOut Time",
+  "Breaks Start/End",
   "Duration",
   "Status",
 ];
@@ -71,35 +78,89 @@ export const DayViewAttendance = ({
 
               return (
                 <TableRow hover key={index}>
-                  <TableCell align="center">{attendance.full_name}</TableCell>
                   <TableCell align="center">
-                    {attendanceValues.shift.type}
+                    <Typography width={150}>{attendance.full_name}</Typography>
                   </TableCell>
                   <TableCell align="center">
-                    {attendanceValues.shift.start}
+                    <Typography width={100}>
+                      {attendanceValues.shift.type}
+                    </Typography>
                   </TableCell>
                   <TableCell align="center">
-                    {attendanceValues.shift.end}
+                    <Typography width={150}>
+                      {attendanceValues.shift.start}
+                    </Typography>
                   </TableCell>
                   <TableCell align="center">
-                    {attendanceValues.shift.hours}
+                    <Typography width={150}>
+                      {attendanceValues.shift.end}
+                    </Typography>
                   </TableCell>
                   <TableCell align="center">
-                    {attendanceValues.attendance.clockIn
-                      ? formatTime(attendanceValues.attendance.clockIn)
-                      : "--"}
+                    <Typography width={150}>
+                      {attendanceValues.shift.hours}
+                    </Typography>
                   </TableCell>
                   <TableCell align="center">
-                    {attendanceValues.attendance.clockOut
-                      ? formatTime(attendanceValues.attendance.clockOut)
-                      : "--"}
+                    <Typography width={150}>
+                      {attendanceValues.attendance.clockIn
+                        ? formatTime(attendanceValues.attendance.clockIn)
+                        : "--"}
+                    </Typography>
                   </TableCell>
                   <TableCell align="center">
-                    {attendanceValues.attendance.duration}
+                    <Typography width={150}>
+                      {attendanceValues.attendance.clockOut
+                        ? formatTime(attendanceValues.attendance.clockOut)
+                        : "--"}
+                    </Typography>
+                  </TableCell>
+
+                  <TableCell align="center">
+                    {!attendanceValues.attendance.breaks?.length ? (
+                      "--"
+                    ) : attendanceValues.attendance.breaks.length > 1 ? (
+                      <TextField
+                        select
+                        variant="standard"
+                        defaultValue={attendanceValues.attendance.breaks[0]._id}
+                        InputProps={{
+                          disableUnderline: true,
+                        }}
+                      >
+                        {attendanceValues.attendance.breaks.map(
+                          (item: any, index: number) => (
+                            <MenuItem key={item._id} value={item._id}>
+                              {formatTime(item.start)} -{" "}
+                              {item.end ? formatTime(item.end) : "not yet"}
+                            </MenuItem>
+                          )
+                        )}
+                      </TextField>
+                    ) : (
+                      <Typography width={200}>
+                        {`${formatTime(
+                          attendanceValues.attendance.breaks[0].start
+                        )} - ${
+                          attendanceValues.attendance.breaks[0].end
+                            ? formatTime(
+                                attendanceValues.attendance.breaks[0].end
+                              )
+                            : " not yet"
+                        }`}
+                      </Typography>
+                    )}
+                  </TableCell>
+
+                  <TableCell align="center">
+                    <Typography width={150}>
+                      {attendanceValues.attendance.duration}
+                    </Typography>
                   </TableCell>
                   <TableCell align="center">
                     {attendanceValues.open ? (
                       <Stack
+                        width={150}
                         direction={"row"}
                         justifyContent={"center"}
                         gap={1}
@@ -129,7 +190,9 @@ export const DayViewAttendance = ({
                         />
                       </Stack>
                     ) : (
-                      attendanceValues.status
+                      <Typography width={150}>
+                        {attendanceValues.status}
+                      </Typography>
                     )}
                   </TableCell>
                 </TableRow>

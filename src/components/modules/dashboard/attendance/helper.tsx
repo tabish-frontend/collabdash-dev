@@ -13,10 +13,8 @@ import {
 } from "src/utils";
 import { StatusIndicator } from "src/constants/attendance-status";
 import { getStatusDetails } from "src/utils/get-attendance-status";
-
 export const CellValues = (employeeAttendance: any, date: any) => {
   const dayOfDate = date.toLocaleString("en-US", { weekday: "long" });
-
   const shiftDay = employeeAttendance.shift?.times.find((item: any) =>
     item.days.includes(dayOfDate)
   );
@@ -62,30 +60,53 @@ export const CellValues = (employeeAttendance: any, date: any) => {
       dayAttendance && dayAttendance?.duration
         ? formatDuration(dayAttendance?.duration)
         : "--",
+    breaks: dayAttendance && dayAttendance.breaks,
   };
 
   if (dayAttendance) {
     const { icon, title } = getStatusDetails(dayAttendance.status);
-
     return {
       icon: icon,
       tooltip: (
         <div>
           <h4>{title}</h4>
           <p>
-            {`Time In: ${
-              attendanceValues.clockIn
-                ? formatTime(attendanceValues.clockIn)
-                : "--"
-            }`}
+            <span>
+              {`Time In: ${
+                attendanceValues.clockIn
+                  ? formatTime(attendanceValues.clockIn)
+                  : "--"
+              }`}
+            </span>
+            &nbsp; &nbsp;
+            <span>
+              {`Time Out: ${
+                attendanceValues.clockOut
+                  ? formatTime(attendanceValues.clockOut)
+                  : "--"
+              }`}
+            </span>
           </p>
-          <p>
-            {`Time Out: ${
-              attendanceValues.clockOut
-                ? formatTime(attendanceValues.clockOut)
-                : "--"
-            }`}
-          </p>
+          {attendanceValues.breaks.length ? (
+            <>
+              <h4>Breaks</h4>
+              {attendanceValues.breaks.map((item: any, index: number) => (
+                <p key={index}>
+                  <span>
+                    {`Break Start: ${
+                      item.start ? formatTime(item.start) : "--"
+                    }`}
+                  </span>
+                  &nbsp; &nbsp;
+                  <span>
+                    {`Break End: ${item.end ? formatTime(item.end) : "--"}`}
+                  </span>
+                </p>
+              ))}
+            </>
+          ) : (
+            ""
+          )}
         </div>
       ),
       open: true,

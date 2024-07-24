@@ -9,6 +9,8 @@ import {
   TableCell,
   Skeleton,
   Typography,
+  TextField,
+  MenuItem,
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { attendanceApi } from "src/api";
@@ -21,6 +23,7 @@ const columns = [
   "Date",
   "ClockIn Time",
   "ClockOut Time",
+  "Breaks",
   "Status",
   "Production",
 ];
@@ -63,6 +66,7 @@ export const MyAttendance = ({ filters }: any) => {
         timeIn: attendanceValues.attendance.clockIn,
         timeOut: attendanceValues.attendance.clockOut,
         duration: attendanceValues.attendance.duration,
+        breaks: attendanceValues.attendance.breaks,
         status: attendanceValues.status,
       };
 
@@ -126,6 +130,35 @@ export const MyAttendance = ({ filters }: any) => {
                         ? formatTime(attendance.timeOut)
                         : "--"}
                     </Typography>
+                  </TableCell>
+                  <TableCell align="center">
+                    {!attendance.breaks?.length ? (
+                      "--"
+                    ) : attendance.breaks.length > 1 ? (
+                      <TextField
+                        select
+                        variant="standard"
+                        defaultValue={attendance.breaks[0]._id}
+                        InputProps={{
+                          disableUnderline: true,
+                        }}
+                      >
+                        {attendance.breaks.map((item: any, index: number) => (
+                          <MenuItem key={item._id} value={item._id}>
+                            {formatTime(item.start)} -{" "}
+                            {item.end ? formatTime(item.end) : "not yet"}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    ) : (
+                      <Typography width={200}>
+                        {`${formatTime(attendance.breaks[0].start)} - ${
+                          attendance.breaks[0].end
+                            ? formatTime(attendance.breaks[0].end)
+                            : " not yet"
+                        }`}
+                      </Typography>
+                    )}
                   </TableCell>
                   <TableCell align="center">
                     <Typography minWidth={150}>{attendance.status}</Typography>

@@ -276,13 +276,15 @@ const LeavesListComponent = () => {
                             )}
 
                             <TableCell>
-                              <Typography>
+                              <Typography width={150}>
                                 {formatDate(leave.createdAt)}
                               </Typography>
                             </TableCell>
 
                             <TableCell>
-                              <Typography>{leave.leave_type}</Typography>
+                              <Typography width={100}>
+                                {leave.leave_type}
+                              </Typography>
                             </TableCell>
 
                             <TableCell>
@@ -317,7 +319,7 @@ const LeavesListComponent = () => {
                             {(user?.role === ROLES.Admin ||
                               user?.role === ROLES.HR) && (
                               <TableCell>
-                                <Stack direction={"row"}>
+                                <Stack direction={"row"} width={150}>
                                   <Tooltip title="Approved">
                                     <span>
                                       <IconButton
