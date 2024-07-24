@@ -50,6 +50,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import Tooltip from "@mui/material/Tooltip";
 
 const employee_Screen = [
+  "Applied Date",
   "Leave Type",
   "Leave From",
   "Leave To",
@@ -59,6 +60,7 @@ const employee_Screen = [
 ];
 const HR_Screen = [
   "Employee Name",
+  "Applied Date",
   "Leave Type",
   "Leave From",
   "Leave To",
@@ -274,7 +276,15 @@ const LeavesListComponent = () => {
                             )}
 
                             <TableCell>
-                              <Typography>{leave.leave_type}</Typography>
+                              <Typography width={150}>
+                                {formatDate(leave.createdAt)}
+                              </Typography>
+                            </TableCell>
+
+                            <TableCell>
+                              <Typography width={100}>
+                                {leave.leave_type}
+                              </Typography>
                             </TableCell>
 
                             <TableCell>
@@ -309,7 +319,7 @@ const LeavesListComponent = () => {
                             {(user?.role === ROLES.Admin ||
                               user?.role === ROLES.HR) && (
                               <TableCell>
-                                <Stack direction={"row"}>
+                                <Stack direction={"row"} width={150}>
                                   <Tooltip title="Approved">
                                     <span>
                                       <IconButton

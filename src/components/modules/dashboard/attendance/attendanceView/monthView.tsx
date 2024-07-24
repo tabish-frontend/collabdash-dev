@@ -23,9 +23,8 @@ import {
 import { paths } from "src/constants/paths";
 import { CellValues } from "../helper";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { EditAttendanceModal } from "./edit-attendance";
-import { boolean } from "yup";
 
 interface ModalValuesTypes {
   open: boolean;
@@ -57,11 +56,35 @@ export const MonthViewAttendance = ({
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const today = dayjs();
+  const todayDate = today.date();
+  const todayMonth = today.month();
+  const todayYear = today.year();
+
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const scrollToToday = () => {
+      if (scrollRef.current) {
+        const todayColumn = document.getElementById("today-column");
+        if (todayColumn) {
+          scrollRef.current.scrollLeft =
+            todayColumn.offsetLeft - scrollRef.current.offsetLeft;
+        }
+      }
+    };
+    scrollToToday();
+  }, []);
+
   return (
     <Scrollbar sx={{ maxHeight: 600, overflowY: "auto" }}>
-      <TableContainer component={Paper}>
+      <TableContainer
+        component={Paper}
+        sx={{ overflowX: "auto" }}
+        ref={scrollRef}
+      >
         <Table>
-          <TableHead>
+          <TableHead sx={{ borderBottom: 1 }}>
             <TableRow>
               <TableCell
                 sx={{
@@ -71,11 +94,29 @@ export const MonthViewAttendance = ({
               >
                 Employee
               </TableCell>
-              {[...Array(daysInMonth)].map((_, index) => (
-                <TableCell key={`header-${index + 1}`}>
-                  <Typography variant="caption">{index + 1}</Typography>
-                </TableCell>
-              ))}
+              {[...Array(daysInMonth)].map((_, index) => {
+                const cellDate = dayjs(filters.date).set("date", index + 1);
+                const isToday =
+                  cellDate.date() === todayDate &&
+                  cellDate.month() === todayMonth &&
+                  cellDate.year() === todayYear;
+
+                return (
+                  <TableCell
+                    key={`header-${index + 1}`}
+                    id={isToday ? "today-column" : undefined}
+                    sx={{
+                      backgroundColor: isToday
+                        ? theme.palette.mode === "dark"
+                          ? "HighlightText !important"
+                          : `${theme.palette.info.alpha50} !important`
+                        : "inherit",
+                    }}
+                  >
+                    <Typography variant="caption">{index + 1}</Typography>
+                  </TableCell>
+                );
+              })}
             </TableRow>
           </TableHead>
 
@@ -115,16 +156,26 @@ export const MonthViewAttendance = ({
                 </TableCell>
 
                 {[...Array(daysInMonth)].map((_, dayIndex) => {
-                  const date = dayjs(filters.date)
-                    .set("date", dayIndex + 1)
-                    .toDate();
+                  const date = dayjs(filters.date).set("date", dayIndex + 1);
+                  const isToday =
+                    date.date() === todayDate &&
+                    date.month() === todayMonth &&
+                    date.year() === todayYear;
 
-                  const attendanceValues = CellValues(item, date);
+                  const attendanceValues = CellValues(item, date.toDate());
 
                   return (
                     <TableCell
                       key={`attendance-${index}-${dayIndex}`}
-                      sx={{ p: 0, cursor: "pointer" }}
+                      sx={{
+                        p: 0,
+                        cursor: "pointer",
+                        backgroundColor: isToday
+                          ? theme.palette.mode === "dark"
+                            ? "HighlightText"
+                            : theme.palette.info.alpha50
+                          : "inherit",
+                      }}
                       align="center"
                       onClick={() =>
                         attendanceValues?.open &&

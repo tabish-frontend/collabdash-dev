@@ -85,13 +85,17 @@ export const formatDob = (dateStr: Date): string => {
   return formatter.format(dateStr);
 };
 
-export const formatDate = (dateString: number) => {
+export const formatDate = (dateString: number, withDay: boolean = false) => {
   const date = new Date(dateString);
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
     day: "numeric",
   };
+
+  if (withDay) {
+    options.weekday = "short";
+  }
 
   return date.toLocaleDateString("en-US", options);
 };
@@ -408,14 +412,35 @@ export const isPastDate = (date: Date, joinDate: Date): boolean => {
 export const isFutureDate = (date: Date, currentDate: Date): boolean =>
   date > currentDate;
 
-export const isOnLeave = (date: Date, leaves: any[]): boolean =>
-  leaves.some(
-    (leave) =>
-      new Date(leave.startDate).toDateString() <=
-        new Date(date).toDateString() &&
-      new Date(date).toDateString() <= new Date(leave.endDate).toDateString() &&
+// export const isOnLeave = (date: Date, leaves: any[]): boolean =>
+//   leaves.some(
+//     (leave) =>
+//       new Date(leave.startDate).toDateString() <=
+//         new Date(date).toDateString() &&
+//       new Date(date).toDateString() <= new Date(leave.endDate).toDateString() &&
+//       leave.status === LeavesStatus.Approved
+//   );
+
+export const isOnLeave = (date: Date, leaves: any[]): boolean => {
+  // Normalize the provided date to remove the time part
+  const normalizedDate = new Date(date);
+  normalizedDate.setHours(0, 0, 0, 0);
+
+  return leaves.some((leave) => {
+    const startDate = new Date(leave.startDate);
+    const endDate = new Date(leave.endDate);
+
+    // Normalize the leave start and end dates to remove the time part
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(0, 0, 0, 0);
+
+    return (
+      startDate <= normalizedDate &&
+      normalizedDate <= endDate &&
       leave.status === LeavesStatus.Approved
-  );
+    );
+  });
+};
 
 export const isOnHoliday = (date: Date, holidays: any[]): boolean =>
   holidays.some(

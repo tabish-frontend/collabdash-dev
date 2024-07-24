@@ -203,7 +203,16 @@ export const ShiftModal: FC<ShiftModalProps> = ({
                           },
                         }}
                         onChange={(time) => {
-                          formik.setFieldValue(`${fieldName}.end`, time);
+                          const startTime = input.start;
+                          let endTime = time;
+
+                          if (endTime < startTime) {
+                            endTime = new Date(
+                              endTime.getTime() + 24 * 60 * 60 * 1000
+                            );
+                          }
+
+                          formik.setFieldValue(`${fieldName}.end`, endTime);
                         }}
                       />
                     </Grid>
