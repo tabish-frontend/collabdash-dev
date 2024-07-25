@@ -1,5 +1,5 @@
 import type { FC, ReactNode } from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import ChevronDownIcon from "@untitled-ui/icons-react/build/esm/ChevronDown";
 import ChevronRightIcon from "@untitled-ui/icons-react/build/esm/ChevronRight";
@@ -9,6 +9,10 @@ import Collapse from "@mui/material/Collapse";
 import SvgIcon from "@mui/material/SvgIcon";
 
 import { RouterLink } from "src/components/shared/router-link";
+import { Button } from "@mui/material";
+import Add from "@mui/icons-material/Add";
+import { WorkspaceModal } from "src/components/shared";
+import { useSettings } from "src/hooks";
 
 interface SideNavItemProps {
   active?: boolean;
@@ -37,6 +41,8 @@ export const SideNavItem: FC<SideNavItemProps> = (props) => {
     title,
   } = props;
   const [open, setOpen] = useState<boolean>(!!openProp);
+
+  const setting = useSettings();
 
   const handleToggle = useCallback((): void => {
     setOpen((prevOpen) => !prevOpen);
@@ -155,7 +161,23 @@ export const SideNavItem: FC<SideNavItemProps> = (props) => {
             {open ? <ChevronDownIcon /> : <ChevronRightIcon />}
           </SvgIcon>
         </ButtonBase>
-        <Collapse in={open} sx={{ mt: 0.5 }}>
+
+        <Collapse in={open} sx={{ mt: 1 }}>
+          <div style={{ marginLeft: "0px", width: "100%" }}>
+            <Button
+              size="small"
+              variant="outlined"
+              color="info"
+              sx={{ mb: 0.5 }}
+              fullWidth
+              onClick={() => {
+                setting.handleUpdateWorkspaceState(true);
+              }}
+            >
+              Add New Workspace
+              <Add sx={{ ml: 1 }} fontSize="small" />
+            </Button>
+          </div>
           {children}
         </Collapse>
       </li>
@@ -178,74 +200,76 @@ export const SideNavItem: FC<SideNavItemProps> = (props) => {
     : {};
 
   return (
-    <li>
-      <ButtonBase
-        disabled={disabled}
-        sx={{
-          alignItems: "center",
-          borderRadius: 1,
-          display: "flex",
-          justifyContent: "flex-start",
-          pl: `${16 + offset}px`,
-          pr: "16px",
-          py: "6px",
-          textAlign: "left",
-          width: "100%",
-          ...(active && {
-            ...(depth === 0 && {
-              backgroundColor: "var(--nav-item-active-bg)",
+    <>
+      <li>
+        <ButtonBase
+          disabled={disabled}
+          sx={{
+            alignItems: "center",
+            borderRadius: 1,
+            display: "flex",
+            justifyContent: "flex-start",
+            pl: `${16 + offset}px`,
+            pr: "16px",
+            py: "6px",
+            textAlign: "left",
+            width: "100%",
+            ...(active && {
+              ...(depth === 0 && {
+                backgroundColor: "var(--nav-item-active-bg)",
+              }),
             }),
-          }),
-          "&:hover": {
-            backgroundColor: "var(--nav-item-hover-bg)",
-          },
-        }}
-        {...linkProps}
-      >
-        {startIcon && (
+            "&:hover": {
+              backgroundColor: "var(--nav-item-hover-bg)",
+            },
+          }}
+          {...linkProps}
+        >
+          {startIcon && (
+            <Box
+              component="span"
+              sx={{
+                alignItems: "center",
+                color: "var(--nav-item-icon-color)",
+                display: "inline-flex",
+                justifyContent: "center",
+                mr: 2,
+                ...(active && {
+                  color: "var(--nav-item-icon-active-color)",
+                }),
+              }}
+            >
+              {startIcon}
+            </Box>
+          )}
           <Box
             component="span"
             sx={{
-              alignItems: "center",
-              color: "var(--nav-item-icon-color)",
-              display: "inline-flex",
-              justifyContent: "center",
-              mr: 2,
+              color: "var(--nav-item-color)",
+              flexGrow: 1,
+              fontFamily: (theme) => theme.typography.fontFamily,
+              fontSize: depth > 0 ? 13 : 14,
+              fontWeight: depth > 0 ? 500 : 600,
+              lineHeight: "24px",
+              whiteSpace: "nowrap",
               ...(active && {
-                color: "var(--nav-item-icon-active-color)",
+                color: "var(--nav-item-active-color)",
+              }),
+              ...(disabled && {
+                color: "var(--nav-item-disabled-color)",
               }),
             }}
           >
-            {startIcon}
+            {title}
           </Box>
-        )}
-        <Box
-          component="span"
-          sx={{
-            color: "var(--nav-item-color)",
-            flexGrow: 1,
-            fontFamily: (theme) => theme.typography.fontFamily,
-            fontSize: depth > 0 ? 13 : 14,
-            fontWeight: depth > 0 ? 500 : 600,
-            lineHeight: "24px",
-            whiteSpace: "nowrap",
-            ...(active && {
-              color: "var(--nav-item-active-color)",
-            }),
-            ...(disabled && {
-              color: "var(--nav-item-disabled-color)",
-            }),
-          }}
-        >
-          {title}
-        </Box>
-        {label && (
-          <Box component="span" sx={{ ml: 2 }}>
-            {label}
-          </Box>
-        )}
-      </ButtonBase>
-    </li>
+          {label && (
+            <Box component="span" sx={{ ml: 2 }}>
+              {label}
+            </Box>
+          )}
+        </ButtonBase>
+      </li>
+    </>
   );
 };
 

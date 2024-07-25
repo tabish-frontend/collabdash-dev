@@ -1,12 +1,4 @@
-import {
-  Avatar,
-  AvatarGroup,
-  Box,
-  Link,
-  Popover,
-  Stack,
-  Tooltip,
-} from "@mui/material";
+import { Avatar, AvatarGroup, Link, Popover, Tooltip } from "@mui/material";
 import { Employee } from "src/types";
 import { ImageAvatar } from "./image-avatar";
 import { RouterLink } from "./router-link";
@@ -27,12 +19,12 @@ export const UserAvatarGroup = ({ users }: { users: Employee[] }) => {
   const open = Boolean(anchorEl);
   const popoverId = open ? "user-popover" : undefined;
 
-  const renderUserAvatars = users.slice(0, 2).map((user) => (
-    <Tooltip key={user._id} title={user.full_name}>
+  const renderUserAvatars = users.slice(0, 2).map((user, index) => (
+    <Tooltip key={index} title={user.full_name}>
       <Link component={RouterLink} href={`${paths.employees}/${user.username}`}>
         <ImageAvatar
           path={user.avatar || ""}
-          alt={user.username}
+          alt={user.full_name}
           width={40}
           height={40}
         />

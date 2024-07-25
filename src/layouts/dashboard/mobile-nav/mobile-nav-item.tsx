@@ -9,6 +9,8 @@ import Collapse from "@mui/material/Collapse";
 import SvgIcon from "@mui/material/SvgIcon";
 
 import { RouterLink } from "src/components/shared";
+import { Button } from "@mui/material";
+import Add from "@mui/icons-material/Add";
 
 interface MobileNavItemProps {
   active?: boolean;
@@ -156,6 +158,18 @@ export const MobileNavItem: FC<MobileNavItemProps> = (props) => {
           </SvgIcon>
         </ButtonBase>
         <Collapse in={open} sx={{ mt: 0.5 }}>
+          <div style={{ marginLeft: "0px", width: "100%" }}>
+            <Button
+              size="small"
+              variant="outlined"
+              color="info"
+              sx={{ mb: 0.5 }}
+              fullWidth
+            >
+              Add New Workspace
+              <Add sx={{ ml: 1 }} fontSize="small" />
+            </Button>
+          </div>
           {children}
         </Collapse>
       </li>
