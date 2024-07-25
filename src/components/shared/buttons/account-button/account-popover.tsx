@@ -149,9 +149,10 @@ export const AccountPopover: FC<AccountPopoverProps> = (props) => {
 
       {logoutModal && (
         <ConfirmationModal
-          warning_title={"Log Out"}
-          warning_text={"Are you sure you want to logout ?"}
-          button_text={"Log Out"}
+          content={{
+            type: "Log Out",
+            text: "Are you sure you want to logout ?",
+          }}
           modal={logoutModal}
           onCancel={() => {
             setLogoutModal(false);

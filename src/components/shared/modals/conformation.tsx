@@ -12,19 +12,16 @@ interface ConfirmationModalProps {
   onConfirm: () => void;
   onCancel: () => void;
   modal: boolean;
-  warning_title: string;
-  warning_text: string;
-  button_text: string;
-  modal_color?: string;
+  content: {
+    type: string;
+    text: string;
+  };
 }
 export const ConfirmationModal: FC<ConfirmationModalProps> = ({
   onConfirm,
   onCancel,
   modal,
-  warning_title,
-  warning_text,
-  button_text,
-  modal_color = "error",
+  content,
 }) => (
   <Dialog fullWidth maxWidth="sm" open={modal} onClose={onCancel}>
     <Paper elevation={12}>
@@ -42,8 +39,8 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
             padding: 1,
             width: "40px",
             height: "40px",
-            backgroundColor: `${modal_color}.lightest`,
-            color: `${modal_color}.main`,
+            backgroundColor: "error.lightest",
+            color: "error.main",
           }}
         >
           <SvgIcon>
@@ -51,9 +48,9 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
           </SvgIcon>
         </Box>
         <div>
-          <Typography variant="h5">{warning_title}</Typography>
+          <Typography variant="h5">{content.type}</Typography>
           <Typography color="text.secondary" sx={{ mt: 1 }} variant="body2">
-            {warning_text}
+            {content.text}
           </Typography>
         </div>
       </Stack>
@@ -70,15 +67,15 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
         </Button>
         <Button
           sx={{
-            backgroundColor: `${modal_color}.main`,
+            backgroundColor: "error.main",
             "&:hover": {
-              backgroundColor: `${modal_color}.dark`,
+              backgroundColor: "error.dark",
             },
           }}
           variant="contained"
           onClick={onConfirm}
         >
-          {button_text}
+          {content.type}
         </Button>
       </Box>
     </Paper>

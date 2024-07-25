@@ -147,9 +147,10 @@ const EmployeeProfileComponent = () => {
 
       {deleteModal && (
         <ConfirmationModal
-          warning_title={"Delete"}
-          warning_text={"Are you sure you want to delete the Employee ?"}
-          button_text={"Delete"}
+          content={{
+            type: "Delete",
+            text: "Are you sure you want to delete the Employee ?",
+          }}
           modal={deleteModal}
           onCancel={() => setDeleteModal(false)}
           onConfirm={async () => {

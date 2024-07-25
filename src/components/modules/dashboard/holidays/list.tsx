@@ -230,7 +230,9 @@ const HolidaysListComponent = () => {
                             </TableCell>
 
                             <TableCell align="center" width={150}>
-                              <Typography width={150}>{holiday.title}</Typography>
+                              <Typography width={150}>
+                                {holiday.title}
+                              </Typography>
                             </TableCell>
 
                             {(user?.role === ROLES.Admin ||
@@ -295,9 +297,10 @@ const HolidaysListComponent = () => {
 
       {deleteModal.open && (
         <ConfirmationModal
-          warning_title={"Delete"}
-          warning_text={"Are you sure you want to delete the Holiday ?"}
-          button_text={"Delete"}
+          content={{
+            type: "Delete",
+            text: "Are you sure you want to delete the Holiday ?",
+          }}
           modal={deleteModal.open}
           onCancel={() =>
             setDeleteModal({

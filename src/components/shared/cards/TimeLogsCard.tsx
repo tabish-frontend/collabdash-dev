@@ -257,14 +257,15 @@ export const TimeLogCard = () => {
 
       {clockOutModal && (
         <ConfirmationModal
-          warning_title={"Clock Out"}
-          warning_text={"Are you sure you want to Clock Out ?"}
+          content={{
+            type: "Clock Out",
+            text: "Are you sure you want to Clock Out ?",
+          }}
           // warning_text={`Your shiftDuration is ${formatDuration(
           //   workingProgress.shiftDuration
           // )} and you completed your ${formatDuration(
           //   workingProgress.attendanceDuration
           // )} .....Are you sure you want to Clock Out ?`}
-          button_text={"Yes"}
           modal={clockOutModal}
           onCancel={() => {
             setClockOutModal(false);

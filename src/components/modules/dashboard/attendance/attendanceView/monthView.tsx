@@ -1,7 +1,5 @@
 import {
-  Link,
   Paper,
-  Skeleton,
   Stack,
   Table,
   TableBody,
@@ -14,12 +12,8 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import {
-  ImageAvatar,
-  NoRecordFound,
-  RouterLink,
-  Scrollbar,
-} from "src/components/shared";
+import { ImageAvatar, RouterLink } from "src/components/shared";
+import { Scrollbar } from "src/utils/scrollbar";
 import { paths } from "src/constants/paths";
 import { CellValues } from "../helper";
 import dayjs from "dayjs";

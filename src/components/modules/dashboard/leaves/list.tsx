@@ -32,7 +32,7 @@ import {
   CloseCircleOutline,
 } from "mdi-material-ui";
 
-import { useAuth, useSettings } from "src/hooks";
+import { useAuth, useDialog, useSettings } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { ROLES } from "src/constants/roles";
 import { LeaveModal } from "./leave-modal";
@@ -70,6 +70,15 @@ const HR_Screen = [
   "Action",
 ];
 
+interface LeaveDialogData {
+  type: string;
+  values?: object;
+}
+
+interface DeleteLeaveDialogData {
+  id: string;
+}
+
 const LeavesListComponent = () => {
   const settings = useSettings();
 
@@ -85,14 +94,7 @@ const LeavesListComponent = () => {
       : employee_Screen;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [leaveModal, setLeaveModal] = useState(false);
-  const [modalType, setModalType] = useState("");
   const [leavesList, setLeavesList] = useState<any[]>([]);
-  const [leaveValues, setLeaveValues] = useState();
-  const [deleteModal, setDeleteModal] = useState({
-    open: false,
-    leaveID: "",
-  });
 
   const getLeaves = useCallback(async () => {
     setIsLoading(true);
@@ -111,10 +113,13 @@ const LeavesListComponent = () => {
     getLeaves();
   }, [getLeaves]);
 
+  const LeaveDialog = useDialog<LeaveDialogData>();
+  const DeleteLeaveDialog = useDialog<DeleteLeaveDialogData>();
+
   const addAndUpdateLeaves = async (values: any) => {
     const { _id, ...LeaveValues } = values;
 
-    if (modalType === "update") {
+    if (LeaveDialog.data?.type === "update") {
       await leavesApi.updateLeave(_id, LeaveValues);
     } else {
       if (user?.role === ROLES.Employee) {
@@ -124,13 +129,14 @@ const LeavesListComponent = () => {
       }
     }
     getLeaves();
-    setLeaveModal(false);
-    setLeaveValues(undefined);
+    LeaveDialog.handleClose();
   };
 
-  const deleteLeave = async (_id: string) => {
+  const deleteLeave = async (_id: string | undefined) => {
+    if (!_id) return null;
     await leavesApi.deleteLeave(_id);
     setLeavesList((prevList) => prevList.filter((leave) => leave._id !== _id));
+    DeleteLeaveDialog.handleClose();
   };
 
   const handleUpdateStatus = async (leave_id: string, status: string) => {
@@ -141,7 +147,6 @@ const LeavesListComponent = () => {
       )
     );
   };
-  // const currentDate = new Date();
 
   const minDate = new Date(currentYear - 3, 0, 1); // January 1st, 5 years ago
   const maxDate = new Date(currentYear, 11, 31);
@@ -172,8 +177,9 @@ const LeavesListComponent = () => {
                 </SvgIcon>
               }
               onClick={() => {
-                setLeaveModal(true);
-                setModalType("create");
+                LeaveDialog.handleOpen({
+                  type: "create",
+                });
               }}
             >
               {user?.role === ROLES.Admin || user?.role === ROLES.HR
@@ -381,9 +387,10 @@ const LeavesListComponent = () => {
                                       color="success"
                                       sx={{ cursor: "pointer" }}
                                       onClick={() => {
-                                        setModalType("update");
-                                        setLeaveModal(true);
-                                        setLeaveValues(leave);
+                                        LeaveDialog.handleOpen({
+                                          type: "update",
+                                          values: leave,
+                                        });
                                       }}
                                     />
                                   </span>
@@ -395,9 +402,8 @@ const LeavesListComponent = () => {
                                       color="error"
                                       sx={{ cursor: "pointer" }}
                                       onClick={() =>
-                                        setDeleteModal({
-                                          open: true,
-                                          leaveID: leave._id,
+                                        DeleteLeaveDialog.handleOpen({
+                                          id: leave._id,
                                         })
                                       }
                                     />
@@ -417,37 +423,24 @@ const LeavesListComponent = () => {
         </Stack>
       </Container>
 
-      {leaveModal && (
+      {LeaveDialog.open && (
         <LeaveModal
-          leaveValues={leaveValues}
-          modalType={modalType}
-          modal={leaveModal}
-          onCancel={() => {
-            setLeaveModal(false);
-            setLeaveValues(undefined);
-          }}
+          leaveValues={LeaveDialog.data?.values}
+          modalType={LeaveDialog.data?.type}
+          modal={LeaveDialog.open}
+          onCancel={LeaveDialog.handleClose}
           onConfirm={addAndUpdateLeaves}
         />
       )}
 
-      {deleteModal.open && (
+      {DeleteLeaveDialog.open && (
         <ConfirmationModal
-          warning_title={"Delete"}
-          warning_text={"Are you sure you want to delete the Leave ?"}
-          button_text={"Delete"}
-          modal={deleteModal.open}
-          onCancel={() =>
-            setDeleteModal({
-              open: false,
-              leaveID: "",
-            })
-          }
-          onConfirm={async () => {
-            deleteLeave(deleteModal.leaveID);
-            setDeleteModal({
-              open: false,
-              leaveID: "",
-            });
+          modal={DeleteLeaveDialog.open}
+          onCancel={DeleteLeaveDialog.handleClose}
+          onConfirm={() => deleteLeave(DeleteLeaveDialog.data?.id)}
+          content={{
+            type: "Delete",
+            text: "Are you sure you want to delete the Leave ?",
           }}
         />
       )}

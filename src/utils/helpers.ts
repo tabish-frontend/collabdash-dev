@@ -21,10 +21,6 @@ dayjs.extend(timezone);
 dayjs.extend(localizedFormat);
 dayjs.extend(customParseFormat);
 
-// export const getTimeZone = (latitude : string, longitude: string) => {
-//   return dayjs.tz.guess(latitude, longitude);
-// }
-
 import { FormikValues } from "formik";
 
 const dayAbbreviations: { [key: string]: string } = {
@@ -262,9 +258,6 @@ export const getClassDuration = ({ startTime, endTime }: any) => {
 
 import { format } from "date-fns";
 
-type Document = any;
-type DocumentSort = Record<string, any>;
-
 export const capitalizeWord = (word: string): string => {
   return word.charAt(0).toUpperCase() + word.slice(1);
 };
@@ -290,99 +283,6 @@ export const getID = (ID: any) => {
 export const wait = (time: number): Promise<void> => {
   return new Promise((res) => setTimeout(res, time));
 };
-
-export function applyPagination<T = Document>(
-  documents: T[],
-  page: number,
-  rowsPerPage: number
-): T[] {
-  return documents.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-}
-
-export const applySorting = (data: any) => {
-  let filteredData = [...data];
-  filteredData.sort((a, b) =>
-    `${a.first_name} ${a.last_name}`.localeCompare(
-      `${b.first_name} ${b.last_name}`
-    )
-  );
-
-  return filteredData;
-};
-
-function descendingComparator(
-  a: DocumentSort,
-  b: DocumentSort,
-  sortBy: string
-): number {
-  // When compared to something undefined, always returns false.
-  // This means that if a field does not exist from either element ('a' or 'b') the return will be 0.
-
-  if (b[sortBy]! < a[sortBy]!) {
-    return -1;
-  }
-
-  if (b[sortBy]! > a[sortBy]!) {
-    return 1;
-  }
-
-  return 0;
-}
-
-function getComparator(sortDir: string, sortBy: string) {
-  return sortDir === "desc"
-    ? (a: DocumentSort, b: DocumentSort) => descendingComparator(a, b, sortBy)
-    : (a: DocumentSort, b: DocumentSort) => -descendingComparator(a, b, sortBy);
-}
-
-export function applySort<T = DocumentSort>(
-  documents: T[],
-  sortBy: string,
-  sortDir: "asc" | "desc"
-): T[] {
-  const comparator = getComparator(sortDir, sortBy);
-  const stabilizedThis = documents.map((el, index) => [el, index]);
-
-  stabilizedThis.sort((a, b) => {
-    // @ts-ignore
-    const newOrder = comparator(a[0], b[0]);
-
-    if (newOrder !== 0) {
-      return newOrder;
-    }
-
-    // @ts-ignore
-    return a[1] - b[1];
-  });
-
-  // @ts-ignore
-  return stabilizedThis.map((el) => el[0]);
-}
-
-// eslint-disable-next-line consistent-return
-export function deepCopy(obj: any): any {
-  if (typeof obj !== "object" || obj === null) {
-    return obj;
-  }
-
-  if (obj instanceof Date) {
-    return new Date(obj.getTime());
-  }
-
-  if (obj instanceof Array) {
-    return obj.reduce((arr, item, index) => {
-      arr[index] = deepCopy(item);
-      return arr;
-    }, []);
-  }
-
-  if (obj instanceof Object) {
-    return Object.keys(obj).reduce((newObj: any, key) => {
-      newObj[key] = deepCopy(obj[key]);
-      return newObj;
-    }, {});
-  }
-}
 
 export const getDate = (date: Date): string => format(date, "MM-dd-yyyy");
 
@@ -411,15 +311,6 @@ export const isPastDate = (date: Date, joinDate: Date): boolean => {
 
 export const isFutureDate = (date: Date, currentDate: Date): boolean =>
   date > currentDate;
-
-// export const isOnLeave = (date: Date, leaves: any[]): boolean =>
-//   leaves.some(
-//     (leave) =>
-//       new Date(leave.startDate).toDateString() <=
-//         new Date(date).toDateString() &&
-//       new Date(date).toDateString() <= new Date(leave.endDate).toDateString() &&
-//       leave.status === LeavesStatus.Approved
-//   );
 
 export const isOnLeave = (date: Date, leaves: any[]): boolean => {
   // Normalize the provided date to remove the time part

@@ -29,7 +29,7 @@ import { LoadingButton } from "@mui/lab";
 
 interface LeaveModalProps {
   modal: boolean;
-  modalType: string;
+  modalType: string | undefined;
   leaveValues: any;
   onConfirm: (values: any) => void;
   onCancel: () => void;

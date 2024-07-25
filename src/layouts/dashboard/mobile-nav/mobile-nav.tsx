@@ -6,7 +6,9 @@ import Drawer from "@mui/material/Drawer";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 
-import { Logo, RouterLink, Scrollbar } from "src/components/shared";
+import { Logo, RouterLink } from "src/components/shared";
+import { Scrollbar } from "src/utils/scrollbar";
+
 import { usePathname } from "src/hooks/use-pathname";
 import { paths } from "src/constants/paths";
 import type { NavColor } from "src/types/settings";

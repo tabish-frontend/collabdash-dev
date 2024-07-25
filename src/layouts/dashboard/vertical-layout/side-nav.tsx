@@ -1,22 +1,20 @@
 import type { FC } from "react";
 import { useMemo } from "react";
 import PropTypes from "prop-types";
-import File04Icon from "@untitled-ui/icons-react/build/esm/File04";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Drawer from "@mui/material/Drawer";
 import Stack from "@mui/material/Stack";
-import SvgIcon from "@mui/material/SvgIcon";
-import Typography from "@mui/material/Typography";
+
 import { useTheme } from "@mui/material/styles";
 
-import { Logo, RouterLink, Scrollbar } from "src/components/shared";
+import { Logo, RouterLink } from "src/components/shared";
+import { Scrollbar } from "src/utils/scrollbar";
+
 import { usePathname } from "src/hooks/use-pathname";
 import { paths } from "src/constants/paths";
 import type { NavColor } from "src/types/settings";
 
 import type { Section } from "../config";
-import { TenantSwitch } from "../../dashboard/tenant-switch";
 import { SideNavSection } from "./side-nav-section";
 
 const SIDE_NAV_WIDTH = 240;

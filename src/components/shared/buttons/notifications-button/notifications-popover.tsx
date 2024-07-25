@@ -19,7 +19,7 @@ import SvgIcon from "@mui/material/SvgIcon";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 
-import { Scrollbar } from "src/components/shared";
+import { Scrollbar } from "src/utils/scrollbar";
 
 import type { Notification } from "./notifications";
 

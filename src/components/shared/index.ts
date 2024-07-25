@@ -1,6 +1,5 @@
 export * from "./buttons";
 export * from "./router-link";
-export * from "./scrollbar";
 export * from "./toaster";
 export * from "./lists";
 export * from "./logos";

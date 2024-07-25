@@ -2,7 +2,7 @@ import { Avatar, Box, Link, Stack } from "@mui/material";
 import { RouterLink } from "../router-link";
 import { paths } from "src/constants/paths";
 import { Employee } from "src/types";
-import { Scrollbar } from "src/components";
+import { Scrollbar } from "src/utils/scrollbar";
 
 export const UsersListPopover = ({ users }: { users: Employee[] }) => (
   <Scrollbar sx={{ maxHeight: 150, width: 200, overflowY: "auto" }}>
