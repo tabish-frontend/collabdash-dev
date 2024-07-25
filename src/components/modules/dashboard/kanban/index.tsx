@@ -188,7 +188,7 @@ const KanbanBoardComponent = () => {
         }}
       >
         <Box sx={{ px: 3 }}>
-          <Typography variant="h4">Kanban</Typography>
+          <Typography variant="h4">Tasks</Typography>
         </Box>
         <DragDropContext onDragEnd={handleDragEnd}>
           <Box

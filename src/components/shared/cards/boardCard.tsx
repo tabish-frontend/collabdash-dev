@@ -26,10 +26,11 @@ const BoardCard = ({
       <Box padding={3} sx={{ minHeight: "280px" }}>
         <Stack
           direction={"column"}
-          onClick={() =>
-            router.push(
-              `${paths.workspaces}/${workspace_slug}/boards/${board?.slug}`
-            )
+          onClick={
+            () => router.push(paths.tasks)
+            // router.push(
+            //   `${paths.workspaces}/${workspace_slug}/boards/${board?.slug}`
+            // )
           }
         >
           <Typography gutterBottom variant="h5" component="h1">

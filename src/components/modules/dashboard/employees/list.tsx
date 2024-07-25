@@ -85,7 +85,7 @@ const EmployeeListComponent = () => {
             lg: 4,
           }}
         >
-          <Stack direction={"row"} justifyContent="space-between" spacing={4}>
+          <Stack direction={"row"} justifyContent="space-between" spacing={2}>
             <Typography variant="h4">{"Employee's"}</Typography>
 
             <Button
@@ -139,7 +139,7 @@ const EmployeeListComponent = () => {
             />
           </Box>
 
-          <Scrollbar sx={{ maxHeight: 650, overflowY: "auto", py: 2, px: 2 }}>
+          <Scrollbar sx={{ maxHeight: 580, overflowY: "auto", py: 2, px: 2 }}>
             <Grid container spacing={2}>
               {isLoading ? (
                 [...Array(9)].map((_, index) => (
