@@ -33,9 +33,10 @@ import {
   School,
 } from "mdi-material-ui";
 import { formatDob } from "src/utils/helpers";
-import { useState } from "react";
+import { FC, useState } from "react";
 import { ImageAvatar } from "../image-avatar";
 import { UpdateEmployeeModal } from "src/components/modules/dashboard/employees/update-modal";
+import { useDialog } from "src/hooks";
 
 const StyledGrid = styled(Grid)(({ theme }) => ({
   display: "flex",
@@ -49,16 +50,17 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
   },
 }));
 
-export const EmployeeDetails = ({
-  employeeData,
-  UpdateEmployee,
-}: {
+interface EmployeeDetailsProps {
   employeeData: Employee | undefined;
   UpdateEmployee: (values: Employee) => void;
-}) => {
-  const [updateModal, setUpdateModal] = useState(false);
+}
 
+export const EmployeeDetails: FC<EmployeeDetailsProps> = ({
+  employeeData,
+  UpdateEmployee,
+}) => {
   const [extandable, setExtandable] = useState(false);
+  const UpdateEmployeeDialog = useDialog();
 
   return (
     <>
@@ -66,7 +68,7 @@ export const EmployeeDetails = ({
         <Box sx={{ position: "absolute", top: 20, right: 15 }}>
           <SvgIcon
             sx={{ cursor: "pointer" }}
-            onClick={() => setUpdateModal(true)}
+            onClick={() => UpdateEmployeeDialog.handleOpen()}
           >
             <Pencil />
           </SvgIcon>
@@ -279,7 +281,7 @@ export const EmployeeDetails = ({
         </Grid>
       </Card>
 
-      {updateModal && (
+      {UpdateEmployeeDialog.open && (
         <UpdateEmployeeModal
           employeeValues={{
             designation: employeeData?.designation || "",
@@ -287,11 +289,11 @@ export const EmployeeDetails = ({
             username: employeeData?.username || "",
             email: employeeData?.email || "",
           }}
-          modal={updateModal}
-          onCancel={() => setUpdateModal(false)}
+          modal={UpdateEmployeeDialog.open}
+          onCancel={UpdateEmployeeDialog.handleClose}
           onConfirm={async (values: Employee) => {
             await UpdateEmployee(values);
-            setUpdateModal(false);
+            UpdateEmployeeDialog.handleClose();
           }}
         />
       )}

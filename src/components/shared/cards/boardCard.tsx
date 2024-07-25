@@ -75,21 +75,19 @@ const BoardCard = ({
 
       {deleteModal && (
         <ConfirmationModal
-          warning_title={"Delete"}
-          warning_text={"Are you sure you want to delete the Board ?"}
-          button_text={"Delete"}
+          content={{
+            type: "Delete",
+            text: "Are you sure you want to delete the Board ?",
+          }}
           modal={deleteModal.open}
           onCancel={() =>
             setDeleteModal({
               open: false,
-              //   boardID: "",
             })
           }
           onConfirm={async () => {
-            // deleteHoliday(deleteModal.holidayID);
             setDeleteModal({
               open: false,
-              //   boardID: "",
             });
           }}
         />

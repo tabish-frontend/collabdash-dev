@@ -21,6 +21,7 @@ import { paths } from "src/constants/paths";
 import { useAuth } from "src/hooks/use-auth";
 import { AuthContextType } from "src/contexts/auth";
 import { ConfirmationModal } from "../../modals";
+import { useDialog } from "src/hooks";
 
 interface AccountPopoverProps {
   anchorEl: null | Element;
@@ -30,7 +31,8 @@ interface AccountPopoverProps {
 
 export const AccountPopover: FC<AccountPopoverProps> = (props) => {
   const { user, signOut } = useAuth<AuthContextType>();
-  const [logoutModal, setLogoutModal] = useState(false);
+
+  const LogoutDialog = useDialog();
 
   const { anchorEl, onClose, open, ...other } = props;
   const router = useRouter();
@@ -39,11 +41,17 @@ export const AccountPopover: FC<AccountPopoverProps> = (props) => {
     try {
       signOut();
       router.replace(paths.auth.login);
+      LogoutDialog.handleClose();
       onClose?.();
     } catch (err) {
       toast.error("Something went wrong!");
     }
-  }, [signOut, router, onClose]);
+  }, [signOut, router, LogoutDialog, onClose]);
+
+  const handleCancel = useCallback(() => {
+    LogoutDialog.handleClose();
+    onClose?.();
+  }, [LogoutDialog, onClose]);
 
   const userName = user ? user?.full_name : "";
   const userEmail = user ? user?.email : "";
@@ -111,23 +119,6 @@ export const AccountPopover: FC<AccountPopoverProps> = (props) => {
               primary={<Typography variant="body1">Settings</Typography>}
             />
           </ListItemButton>
-          {/* <ListItemButton
-          onClick={onClose}
-          sx={{
-            borderRadius: 1,
-            px: 1,
-            py: 0.5,
-          }}
-        >
-          <ListItemIcon>
-            <SvgIcon fontSize="small">
-              <CreditCard01Icon />
-            </SvgIcon>
-          </ListItemIcon>
-          <ListItemText
-            primary={<Typography variant="body1">Billing</Typography>}
-          />
-        </ListItemButton> */}
         </Box>
         <Divider sx={{ my: "0 !important" }} />
         <Box
@@ -139,7 +130,7 @@ export const AccountPopover: FC<AccountPopoverProps> = (props) => {
         >
           <Button
             color="inherit"
-            onClick={() => setLogoutModal(true)}
+            onClick={() => LogoutDialog.handleOpen()}
             size="small"
           >
             Logout
@@ -147,20 +138,14 @@ export const AccountPopover: FC<AccountPopoverProps> = (props) => {
         </Box>
       </Popover>
 
-      {logoutModal && (
+      {LogoutDialog.open && (
         <ConfirmationModal
+          modal={LogoutDialog.open}
+          onCancel={handleCancel}
+          onConfirm={() => handleLogout()}
           content={{
             type: "Log Out",
             text: "Are you sure you want to logout ?",
-          }}
-          modal={logoutModal}
-          onCancel={() => {
-            setLogoutModal(false);
-            onClose?.();
-          }}
-          onConfirm={async () => {
-            handleLogout();
-            setLogoutModal(false);
           }}
         />
       )}

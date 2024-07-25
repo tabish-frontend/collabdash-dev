@@ -14,11 +14,14 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { NoRecordFound } from "src/components/shared";
+import { NoRecordFound, RouterLink } from "src/components/shared";
 import { useState } from "react";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { EditAttendanceModal } from "./edit-attendance";
 import { formatTime } from "src/utils";
+import { useDialog } from "src/hooks";
+import { Scrollbar } from "src/utils/scrollbar";
+import { paths } from "src/constants/paths";
 
 const columns = [
   "Full Name",
@@ -28,18 +31,15 @@ const columns = [
   "Working Hours",
   "ClockIn Time",
   "ClockOut Time",
-  "Breaks Start/End",
+  "Break Start/End",
   "Duration",
   "Status",
 ];
 
 interface ModalValuesTypes {
-  open: boolean;
-  attendance: {
-    id: string;
-    clockInTime: null | Date;
-    clockOutTime: null | Date;
-  };
+  id: string;
+  clockInTime: null | Date;
+  clockOutTime: null | Date;
 }
 
 export const DayViewAttendance = ({
@@ -47,168 +47,168 @@ export const DayViewAttendance = ({
   filters,
   handleEditAttendance,
 }: any) => {
-  const modalnitialValues = {
-    open: false,
-    attendance: {
-      id: "",
-      clockInTime: null,
-      clockOutTime: null,
-    },
-  };
-
-  const [modalValues, setModalValues] =
-    useState<ModalValuesTypes>(modalnitialValues);
+  const EditAttendanceDialog = useDialog<{ values: ModalValuesTypes }>();
 
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column, index) => (
-                <TableCell key={index} align="center">
-                  <span style={{ fontWeight: 700 }}>{column}</span>
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {employeesAttendance.map((attendance: any, index: number) => {
-              const attendanceValues = CellValues(attendance, filters.date);
+    <Paper sx={{ overflowX: "auto" }}>
+      <TableContainer>
+        <Scrollbar sx={{ maxHeight: 470 }}>
+          <Table stickyHeader>
+            <TableHead>
+              <TableRow>
+                {columns.map((column, index) => (
+                  <TableCell key={index} align="center">
+                    <span style={{ fontWeight: 700 }}>{column}</span>
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {employeesAttendance.map((attendance: any, index: number) => {
+                const attendanceValues = CellValues(attendance, filters.date);
 
-              return (
-                <TableRow hover key={index}>
-                  <TableCell align="center">
-                    <Typography width={150}>{attendance.full_name}</Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Typography width={100}>
-                      {attendanceValues.shift.type}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Typography width={150}>
-                      {attendanceValues.shift.start}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Typography width={150}>
-                      {attendanceValues.shift.end}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Typography width={150}>
-                      {attendanceValues.shift.hours}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Typography width={150}>
-                      {attendanceValues.attendance.clockIn
-                        ? formatTime(attendanceValues.attendance.clockIn)
-                        : "--"}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Typography width={150}>
-                      {attendanceValues.attendance.clockOut
-                        ? formatTime(attendanceValues.attendance.clockOut)
-                        : "--"}
-                    </Typography>
-                  </TableCell>
-
-                  <TableCell align="center">
-                    {!attendanceValues.attendance.breaks?.length ? (
-                      "--"
-                    ) : attendanceValues.attendance.breaks.length > 1 ? (
-                      <TextField
-                        select
-                        variant="standard"
-                        defaultValue={attendanceValues.attendance.breaks[0]._id}
-                        InputProps={{
-                          disableUnderline: true,
-                        }}
-                      >
-                        {attendanceValues.attendance.breaks.map(
-                          (item: any, index: number) => (
-                            <MenuItem key={item._id} value={item._id}>
-                              {formatTime(item.start)} -{" "}
-                              {item.end ? formatTime(item.end) : "not yet"}
-                            </MenuItem>
-                          )
-                        )}
-                      </TextField>
-                    ) : (
-                      <Typography width={200}>
-                        {`${formatTime(
-                          attendanceValues.attendance.breaks[0].start
-                        )} - ${
-                          attendanceValues.attendance.breaks[0].end
-                            ? formatTime(
-                                attendanceValues.attendance.breaks[0].end
-                              )
-                            : " not yet"
-                        }`}
-                      </Typography>
-                    )}
-                  </TableCell>
-
-                  <TableCell align="center">
-                    <Typography width={150}>
-                      {attendanceValues.attendance.duration}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    {attendanceValues.open ? (
-                      <Stack
+                return (
+                  <TableRow hover key={index}>
+                    <TableCell align="center">
+                      <Typography
                         width={150}
-                        direction={"row"}
-                        justifyContent={"center"}
-                        gap={1}
+                        display={"block"}
+                        component={RouterLink}
+                        href={`${paths.employees}/${attendance.username}`}
+                        color="inherit"
+                        variant="body2"
                       >
-                        {attendanceValues.status}
-
-                        <EditOutlinedIcon
-                          sx={{ cursor: "pointer" }}
-                          onClick={() =>
-                            setModalValues({
-                              open: true,
-                              attendance: {
-                                id: attendanceValues.attendance.id,
-                                clockInTime:
-                                  new Date(
-                                    attendanceValues.attendance.clockIn
-                                  ) || null,
-                                clockOutTime: attendanceValues.attendance
-                                  .clockOut
-                                  ? new Date(
-                                      attendanceValues.attendance.clockOut
-                                    )
-                                  : null,
-                              },
-                            })
-                          }
-                        />
-                      </Stack>
-                    ) : (
-                      <Typography width={150}>
-                        {attendanceValues.status}
+                        {attendance.full_name}
                       </Typography>
-                    )}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Typography width={100}>
+                        {attendanceValues.shift.type}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Typography width={150}>
+                        {attendanceValues.shift.start}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Typography width={150}>
+                        {attendanceValues.shift.end}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Typography width={150}>
+                        {attendanceValues.shift.hours}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Typography width={150}>
+                        {attendanceValues.attendance.clockIn
+                          ? formatTime(attendanceValues.attendance.clockIn)
+                          : "--"}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Typography width={150}>
+                        {attendanceValues.attendance.clockOut
+                          ? formatTime(attendanceValues.attendance.clockOut)
+                          : "--"}
+                      </Typography>
+                    </TableCell>
+
+                    <TableCell align="center">
+                      {!attendanceValues.attendance.breaks?.length ? (
+                        "--"
+                      ) : attendanceValues.attendance.breaks.length > 1 ? (
+                        <TextField
+                          select
+                          variant="standard"
+                          defaultValue={
+                            attendanceValues.attendance.breaks[0]._id
+                          }
+                          InputProps={{
+                            disableUnderline: true,
+                          }}
+                        >
+                          {attendanceValues.attendance.breaks.map(
+                            (item: any, index: number) => (
+                              <MenuItem key={item._id} value={item._id}>
+                                {formatTime(item.start)} -{" "}
+                                {item.end ? formatTime(item.end) : "not yet"}
+                              </MenuItem>
+                            )
+                          )}
+                        </TextField>
+                      ) : (
+                        <Typography width={200}>
+                          {`${formatTime(
+                            attendanceValues.attendance.breaks[0].start
+                          )} - ${
+                            attendanceValues.attendance.breaks[0].end
+                              ? formatTime(
+                                  attendanceValues.attendance.breaks[0].end
+                                )
+                              : " not yet"
+                          }`}
+                        </Typography>
+                      )}
+                    </TableCell>
+
+                    <TableCell align="center">
+                      <Typography width={150}>
+                        {attendanceValues.attendance.duration}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      {attendanceValues.open ? (
+                        <Stack
+                          width={150}
+                          direction={"row"}
+                          justifyContent={"center"}
+                          gap={1}
+                        >
+                          {attendanceValues.status}
+
+                          <EditOutlinedIcon
+                            sx={{ cursor: "pointer" }}
+                            onClick={() =>
+                              EditAttendanceDialog.handleOpen({
+                                values: {
+                                  id: attendanceValues.attendance.id,
+                                  clockInTime:
+                                    new Date(
+                                      attendanceValues.attendance.clockIn
+                                    ) || null,
+                                  clockOutTime: attendanceValues.attendance
+                                    .clockOut
+                                    ? new Date(
+                                        attendanceValues.attendance.clockOut
+                                      )
+                                    : null,
+                                },
+                              })
+                            }
+                          />
+                        </Stack>
+                      ) : (
+                        <Typography width={150}>
+                          {attendanceValues.status}
+                        </Typography>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </Scrollbar>
       </TableContainer>
 
-      {modalValues.open && (
+      {EditAttendanceDialog.open && (
         <EditAttendanceModal
-          attendanceValues={modalValues.attendance}
-          modal={modalValues.open}
-          onCancel={() => {
-            setModalValues(modalnitialValues);
-          }}
+          attendanceValues={EditAttendanceDialog.data?.values}
+          modal={EditAttendanceDialog.open}
+          onCancel={EditAttendanceDialog.handleClose}
           onConfirm={handleEditAttendance}
         />
       )}

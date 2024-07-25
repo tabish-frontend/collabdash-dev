@@ -27,7 +27,7 @@ class EmployeesApi {
     return response.data;
   }
 
-  async deleteEmployee(username: string) {
+  async deleteEmployee(username: string | string[]) {
     const response = await Axios.delete(`/employees/${username}`);
     return response.data;
   }

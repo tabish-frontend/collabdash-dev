@@ -30,7 +30,7 @@ import { LoadingButton } from "@mui/lab";
 
 interface ShiftModalProps {
   modal: boolean;
-  modalType: string;
+  modalType: string | undefined;
   shiftValues: Shift | undefined;
   onConfirm: (values: any) => void;
   onCancel: () => void;

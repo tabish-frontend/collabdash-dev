@@ -17,16 +17,14 @@ import { Scrollbar } from "src/utils/scrollbar";
 import { paths } from "src/constants/paths";
 import { CellValues } from "../helper";
 import dayjs from "dayjs";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { EditAttendanceModal } from "./edit-attendance";
+import { useDialog } from "src/hooks";
 
 interface ModalValuesTypes {
-  open: boolean;
-  attendance: {
-    id: string;
-    clockInTime: null | Date;
-    clockOutTime: null | Date;
-  };
+  id: string;
+  clockInTime: null | Date;
+  clockOutTime: null | Date;
 }
 
 export const MonthViewAttendance = ({
@@ -34,19 +32,10 @@ export const MonthViewAttendance = ({
   filters,
   handleEditAttendance,
 }: any) => {
-  const modalnitialValues = {
-    open: false,
-    attendance: {
-      id: "",
-      clockInTime: null,
-      clockOutTime: null,
-    },
-  };
-
   const daysInMonth = dayjs(filters.date).daysInMonth();
   const theme = useTheme();
-  const [modalValues, setModalValues] =
-    useState<ModalValuesTypes>(modalnitialValues);
+
+  const EditAttendanceDialog = useDialog<{ values: ModalValuesTypes }>();
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -55,15 +44,16 @@ export const MonthViewAttendance = ({
   const todayMonth = today.month();
   const todayYear = today.year();
 
-  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const scrollRef = useRef<any>(null);
 
   useEffect(() => {
     const scrollToToday = () => {
       if (scrollRef.current) {
+        const scrollElement = scrollRef.current.getScrollElement();
         const todayColumn = document.getElementById("today-column");
-        if (todayColumn) {
-          scrollRef.current.scrollLeft =
-            todayColumn.offsetLeft - scrollRef.current.offsetLeft;
+        if (todayColumn && scrollElement) {
+          scrollElement.scrollLeft =
+            todayColumn.offsetLeft - scrollElement.offsetLeft;
         }
       }
     };
@@ -71,144 +61,139 @@ export const MonthViewAttendance = ({
   }, []);
 
   return (
-    <Scrollbar sx={{ maxHeight: 600, overflowY: "auto" }}>
-      <TableContainer
-        component={Paper}
-        sx={{ overflowX: "auto" }}
-        ref={scrollRef}
-      >
-        <Table>
-          <TableHead sx={{ borderBottom: 1 }}>
-            <TableRow>
-              <TableCell
-                sx={{
-                  position: "sticky",
-                  left: 0,
-                }}
-              >
-                Employee
-              </TableCell>
-              {[...Array(daysInMonth)].map((_, index) => {
-                const cellDate = dayjs(filters.date).set("date", index + 1);
-                const isToday =
-                  cellDate.date() === todayDate &&
-                  cellDate.month() === todayMonth &&
-                  cellDate.year() === todayYear;
-
-                return (
-                  <TableCell
-                    key={`header-${index + 1}`}
-                    id={isToday ? "today-column" : undefined}
-                    sx={{
-                      backgroundColor: isToday
-                        ? theme.palette.mode === "dark"
-                          ? "HighlightText !important"
-                          : `${theme.palette.info.alpha50} !important`
-                        : "inherit",
-                    }}
-                  >
-                    <Typography variant="caption">{index + 1}</Typography>
-                  </TableCell>
-                );
-              })}
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {employeesAttendance.map((item: any, index: number) => (
-              <TableRow key={index}>
+    <Paper sx={{ overflowX: "auto" }}>
+      <TableContainer>
+        <Scrollbar ref={scrollRef} sx={{ maxHeight: 470 }}>
+          <Table>
+            <TableHead sx={{ borderBottom: 1 }}>
+              <TableRow>
                 <TableCell
                   sx={{
                     position: "sticky",
                     left: 0,
-                    p: 1,
-                    backgroundColor: theme.palette.background.paper,
                   }}
                 >
-                  <Stack
-                    direction={"row"}
-                    component={RouterLink}
-                    color="inherit"
-                    href={`${paths.employees}/${item.username}`}
-                    gap={1}
-                    width={isSmallScreen ? 80 : 150}
-                    alignItems={"center"}
-                  >
-                    <Tooltip title={item.full_name} arrow>
-                      <span>
-                        <ImageAvatar
-                          path={item.avatar || ""}
-                          alt="user image"
-                          width={30}
-                          height={30}
-                        />
-                      </span>
-                    </Tooltip>
-
-                    {!isSmallScreen && item.full_name}
-                  </Stack>
+                  Employee
                 </TableCell>
-
-                {[...Array(daysInMonth)].map((_, dayIndex) => {
-                  const date = dayjs(filters.date).set("date", dayIndex + 1);
+                {[...Array(daysInMonth)].map((_, index) => {
+                  const cellDate = dayjs(filters.date).set("date", index + 1);
                   const isToday =
-                    date.date() === todayDate &&
-                    date.month() === todayMonth &&
-                    date.year() === todayYear;
-
-                  const attendanceValues = CellValues(item, date.toDate());
+                    cellDate.date() === todayDate &&
+                    cellDate.month() === todayMonth &&
+                    cellDate.year() === todayYear;
 
                   return (
                     <TableCell
-                      key={`attendance-${index}-${dayIndex}`}
+                      key={`header-${index + 1}`}
+                      id={isToday ? "today-column" : undefined}
                       sx={{
-                        p: 0,
-                        cursor: "pointer",
                         backgroundColor: isToday
                           ? theme.palette.mode === "dark"
-                            ? "HighlightText"
-                            : theme.palette.info.alpha50
+                            ? "HighlightText !important"
+                            : `${theme.palette.info.alpha50} !important`
                           : "inherit",
                       }}
-                      align="center"
-                      onClick={() =>
-                        attendanceValues?.open &&
-                        setModalValues({
-                          open: true,
-                          attendance: {
-                            id: attendanceValues.attendance.id,
-                            clockInTime:
-                              new Date(attendanceValues.attendance.clockIn) ||
-                              null,
-                            clockOutTime: attendanceValues.attendance.clockOut
-                              ? new Date(attendanceValues.attendance.clockOut)
-                              : null,
-                          },
-                        })
-                      }
                     >
-                      <Tooltip title={attendanceValues?.tooltip} arrow>
-                        <span>{attendanceValues.icon}</span>
-                      </Tooltip>
+                      <Typography variant="caption">{index + 1}</Typography>
                     </TableCell>
                   );
                 })}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHead>
+
+            <TableBody>
+              {employeesAttendance.map((item: any, index: number) => (
+                <TableRow key={index}>
+                  <TableCell
+                    sx={{
+                      position: "sticky",
+                      left: 0,
+                      p: 1,
+                      backgroundColor: theme.palette.background.paper,
+                    }}
+                  >
+                    <Stack
+                      direction={"row"}
+                      component={RouterLink}
+                      color="inherit"
+                      href={`${paths.employees}/${item.username}`}
+                      gap={1}
+                      width={isSmallScreen ? 80 : 150}
+                      alignItems={"center"}
+                    >
+                      <Tooltip title={item.full_name} arrow>
+                        <span>
+                          <ImageAvatar
+                            path={item.avatar || ""}
+                            alt="user image"
+                            width={30}
+                            height={30}
+                          />
+                        </span>
+                      </Tooltip>
+
+                      {!isSmallScreen && item.full_name}
+                    </Stack>
+                  </TableCell>
+
+                  {[...Array(daysInMonth)].map((_, dayIndex) => {
+                    const date = dayjs(filters.date).set("date", dayIndex + 1);
+                    const isToday =
+                      date.date() === todayDate &&
+                      date.month() === todayMonth &&
+                      date.year() === todayYear;
+
+                    const attendanceValues = CellValues(item, date.toDate());
+
+                    return (
+                      <TableCell
+                        key={`attendance-${index}-${dayIndex}`}
+                        sx={{
+                          p: 0,
+                          cursor: "pointer",
+                          backgroundColor: isToday
+                            ? theme.palette.mode === "dark"
+                              ? "HighlightText"
+                              : theme.palette.info.alpha50
+                            : "inherit",
+                        }}
+                        align="center"
+                        onClick={() =>
+                          attendanceValues?.open &&
+                          EditAttendanceDialog.handleOpen({
+                            values: {
+                              id: attendanceValues.attendance.id,
+                              clockInTime:
+                                new Date(attendanceValues.attendance.clockIn) ||
+                                null,
+                              clockOutTime: attendanceValues.attendance.clockOut
+                                ? new Date(attendanceValues.attendance.clockOut)
+                                : null,
+                            },
+                          })
+                        }
+                      >
+                        <Tooltip title={attendanceValues?.tooltip} arrow>
+                          <span>{attendanceValues.icon}</span>
+                        </Tooltip>
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Scrollbar>
       </TableContainer>
 
-      {modalValues.open && (
+      {EditAttendanceDialog.open && (
         <EditAttendanceModal
-          attendanceValues={modalValues.attendance}
-          modal={modalValues.open}
-          onCancel={() => {
-            setModalValues(modalnitialValues);
-          }}
+          attendanceValues={EditAttendanceDialog.data?.values}
+          modal={EditAttendanceDialog.open}
+          onCancel={EditAttendanceDialog.handleClose}
           onConfirm={handleEditAttendance}
         />
       )}
-    </Scrollbar>
+    </Paper>
   );
 };

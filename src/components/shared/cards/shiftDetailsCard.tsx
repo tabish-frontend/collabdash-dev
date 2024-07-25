@@ -14,36 +14,38 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { ShiftModal } from "../modals";
 import { shiftApi } from "src/api";
 import { Shift } from "src/types";
 import { formatTime, getAbbreviatedDays } from "src/utils/helpers";
 import { Pencil } from "mdi-material-ui";
+import { useDialog } from "src/hooks";
 
-export const ShiftDetails = ({
-  employeeID,
-  shiftDetails,
-}: {
+interface ShiftDetailsProps {
   employeeID: string | undefined;
   shiftDetails: Shift | undefined;
+}
+
+export const ShiftDetails: FC<ShiftDetailsProps> = ({
+  employeeID,
+  shiftDetails,
 }) => {
-  const [shiftModal, setshiftModal] = useState(false);
-  const [modalType, setModalType] = useState("");
   const [employeeShift, setEmployeeShift] = useState(shiftDetails);
+  const ShiftDialog = useDialog<{ type: string }>();
 
   const addAndUpdateShift = async (values: any) => {
     const { _id, ...shiftValues } = values;
 
     let response: any;
 
-    if (modalType === "update") {
+    if (ShiftDialog.data?.type === "update") {
       response = await shiftApi.updateShift(_id, shiftValues);
     } else {
       response = await shiftApi.addShift({ ...shiftValues, user: employeeID });
     }
-    setshiftModal(false);
     setEmployeeShift(response.data);
+    ShiftDialog.handleClose();
   };
 
   useEffect(() => {
@@ -62,8 +64,9 @@ export const ShiftDetails = ({
             <SvgIcon
               sx={{ cursor: "pointer" }}
               onClick={() => {
-                setshiftModal(true);
-                setModalType("update");
+                ShiftDialog.handleOpen({
+                  type: "update",
+                });
               }}
             >
               <Pencil />
@@ -143,8 +146,9 @@ export const ShiftDetails = ({
                 <Button
                   variant="contained"
                   onClick={() => {
-                    setModalType("create");
-                    setshiftModal(true);
+                    ShiftDialog.handleOpen({
+                      type: "create",
+                    });
                   }}
                 >
                   Add Shift
@@ -155,14 +159,12 @@ export const ShiftDetails = ({
         </CardContent>
       </Card>
 
-      {shiftModal && (
+      {ShiftDialog.open && (
         <ShiftModal
-          modalType={modalType}
+          modalType={ShiftDialog.data?.type}
           shiftValues={employeeShift}
-          modal={shiftModal}
-          onCancel={() => {
-            setshiftModal(false);
-          }}
+          modal={ShiftDialog.open}
+          onCancel={ShiftDialog.handleClose}
           onConfirm={addAndUpdateShift}
         />
       )}

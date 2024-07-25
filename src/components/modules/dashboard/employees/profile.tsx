@@ -21,7 +21,7 @@ import {
   LeavesCard,
   ConfirmationModal,
 } from "src/components/shared";
-import { useSettings } from "src/hooks";
+import { useDialog, useSettings } from "src/hooks";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -34,17 +34,16 @@ const EmployeeProfileComponent = () => {
   const { username } = router.query;
 
   const [employeeData, setEmployeeData] = useState<Employee | undefined>();
-  const [deleteModal, setDeleteModal] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false)
 
-  // Memoize the handleGetEmployee function
+  const DeleteEmployeeDialog = useDialog();
+
   const handleGetEmployee = useCallback(async () => {
     if (!username) return;
 
     // setIsLoading(true)
     const response = await employeesApi.getEmployee(username);
     setEmployeeData(response);
-  }, [username]); // Memoize based on username
+  }, [username]);
 
   const handleUpdateEmployee = async (values: any) => {
     const { username, ...UpdatedValues } = values;
@@ -54,12 +53,13 @@ const EmployeeProfileComponent = () => {
     setEmployeeData(response);
   };
 
-  const handleDeleteEmployee = async (username: any) => {
+  const handleDeleteEmployee = async () => {
+    if (!username) return null;
     await employeesApi.deleteEmployee(username);
+    DeleteEmployeeDialog.handleClose();
     router.back();
   };
 
-  // useEffect to call handleGetEmployee when username changes
   useEffect(() => {
     handleGetEmployee();
   }, [handleGetEmployee]);
@@ -106,7 +106,7 @@ const EmployeeProfileComponent = () => {
                   startIcon={<DeleteIcon />}
                   color="error"
                   size="small"
-                  onClick={() => setDeleteModal(true)}
+                  onClick={() => DeleteEmployeeDialog.handleOpen()}
                 >
                   Delete Employee
                 </Button>
@@ -145,17 +145,14 @@ const EmployeeProfileComponent = () => {
         </Stack>
       </Container>
 
-      {deleteModal && (
+      {DeleteEmployeeDialog.open && (
         <ConfirmationModal
+          modal={DeleteEmployeeDialog.open}
+          onCancel={DeleteEmployeeDialog.handleClose}
+          onConfirm={handleDeleteEmployee}
           content={{
             type: "Delete",
             text: "Are you sure you want to delete the Employee ?",
-          }}
-          modal={deleteModal}
-          onCancel={() => setDeleteModal(false)}
-          onConfirm={async () => {
-            handleDeleteEmployee(username);
-            setDeleteModal(false);
           }}
         />
       )}

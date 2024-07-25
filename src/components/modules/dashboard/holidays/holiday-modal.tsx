@@ -24,7 +24,7 @@ import { LoadingButton } from "@mui/lab";
 
 interface HolidayModalProps {
   modal: boolean;
-  modalType: string;
+  modalType: string | undefined;
   holidayValues: any;
   onConfirm: (values: any) => void;
   onCancel: () => void;

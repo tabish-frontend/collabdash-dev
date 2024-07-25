@@ -36,7 +36,7 @@ import {
   UserAvatarGroup,
 } from "src/components/shared";
 import { SquareEditOutline, TrashCanOutline } from "mdi-material-ui";
-import { useAuth, useSettings } from "src/hooks";
+import { useAuth, useDialog, useSettings } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { ROLES } from "src/constants/roles";
 
@@ -49,10 +49,18 @@ const HR_Screen = [
   "Action",
 ];
 
+interface HolidayDialogData {
+  type: string;
+  values?: object;
+}
+
+interface DeletHolidayDialogData {
+  id: string;
+}
+
 const HolidaysListComponent = () => {
   const currentYear = new Date().getFullYear();
 
-  // Create an array of the last 4 years
   const lastFourYears = Array.from(
     { length: 4 },
     (_, index) => currentYear - index
@@ -65,7 +73,6 @@ const HolidaysListComponent = () => {
   };
 
   const settings = useSettings();
-  const theme = useTheme();
   const { user } = useAuth<AuthContextType>();
 
   const columns =
@@ -74,14 +81,7 @@ const HolidaysListComponent = () => {
       : employee_Screen;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [holidayModal, setHolidayModal] = useState(false);
   const [holidayList, setHolidayList] = useState<any[]>([]);
-  const [modalType, setModalType] = useState("");
-  const [holidayValues, setHolidayValues] = useState();
-  const [deleteModal, setDeleteModal] = useState({
-    open: false,
-    holidayID: "",
-  });
 
   const getHoliday = useCallback(async () => {
     setIsLoading(true);
@@ -100,27 +100,29 @@ const HolidaysListComponent = () => {
     getHoliday();
   }, [getHoliday]);
 
+  const HolidayDialog = useDialog<HolidayDialogData>();
+  const DeleteHolidayDialog = useDialog<DeletHolidayDialogData>();
+
   const addAndUpdateHoliday = async (values: any) => {
     const { _id, ...HolidayValues } = values;
 
-    if (modalType === "update") {
+    if (HolidayDialog.data?.type === "update") {
       await holidaysApi.updateHoliday(_id, HolidayValues);
     } else {
       await holidaysApi.addHoliday(HolidayValues);
     }
     getHoliday();
-    setHolidayModal(false);
-    setHolidayValues(undefined);
+    HolidayDialog.handleClose();
   };
 
-  const deleteHoliday = async (_id: string) => {
+  const deleteHoliday = async (_id: string | undefined) => {
+    if (!_id) return null;
     await holidaysApi.deleteHoliday(_id);
     setHolidayList((prevList) =>
       prevList.filter((holiday) => holiday._id !== _id)
     );
+    DeleteHolidayDialog.handleClose();
   };
-
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <Box
@@ -143,8 +145,9 @@ const HolidaysListComponent = () => {
             {(user?.role === ROLES.Admin || user?.role === ROLES.HR) && (
               <Button
                 onClick={() => {
-                  setHolidayModal(true);
-                  setModalType("create");
+                  HolidayDialog.handleOpen({
+                    type: "create",
+                  });
                 }}
                 startIcon={
                   <SvgIcon>
@@ -251,18 +254,18 @@ const HolidaysListComponent = () => {
                                       color="success"
                                       sx={{ cursor: "pointer" }}
                                       onClick={() => {
-                                        setModalType("update");
-                                        setHolidayModal(true);
-                                        setHolidayValues(holiday);
+                                        HolidayDialog.handleOpen({
+                                          type: "update",
+                                          values: holiday,
+                                        });
                                       }}
                                     />
                                     <TrashCanOutline
                                       color="error"
                                       sx={{ cursor: "pointer" }}
                                       onClick={() =>
-                                        setDeleteModal({
-                                          open: true,
-                                          holidayID: holiday._id,
+                                        DeleteHolidayDialog.handleOpen({
+                                          id: holiday._id,
                                         })
                                       }
                                     />
@@ -282,38 +285,24 @@ const HolidaysListComponent = () => {
         </Stack>
       </Container>
 
-      {holidayModal && (
+      {HolidayDialog.open && (
         <HolidayModal
-          holidayValues={holidayValues}
-          modalType={modalType}
-          modal={holidayModal}
-          onCancel={() => {
-            setHolidayValues(undefined);
-            setHolidayModal(false);
-          }}
+          holidayValues={HolidayDialog.data?.values}
+          modalType={HolidayDialog.data?.type}
+          modal={HolidayDialog.open}
+          onCancel={HolidayDialog.handleClose}
           onConfirm={addAndUpdateHoliday}
         />
       )}
 
-      {deleteModal.open && (
+      {DeleteHolidayDialog.open && (
         <ConfirmationModal
+          modal={DeleteHolidayDialog.open}
+          onCancel={DeleteHolidayDialog.handleClose}
+          onConfirm={() => deleteHoliday(DeleteHolidayDialog.data?.id)}
           content={{
             type: "Delete",
             text: "Are you sure you want to delete the Holiday ?",
-          }}
-          modal={deleteModal.open}
-          onCancel={() =>
-            setDeleteModal({
-              open: false,
-              holidayID: "",
-            })
-          }
-          onConfirm={async () => {
-            deleteHoliday(deleteModal.holidayID);
-            setDeleteModal({
-              open: false,
-              holidayID: "",
-            });
           }}
         />
       )}

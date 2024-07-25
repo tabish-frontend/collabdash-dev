@@ -18,6 +18,7 @@ import { formatDate, formatTime } from "src/utils/helpers";
 import { CellValues } from "../helper";
 import dayjs from "dayjs";
 import { NoRecordFound } from "src/components/shared";
+import { Scrollbar } from "src/utils/scrollbar";
 
 const columns = [
   "Date",
@@ -82,97 +83,103 @@ export const MyAttendance = ({ filters }: any) => {
   }, [fetchAndProcessData]);
 
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden", mt: 4 }}>
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column, index) => (
-                <TableCell key={index} align="center">
-                  <span style={{ fontWeight: 700 }}>{column}</span>
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {isLoading ? (
-              [...Array(5)].map((_, index) => (
-                <TableRow key={`skeleton-${index}`}>
-                  {columns.map((col, colIndex) => (
-                    <TableCell key={colIndex} align="center">
-                      <Skeleton variant="rounded" width="100%" height={15} />
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : attendance.length === 0 ? (
+    <Paper sx={{ overflowX: "auto", mt: 4 }}>
+      <TableContainer>
+        <Scrollbar sx={{ maxHeight: 500 }}>
+          <Table stickyHeader>
+            <TableHead>
               <TableRow>
-                <TableCell colSpan={columns.length}>
-                  <NoRecordFound />
-                </TableCell>
+                {columns.map((column, index) => (
+                  <TableCell key={index} align="center">
+                    <span style={{ fontWeight: 700 }}>{column}</span>
+                  </TableCell>
+                ))}
               </TableRow>
-            ) : (
-              attendance.map((attendance, index) => (
-                <TableRow hover role="checkbox" key={index}>
-                  <TableCell align="center">
-                    <Typography minWidth={150}>
-                      {formatDate(attendance.date, true)}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Typography minWidth={150}>
-                      {attendance.timeIn ? formatTime(attendance.timeIn) : "--"}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Typography minWidth={150}>
-                      {attendance.timeOut
-                        ? formatTime(attendance.timeOut)
-                        : "--"}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    {!attendance.breaks?.length ? (
-                      "--"
-                    ) : attendance.breaks.length > 1 ? (
-                      <TextField
-                        select
-                        variant="standard"
-                        defaultValue={attendance.breaks[0]._id}
-                        InputProps={{
-                          disableUnderline: true,
-                        }}
-                      >
-                        {attendance.breaks.map((item: any, index: number) => (
-                          <MenuItem key={item._id} value={item._id}>
-                            {formatTime(item.start)} -{" "}
-                            {item.end ? formatTime(item.end) : "not yet"}
-                          </MenuItem>
-                        ))}
-                      </TextField>
-                    ) : (
-                      <Typography width={200}>
-                        {`${formatTime(attendance.breaks[0].start)} - ${
-                          attendance.breaks[0].end
-                            ? formatTime(attendance.breaks[0].end)
-                            : " not yet"
-                        }`}
-                      </Typography>
-                    )}
-                  </TableCell>
-                  <TableCell align="center">
-                    <Typography minWidth={150}>{attendance.status}</Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Typography minWidth={150}>
-                      {attendance.duration}
-                    </Typography>
+            </TableHead>
+            <TableBody>
+              {isLoading ? (
+                [...Array(5)].map((_, index) => (
+                  <TableRow key={`skeleton-${index}`}>
+                    {columns.map((col, colIndex) => (
+                      <TableCell key={colIndex} align="center">
+                        <Skeleton variant="rounded" width="100%" height={15} />
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : attendance.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length}>
+                    <NoRecordFound />
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : (
+                attendance.map((attendance, index) => (
+                  <TableRow hover role="checkbox" key={index}>
+                    <TableCell align="center">
+                      <Typography minWidth={150}>
+                        {formatDate(attendance.date, true)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Typography minWidth={150}>
+                        {attendance.timeIn
+                          ? formatTime(attendance.timeIn)
+                          : "--"}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Typography minWidth={150}>
+                        {attendance.timeOut
+                          ? formatTime(attendance.timeOut)
+                          : "--"}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      {!attendance.breaks?.length ? (
+                        "--"
+                      ) : attendance.breaks.length > 1 ? (
+                        <TextField
+                          select
+                          variant="standard"
+                          defaultValue={attendance.breaks[0]._id}
+                          InputProps={{
+                            disableUnderline: true,
+                          }}
+                        >
+                          {attendance.breaks.map((item: any, index: number) => (
+                            <MenuItem key={item._id} value={item._id}>
+                              {formatTime(item.start)} -{" "}
+                              {item.end ? formatTime(item.end) : "not yet"}
+                            </MenuItem>
+                          ))}
+                        </TextField>
+                      ) : (
+                        <Typography width={200}>
+                          {`${formatTime(attendance.breaks[0].start)} - ${
+                            attendance.breaks[0].end
+                              ? formatTime(attendance.breaks[0].end)
+                              : " not yet"
+                          }`}
+                        </Typography>
+                      )}
+                    </TableCell>
+                    <TableCell align="center">
+                      <Typography minWidth={150}>
+                        {attendance.status}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Typography minWidth={150}>
+                        {attendance.duration}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </Scrollbar>
       </TableContainer>
     </Paper>
   );

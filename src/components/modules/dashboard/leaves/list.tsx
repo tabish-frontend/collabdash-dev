@@ -48,6 +48,7 @@ import { paths } from "src/constants/paths";
 import { LeavesStatus } from "src/constants/status";
 import { DatePicker } from "@mui/x-date-pickers";
 import Tooltip from "@mui/material/Tooltip";
+import { Scrollbar } from "src/utils/scrollbar";
 
 const employee_Screen = [
   "Applied Date",
@@ -208,215 +209,218 @@ const LeavesListComponent = () => {
               }
             />
             <CardContent>
-              <TableContainer
-                component={Paper}
-                sx={{ maxHeight: 440, overflowY: "auto" }}
-              >
-                <Table stickyHeader aria-label="leave requests table">
-                  <TableHead>
-                    <TableRow>
-                      {columns.map((column, index) => (
-                        <TableCell key={index}>
-                          <span style={{ fontWeight: 700 }}>{column}</span>
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {isLoading ? (
-                      [...Array(5)].map((_, index) => (
-                        <TableRow key={`skeleton-${index}`}>
-                          {columns.map((col, colIndex) => (
-                            <TableCell
-                              key={colIndex}
-                              align="center"
-                              width={150}
-                            >
-                              <Skeleton
-                                variant="rounded"
-                                width="100%"
-                                height={25}
-                              />
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      ))
-                    ) : leavesList.length === 0 ? (
+              <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+                <Scrollbar sx={{ maxHeight: 470 }}>
+                  <Table stickyHeader>
+                    <TableHead>
                       <TableRow>
-                        <TableCell colSpan={columns.length}>
-                          <NoRecordFound />
-                        </TableCell>
+                        {columns.map((column, index) => (
+                          <TableCell key={index}>
+                            <span style={{ fontWeight: 700 }}>{column}</span>
+                          </TableCell>
+                        ))}
                       </TableRow>
-                    ) : (
-                      leavesList.map((leave, index) => {
-                        return (
-                          <TableRow hover role="checkbox" key={index}>
-                            {(user?.role === ROLES.Admin ||
-                              user?.role === ROLES.HR) && (
-                              <TableCell>
-                                <Stack
-                                  alignItems={"center"}
-                                  direction={"row"}
-                                  justifyContent={"center"}
-                                  spacing={1}
-                                  width={150}
-                                >
-                                  <ImageAvatar
-                                    path={leave.user.avatar || ""}
-                                    alt="user image"
-                                    width={40}
-                                    height={40}
-                                  />
-
-                                  <Link
-                                    color="inherit"
-                                    component={RouterLink}
-                                    href={`${paths.employees}/${leave.user.username}`}
-                                    variant="subtitle2"
-                                    sx={{ textTransform: "capitalize" }}
-                                  >
-                                    {leave.user.full_name}
-                                  </Link>
-                                </Stack>
-                              </TableCell>
-                            )}
-
-                            <TableCell>
-                              <Typography width={150}>
-                                {formatDate(leave.createdAt)}
-                              </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                              <Typography width={100}>
-                                {leave.leave_type}
-                              </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                              <Typography width={150}>
-                                {formatDate(leave.startDate)}
-                              </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                              <Typography width={150}>
-                                {formatDate(leave.endDate)}
-                              </Typography>
-                            </TableCell>
-
-                            <TableCell>
-                              <Tooltip
-                                arrow
-                                title={<Typography>{leave.reason}</Typography>}
+                    </TableHead>
+                    <TableBody>
+                      {isLoading ? (
+                        [...Array(5)].map((_, index) => (
+                          <TableRow key={`skeleton-${index}`}>
+                            {columns.map((col, colIndex) => (
+                              <TableCell
+                                key={colIndex}
+                                align="center"
+                                width={150}
                               >
-                                <Typography width={200} noWrap>
-                                  {leave.reason}
-                                </Typography>
-                              </Tooltip>
-                            </TableCell>
+                                <Skeleton
+                                  variant="rounded"
+                                  width="100%"
+                                  height={25}
+                                />
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        ))
+                      ) : leavesList.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={columns.length}>
+                            <NoRecordFound />
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        leavesList.map((leave, index) => {
+                          return (
+                            <TableRow hover role="checkbox" key={index}>
+                              {(user?.role === ROLES.Admin ||
+                                user?.role === ROLES.HR) && (
+                                <TableCell>
+                                  <Stack
+                                    alignItems={"center"}
+                                    direction={"row"}
+                                    justifyContent={"center"}
+                                    spacing={1}
+                                    width={150}
+                                  >
+                                    <ImageAvatar
+                                      path={leave.user.avatar || ""}
+                                      alt="user image"
+                                      width={40}
+                                      height={40}
+                                    />
 
-                            <TableCell>
-                              <Typography>
-                                {leave.status.toUpperCase()}
-                              </Typography>
-                            </TableCell>
+                                    <Link
+                                      color="inherit"
+                                      component={RouterLink}
+                                      href={`${paths.employees}/${leave.user.username}`}
+                                      variant="subtitle2"
+                                      sx={{ textTransform: "capitalize" }}
+                                    >
+                                      {leave.user.full_name}
+                                    </Link>
+                                  </Stack>
+                                </TableCell>
+                              )}
 
-                            {(user?.role === ROLES.Admin ||
-                              user?.role === ROLES.HR) && (
                               <TableCell>
-                                <Stack direction={"row"} width={150}>
-                                  <Tooltip title="Approved">
-                                    <span>
-                                      <IconButton
-                                        onClick={() =>
-                                          handleUpdateStatus(
-                                            leave._id,
+                                <Typography width={150}>
+                                  {formatDate(leave.createdAt)}
+                                </Typography>
+                              </TableCell>
+
+                              <TableCell>
+                                <Typography width={100}>
+                                  {leave.leave_type}
+                                </Typography>
+                              </TableCell>
+
+                              <TableCell>
+                                <Typography width={150}>
+                                  {formatDate(leave.startDate)}
+                                </Typography>
+                              </TableCell>
+
+                              <TableCell>
+                                <Typography width={150}>
+                                  {formatDate(leave.endDate)}
+                                </Typography>
+                              </TableCell>
+
+                              <TableCell>
+                                <Tooltip
+                                  arrow
+                                  title={
+                                    <Typography>{leave.reason}</Typography>
+                                  }
+                                >
+                                  <Typography width={200} noWrap>
+                                    {leave.reason}
+                                  </Typography>
+                                </Tooltip>
+                              </TableCell>
+
+                              <TableCell>
+                                <Typography>
+                                  {leave.status.toUpperCase()}
+                                </Typography>
+                              </TableCell>
+
+                              {(user?.role === ROLES.Admin ||
+                                user?.role === ROLES.HR) && (
+                                <TableCell>
+                                  <Stack direction={"row"} width={150}>
+                                    <Tooltip title="Approved">
+                                      <span>
+                                        <IconButton
+                                          onClick={() =>
+                                            handleUpdateStatus(
+                                              leave._id,
+                                              LeavesStatus.Approved
+                                            )
+                                          }
+                                          disabled={
+                                            leave.status ===
                                             LeavesStatus.Approved
-                                          )
-                                        }
-                                        disabled={
-                                          leave.status === LeavesStatus.Approved
-                                        }
-                                        sx={{
-                                          "&:hover": {
-                                            backgroundColor: "green",
-                                            color: "white",
-                                          },
-                                          color: "green",
+                                          }
+                                          sx={{
+                                            "&:hover": {
+                                              backgroundColor: "green",
+                                              color: "white",
+                                            },
+                                            color: "green",
+                                          }}
+                                        >
+                                          <CheckCircleOutline />
+                                        </IconButton>
+                                      </span>
+                                    </Tooltip>
+
+                                    <Tooltip title="Rejected">
+                                      <span>
+                                        <IconButton
+                                          onClick={() =>
+                                            handleUpdateStatus(
+                                              leave._id,
+                                              LeavesStatus.Rejected
+                                            )
+                                          }
+                                          disabled={
+                                            leave.status ===
+                                            LeavesStatus.Rejected
+                                          }
+                                          sx={{
+                                            "&:hover": {
+                                              backgroundColor: "red",
+                                              color: "white",
+                                            },
+                                            color: "red",
+                                          }}
+                                        >
+                                          <CloseCircleOutline />
+                                        </IconButton>
+                                      </span>
+                                    </Tooltip>
+                                  </Stack>
+                                </TableCell>
+                              )}
+
+                              <TableCell>
+                                <Stack direction={"row"} spacing={1}>
+                                  <Tooltip title="Edit">
+                                    <span>
+                                      <SquareEditOutline
+                                        color="success"
+                                        sx={{ cursor: "pointer" }}
+                                        onClick={() => {
+                                          LeaveDialog.handleOpen({
+                                            type: "update",
+                                            values: leave,
+                                          });
                                         }}
-                                      >
-                                        <CheckCircleOutline />
-                                      </IconButton>
+                                      />
                                     </span>
                                   </Tooltip>
 
-                                  <Tooltip title="Rejected">
+                                  <Tooltip title="Delete">
                                     <span>
-                                      <IconButton
+                                      <TrashCanOutline
+                                        color="error"
+                                        sx={{ cursor: "pointer" }}
                                         onClick={() =>
-                                          handleUpdateStatus(
-                                            leave._id,
-                                            LeavesStatus.Rejected
-                                          )
+                                          DeleteLeaveDialog.handleOpen({
+                                            id: leave._id,
+                                          })
                                         }
-                                        disabled={
-                                          leave.status === LeavesStatus.Rejected
-                                        }
-                                        sx={{
-                                          "&:hover": {
-                                            backgroundColor: "red",
-                                            color: "white",
-                                          },
-                                          color: "red",
-                                        }}
-                                      >
-                                        <CloseCircleOutline />
-                                      </IconButton>
+                                      />
                                     </span>
                                   </Tooltip>
                                 </Stack>
                               </TableCell>
-                            )}
-
-                            <TableCell>
-                              <Stack direction={"row"} spacing={1}>
-                                <Tooltip title="Edit">
-                                  <span>
-                                    <SquareEditOutline
-                                      color="success"
-                                      sx={{ cursor: "pointer" }}
-                                      onClick={() => {
-                                        LeaveDialog.handleOpen({
-                                          type: "update",
-                                          values: leave,
-                                        });
-                                      }}
-                                    />
-                                  </span>
-                                </Tooltip>
-
-                                <Tooltip title="Delete">
-                                  <span>
-                                    <TrashCanOutline
-                                      color="error"
-                                      sx={{ cursor: "pointer" }}
-                                      onClick={() =>
-                                        DeleteLeaveDialog.handleOpen({
-                                          id: leave._id,
-                                        })
-                                      }
-                                    />
-                                  </span>
-                                </Tooltip>
-                              </Stack>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })
-                    )}
-                  </TableBody>
-                </Table>
+                            </TableRow>
+                          );
+                        })
+                      )}
+                    </TableBody>
+                  </Table>
+                </Scrollbar>
               </TableContainer>
             </CardContent>
           </Card>

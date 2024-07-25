@@ -20,7 +20,7 @@ import { AccountStatus } from "src/constants/status";
 import { common_user_validation } from "src/formik";
 import * as Yup from "yup";
 
-interface ShiftModalProps {
+interface UpdateEmployeeModalProps {
   modal: boolean;
   employeeValues: {
     username: string;
@@ -37,7 +37,7 @@ const UpdateEmployeeValidation = Yup.object().shape({
   designation: common_user_validation.designation,
 });
 
-export const UpdateEmployeeModal: FC<ShiftModalProps> = ({
+export const UpdateEmployeeModal: FC<UpdateEmployeeModalProps> = ({
   modal,
   employeeValues,
   onCancel,
