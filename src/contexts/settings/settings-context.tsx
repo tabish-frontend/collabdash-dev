@@ -25,12 +25,16 @@ export const initialState: State = {
 export interface SettingsContextType extends State {
   handleUpdate: (settings: Settings) => void;
   isCustom: boolean;
+  handleUpdateWorkspaceState: (value: boolean) => void;
+  workspaceeModal: boolean;
 }
 
 export const SettingsContext = createContext<SettingsContextType>({
   ...initialState,
   handleUpdate: () => {},
   isCustom: false,
+  handleUpdateWorkspaceState: () => {},
+  workspaceeModal: false,
 });
 
 export const RoleContext = createContext<{ role: string }>({

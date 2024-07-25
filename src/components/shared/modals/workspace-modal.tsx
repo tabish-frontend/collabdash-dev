@@ -12,47 +12,29 @@ import Button from "@mui/material/Button";
 import { useFormik } from "formik";
 import { CloseCircleOutline } from "mdi-material-ui";
 import { useEffect, useState, type FC } from "react";
-import { holidayInitialValues } from "src/formik";
 import { employeesApi } from "src/api";
-import { Employee, Holiday } from "src/types";
-import { DatePicker } from "@mui/x-date-pickers";
-import {
-  SelectMultipleDepartments,
-  SelectMultipleUsers,
-} from "src/components/shared";
+import { Employee } from "src/types";
+import { SelectMultipleUsers } from "src/components/shared";
 import { LoadingButton } from "@mui/lab";
 
-interface HolidayModalProps {
+interface WorkspaceModalProps {
   modal: boolean;
-  modalType: string;
-  holidayValues: any;
-  onConfirm: (values: any) => void;
   onCancel: () => void;
 }
 
-export const HolidayModal: FC<HolidayModalProps> = ({
+export const WorkspaceModal: FC<WorkspaceModalProps> = ({
   modal,
-  modalType,
-  holidayValues,
   onCancel,
-  onConfirm,
 }) => {
-  const [departments, setDepartments] = useState<string[]>([]);
-
   const formik = useFormik({
-    initialValues: holidayValues
-      ? {
-          ...holidayValues,
-          date: new Date(holidayValues.date),
-          users: holidayValues.users.map((user: Holiday) => user._id),
-        }
-      : holidayInitialValues,
+    initialValues: { title: "", users: [] },
 
     enableReinitialize: true,
     onSubmit: async (values, helpers): Promise<void> => {
       helpers.setStatus({ success: true });
       helpers.setSubmitting(false);
-      onConfirm(values);
+
+      // API will CAll here
     },
   });
 
@@ -82,7 +64,7 @@ export const HolidayModal: FC<HolidayModalProps> = ({
       <form onSubmit={formik.handleSubmit}>
         <Paper elevation={12}>
           <DialogTitle sx={{ m: 0, p: 3, fontSize: 24, fontWeight: 600 }}>
-            {modalType === "create" ? "Add Holiday" : "Update Holiday"}
+            Create Workspace
           </DialogTitle>
           <IconButton
             aria-label="close"
@@ -112,45 +94,8 @@ export const HolidayModal: FC<HolidayModalProps> = ({
             </Grid>
 
             <Grid item xs={12}>
-              <DatePicker
-                label="Select Date"
-                views={["year", "month", "day"]}
-                sx={{ width: "100%" }}
-                value={formik.values.date}
-                slotProps={{
-                  textField: {
-                    required: true,
-                  },
-                }}
-                onChange={(date) => {
-                  if (date) {
-                    date.setHours(23, 0, 0, 0);
-                    formik.setFieldValue("date", date);
-                  }
-                }}
-              />
-            </Grid>
-
-            {modalType === "create" && (
-              <Grid item xs={12}>
-                <SelectMultipleDepartments
-                  departments={departments}
-                  handleChange={(event: any, value: any[]) => {
-                    setDepartments(value);
-                  }}
-                />
-              </Grid>
-            )}
-
-            <Grid item xs={12}>
               <SelectMultipleUsers
-                employees={
-                  departments.length
-                    ? employees.filter((employee) =>
-                        departments.includes(employee.department)
-                      )
-                    : employees
-                }
+                employees={employees}
                 formikUsers={formik.values.users}
                 setFieldValue={(value: any) =>
                   formik.setFieldValue("users", value)
