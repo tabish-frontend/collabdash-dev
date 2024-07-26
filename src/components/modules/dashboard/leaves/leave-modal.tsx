@@ -55,9 +55,9 @@ export const LeaveModal: FC<LeaveModalProps> = ({
       : leaveInitialValues,
     enableReinitialize: true,
     onSubmit: async (values, helpers): Promise<void> => {
+      await onConfirm(values);
       helpers.setStatus({ success: true });
       helpers.setSubmitting(false);
-      onConfirm(values);
     },
   });
 

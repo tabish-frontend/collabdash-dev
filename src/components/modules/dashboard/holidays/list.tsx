@@ -39,6 +39,8 @@ import { SquareEditOutline, TrashCanOutline } from "mdi-material-ui";
 import { useAuth, useDialog, useSettings } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { ROLES } from "src/constants/roles";
+import UpdateAction from "src/components/shared/update-action";
+import DeleteAction from "src/components/shared/delete-action";
 
 const employee_Screen = ["Holiday Day", "Holiday Date", "Holiday Name"];
 const HR_Screen = [
@@ -249,21 +251,19 @@ const HolidaysListComponent = () => {
                                   <Stack
                                     justifyContent={"center"}
                                     direction={"row"}
+                                    spacing={2}
                                   >
-                                    <SquareEditOutline
-                                      color="success"
-                                      sx={{ cursor: "pointer" }}
-                                      onClick={() => {
+                                    <UpdateAction
+                                      handleUpdateDialog={() =>
                                         HolidayDialog.handleOpen({
                                           type: "update",
                                           values: holiday,
-                                        });
-                                      }}
+                                        })
+                                      }
                                     />
-                                    <TrashCanOutline
-                                      color="error"
-                                      sx={{ cursor: "pointer" }}
-                                      onClick={() =>
+
+                                    <DeleteAction
+                                      handleDeleteDialog={() =>
                                         DeleteHolidayDialog.handleOpen({
                                           id: holiday._id,
                                         })
