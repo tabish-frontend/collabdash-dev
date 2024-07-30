@@ -15,7 +15,7 @@ import {
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { Plus } from "mdi-material-ui";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { SyntheticEvent, useCallback, useEffect, useState } from "react";
 import SearchMdIcon from "@untitled-ui/icons-react/build/esm/SearchMd";
 
 import { EmployeeCard, NoRecordFound } from "src/components/shared";
@@ -57,17 +57,16 @@ const EmployeeListComponent = () => {
     setFilters((prev) => ({ ...prev, search }));
   }, 500);
 
-  const handleGetEmployees = async () => {
+  const handleGetEmployees = useCallback(async () => {
     setIsLoading(true);
     const response = await employeesApi.getAllEmployees(filters);
     setEmployeesList(response.users);
     setIsLoading(false);
-  };
+  }, [filters]);
 
   useEffect(() => {
     handleGetEmployees();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters]);
+  }, [handleGetEmployees]);
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 

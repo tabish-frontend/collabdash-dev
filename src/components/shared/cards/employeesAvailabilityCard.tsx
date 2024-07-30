@@ -15,7 +15,7 @@ import {
   ClockTimeTwoOutline,
   UmbrellaBeachOutline,
 } from "mdi-material-ui";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { statisticsApi } from "src/api";
 import { UsersListPopover } from "../lists";
 
@@ -47,7 +47,7 @@ export const EmployeesAvailability = () => {
     },
   ]);
 
-  const handleGetTodayAvailability = async () => {
+  const handleGetTodayAvailability = useCallback(async () => {
     const response = await statisticsApi.getAllUserAvailability();
     const updatedAvailability = employeesAvailability.map(
       (availability: any) => ({
@@ -56,11 +56,11 @@ export const EmployeesAvailability = () => {
       })
     );
     setEmployeesAvailability(updatedAvailability);
-  };
+  }, [employeesAvailability]);
 
   useEffect(() => {
     handleGetTodayAvailability();
-  }, []);
+  }, [handleGetTodayAvailability]);
 
   return (
     <Card style={{ minHeight: 490 }}>
