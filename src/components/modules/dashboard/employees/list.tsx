@@ -144,7 +144,7 @@ const EmployeeListComponent = () => {
             <Grid container spacing={2}>
               {isLoading ? (
                 [...Array(9)].map((_, index) => (
-                  <Grid item xs={12} xl={4} lg={6} key={index}>
+                  <Grid item xs={12} sm={6} xl={4} key={index}>
                     <EmployeeCard isLoading={isLoading} />
                   </Grid>
                 ))
@@ -154,7 +154,7 @@ const EmployeeListComponent = () => {
                 </Grid>
               ) : (
                 employeesList.map((employee: Employee) => (
-                  <Grid item xs={12} xl={4} lg={6} key={employee._id}>
+                  <Grid item xs={12} sm={6} xl={4} key={employee._id}>
                     <EmployeeCard employee={employee} isLoading={isLoading} />
                   </Grid>
                 ))

@@ -17,6 +17,7 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
+  Paper,
   Select,
   Skeleton,
   Stack,
@@ -39,6 +40,7 @@ import { SquareEditOutline, TrashCanOutline } from "mdi-material-ui";
 import { useAuth, useDialog, useSettings } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { ROLES } from "src/constants/roles";
+import { Scrollbar } from "src/utils/scrollbar";
 
 const employee_Screen = ["Holiday Day", "Holiday Date", "Holiday Name"];
 const HR_Screen = [
@@ -180,105 +182,107 @@ const HolidaysListComponent = () => {
               }
             />
             <CardContent>
-              <TableContainer sx={{ maxHeight: 440 }}>
-                <Table stickyHeader aria-label="sticky table">
-                  <TableHead>
-                    <TableRow>
-                      {columns.map((column, index) => (
-                        <TableCell
-                          key={index}
-                          align="center"
-                          sx={{ fontSize: 700 }}
-                        >
-                          {column}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {isLoading ? (
-                      [...Array(5)].map((_, index) => (
-                        <TableRow key={`skeleton-${index}`}>
-                          {columns.map((col, colIndex) => (
-                            <TableCell key={colIndex} align="center">
-                              <Skeleton
-                                variant="rounded"
-                                width="100%"
-                                height={25}
-                              />
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      ))
-                    ) : holidayList.length === 0 ? (
+              <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+                <Scrollbar sx={{ maxHeight: 470 }}>
+                  <Table stickyHeader aria-label="sticky table">
+                    <TableHead>
                       <TableRow>
-                        <TableCell colSpan={columns.length}>
-                          <NoRecordFound />
-                        </TableCell>
+                        {columns.map((column, index) => (
+                          <TableCell
+                            key={index}
+                            align="center"
+                            sx={{ fontSize: 700 }}
+                          >
+                            {column}
+                          </TableCell>
+                        ))}
                       </TableRow>
-                    ) : (
-                      holidayList.map((holiday, index) => {
-                        return (
-                          <TableRow hover role="checkbox" key={index}>
-                            <TableCell align="center" width={100}>
-                              <Typography width={100}>
-                                {getDayFromDate(holiday.date)}
-                              </Typography>
-                            </TableCell>
-
-                            <TableCell align="center">
-                              <Typography minWidth={150}>
-                                {formatDate(holiday.date)}
-                              </Typography>
-                            </TableCell>
-
-                            <TableCell align="center" width={150}>
-                              <Typography width={150}>
-                                {holiday.title}
-                              </Typography>
-                            </TableCell>
-
-                            {(user?.role === ROLES.Admin ||
-                              user?.role === ROLES.HR) && (
-                              <>
-                                <TableCell align="center">
-                                  <UserAvatarGroup users={holiday.users} />
-                                </TableCell>
-
-                                <TableCell align="center">
-                                  <Stack
-                                    justifyContent={"center"}
-                                    direction={"row"}
-                                  >
-                                    <SquareEditOutline
-                                      color="success"
-                                      sx={{ cursor: "pointer" }}
-                                      onClick={() => {
-                                        HolidayDialog.handleOpen({
-                                          type: "update",
-                                          values: holiday,
-                                        });
-                                      }}
-                                    />
-                                    <TrashCanOutline
-                                      color="error"
-                                      sx={{ cursor: "pointer" }}
-                                      onClick={() =>
-                                        DeleteHolidayDialog.handleOpen({
-                                          id: holiday._id,
-                                        })
-                                      }
-                                    />
-                                  </Stack>
-                                </TableCell>
-                              </>
-                            )}
+                    </TableHead>
+                    <TableBody>
+                      {isLoading ? (
+                        [...Array(5)].map((_, index) => (
+                          <TableRow key={`skeleton-${index}`}>
+                            {columns.map((col, colIndex) => (
+                              <TableCell key={colIndex} align="center">
+                                <Skeleton
+                                  variant="rounded"
+                                  width="100%"
+                                  height={25}
+                                />
+                              </TableCell>
+                            ))}
                           </TableRow>
-                        );
-                      })
-                    )}
-                  </TableBody>
-                </Table>
+                        ))
+                      ) : holidayList.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={columns.length}>
+                            <NoRecordFound />
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        holidayList.map((holiday, index) => {
+                          return (
+                            <TableRow hover role="checkbox" key={index}>
+                              <TableCell align="center" width={100}>
+                                <Typography width={100}>
+                                  {getDayFromDate(holiday.date)}
+                                </Typography>
+                              </TableCell>
+
+                              <TableCell align="center">
+                                <Typography minWidth={150}>
+                                  {formatDate(holiday.date)}
+                                </Typography>
+                              </TableCell>
+
+                              <TableCell align="center" width={150}>
+                                <Typography width={150}>
+                                  {holiday.title}
+                                </Typography>
+                              </TableCell>
+
+                              {(user?.role === ROLES.Admin ||
+                                user?.role === ROLES.HR) && (
+                                <>
+                                  <TableCell align="center">
+                                    <UserAvatarGroup users={holiday.users} />
+                                  </TableCell>
+
+                                  <TableCell align="center">
+                                    <Stack
+                                      justifyContent={"center"}
+                                      direction={"row"}
+                                    >
+                                      <SquareEditOutline
+                                        color="success"
+                                        sx={{ cursor: "pointer" }}
+                                        onClick={() => {
+                                          HolidayDialog.handleOpen({
+                                            type: "update",
+                                            values: holiday,
+                                          });
+                                        }}
+                                      />
+                                      <TrashCanOutline
+                                        color="error"
+                                        sx={{ cursor: "pointer" }}
+                                        onClick={() =>
+                                          DeleteHolidayDialog.handleOpen({
+                                            id: holiday._id,
+                                          })
+                                        }
+                                      />
+                                    </Stack>
+                                  </TableCell>
+                                </>
+                              )}
+                            </TableRow>
+                          );
+                        })
+                      )}
+                    </TableBody>
+                  </Table>
+                </Scrollbar>
               </TableContainer>
             </CardContent>
           </Card>
