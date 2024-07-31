@@ -47,20 +47,19 @@ export const EmployeesAvailability = () => {
     },
   ]);
 
-  const handleGetTodayAvailability = useCallback(async () => {
-    const response = await statisticsApi.getAllUserAvailability();
-    const updatedAvailability = employeesAvailability.map(
-      (availability: any) => ({
-        ...availability,
-        values: response.data[availability.key] || [],
-      })
-    );
-    setEmployeesAvailability(updatedAvailability);
-  }, [employeesAvailability]);
-
   useEffect(() => {
+    const handleGetTodayAvailability = async () => {
+      const response = await statisticsApi.getAllUserAvailability();
+      setEmployeesAvailability((prevAvailability: any) =>
+        prevAvailability.map((availability: any) => ({
+          ...availability,
+          values: response.data[availability.key] || [],
+        }))
+      );
+    };
+
     handleGetTodayAvailability();
-  }, [handleGetTodayAvailability]);
+  }, []);
 
   return (
     <Card style={{ minHeight: 490 }}>

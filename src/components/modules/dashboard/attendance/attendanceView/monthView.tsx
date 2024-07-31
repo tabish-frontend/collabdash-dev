@@ -118,7 +118,7 @@ export const MonthViewAttendance = ({
                       color="inherit"
                       href={`${paths.employees}/${item.username}`}
                       gap={1}
-                      width={isSmallScreen ? 80 : 150}
+                      width={isSmallScreen ? 80 : 200}
                       alignItems={"center"}
                     >
                       <Tooltip title={item.full_name} arrow>
