@@ -13,6 +13,7 @@ import { TopNav } from "./top-nav";
 import { useMobileNav } from "./use-mobile-nav";
 import { WorkspaceModal } from "src/components/shared";
 import { useSettings } from "src/hooks";
+import { useWorkSpace } from "src/hooks/use-workSpace";
 
 const SIDE_NAV_WIDTH = 240;
 
@@ -43,7 +44,8 @@ export const VerticalLayout: FC<VerticalLayoutProps> = (props) => {
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
   const mobileNav = useMobileNav();
 
-  const setting = useSettings();
+  const workSpace = useWorkSpace();
+
   return (
     <>
       <TopNav onMobileNavOpen={mobileNav.handleOpen} />
@@ -60,11 +62,11 @@ export const VerticalLayout: FC<VerticalLayoutProps> = (props) => {
         <VerticalLayoutContainer>
           {children}
 
-          {setting.workspaceeModal && (
+          {workSpace.openModal && (
             <WorkspaceModal
-              modal={setting.workspaceeModal}
+              modal={workSpace.openModal}
               onCancel={() => {
-                setting.handleUpdateWorkspaceState(false);
+                workSpace.handleClose();
               }}
             />
           )}

@@ -17,8 +17,7 @@ import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts";
 import { useRouter } from "next/router";
 import { Plus } from "mdi-material-ui";
-import { useEffect, useState } from "react";
-import { WorkSpaceBoards } from "src/constants/dummyJson";
+import { useState } from "react";
 import BoardCard from "src/components/shared/cards/boardCard";
 import { BoardsModal } from "src/components/shared/modals/boards-modal";
 import ArrowLeftIcon from "@untitled-ui/icons-react/build/esm/ArrowLeft";
@@ -47,18 +46,18 @@ const TaskComponent = () => {
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const handleGetBoards = () => {
-    // Board API will call here
-    const updatedBoards = WorkSpaceBoards.filter(
-      (board) => board.workspace === workspace_slug
-    );
+  // const handleGetBoards = () => {
+  //   // Board API will call here
+  //   const updatedBoards = WorkSpaceBoards.filter(
+  //     (board) => board.workspace === workspace_slug
+  //   );
 
-    setBoards(updatedBoards);
-  };
+  //   setBoards(updatedBoards);
+  // };
 
-  useEffect(() => {
-    handleGetBoards();
-  }, [workspace_slug]);
+  // useEffect(() => {
+  //   handleGetBoards();
+  // }, [workspace_slug]);
 
   return (
     <Box

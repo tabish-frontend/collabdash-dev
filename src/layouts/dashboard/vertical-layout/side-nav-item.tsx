@@ -11,8 +11,7 @@ import SvgIcon from "@mui/material/SvgIcon";
 import { RouterLink } from "src/components/shared/router-link";
 import { Button } from "@mui/material";
 import Add from "@mui/icons-material/Add";
-import { WorkspaceModal } from "src/components/shared";
-import { useSettings } from "src/hooks";
+import { useWorkSpace } from "src/hooks/use-workSpace";
 
 interface SideNavItemProps {
   active?: boolean;
@@ -42,7 +41,7 @@ export const SideNavItem: FC<SideNavItemProps> = (props) => {
   } = props;
   const [open, setOpen] = useState<boolean>(!!openProp);
 
-  const setting = useSettings();
+  const workSpace = useWorkSpace();
 
   const handleToggle = useCallback((): void => {
     setOpen((prevOpen) => !prevOpen);
@@ -171,7 +170,7 @@ export const SideNavItem: FC<SideNavItemProps> = (props) => {
               sx={{ mb: 0.5 }}
               fullWidth
               onClick={() => {
-                setting.handleUpdateWorkspaceState(true);
+                workSpace.handleOpen();
               }}
             >
               Add New Workspace

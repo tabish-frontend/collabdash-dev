@@ -16,6 +16,8 @@ import { employeesApi } from "src/api";
 import { Employee } from "src/types";
 import { SelectMultipleUsers } from "src/components/shared";
 import { LoadingButton } from "@mui/lab";
+import { useWorkSpace } from "src/hooks/use-workSpace";
+import { workSpaceInitialValues } from "src/formik";
 
 interface WorkspaceModalProps {
   modal: boolean;
@@ -26,15 +28,16 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
   modal,
   onCancel,
 }) => {
+  const workSpace = useWorkSpace();
+
   const formik = useFormik({
-    initialValues: { title: "", users: [] },
+    initialValues: workSpaceInitialValues,
 
     enableReinitialize: true,
     onSubmit: async (values, helpers): Promise<void> => {
       helpers.setStatus({ success: true });
       helpers.setSubmitting(false);
-
-      // API will CAll here
+      workSpace.handleAddWorkSpace(values);
     },
   });
 
@@ -87,8 +90,8 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
                 fullWidth
                 label="Title"
                 required
-                value={formik.values.title}
-                name="title"
+                value={formik.values.name}
+                name="name"
                 onChange={formik.handleChange}
               />
             </Grid>
@@ -96,11 +99,11 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
             <Grid item xs={12}>
               <SelectMultipleUsers
                 employees={employees}
-                formikUsers={formik.values.users}
+                formikUsers={formik.values.members}
                 setFieldValue={(value: any) =>
-                  formik.setFieldValue("users", value)
+                  formik.setFieldValue("members", value)
                 }
-                isRequired={!formik.values.users.length}
+                isRequired={!formik.values.members.length}
               />
             </Grid>
           </Grid>

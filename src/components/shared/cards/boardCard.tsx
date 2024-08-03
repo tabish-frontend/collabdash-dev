@@ -26,15 +26,15 @@ const BoardCard = ({
       <Box padding={3} sx={{ minHeight: "280px" }}>
         <Stack
           direction={"column"}
-          onClick={
-            () => router.push(paths.tasks)
-            // router.push(
-            //   `${paths.workspaces}/${workspace_slug}/boards/${board?.slug}`
-            // )
+          onClick={() =>
+            //  router.push(paths.tasks)
+            router.push(
+              `${paths.workspaces}/${workspace_slug}/boards/${board?.slug}`
+            )
           }
         >
           <Typography gutterBottom variant="h5" component="h1">
-            {board.title}
+            {board.name}
           </Typography>
 
           <Typography minHeight={150} fontSize={14} pt={2}>
@@ -48,7 +48,7 @@ const BoardCard = ({
           justifyContent={"space-between"}
           alignItems={"center"}
         >
-          <UserAvatarGroup users={board.users} />
+          <UserAvatarGroup users={board.members} />
 
           <Stack direction={"row"} spacing={2}>
             <Tooltip title="Edit">

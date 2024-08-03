@@ -11,7 +11,7 @@ import {
   FileTreeOutline,
   CardAccountDetailsStarOutline,
 } from "mdi-material-ui";
-import { WorkSpaces } from "src/constants/dummyJson";
+import { useWorkSpace } from "src/hooks/use-workSpace";
 
 export interface Item {
   disabled?: boolean;
@@ -57,32 +57,37 @@ const navItems: Item[] = [
     path: paths.leaves,
   },
 
-  // {
-  //   title: "Tasks",
-  //   icon: <SvgIcon component={FileTreeOutline} />,
-  //   path: paths.tasks,
-  // },
-
-  // {
-  //   title: "Workspaces",
-  //   path: paths.attendance,
-  //   icon: <SvgIcon component={FileTreeOutline} />,
-  //   items: WorkSpaces.map((item) => ({
-  //     title: item.title,
-  //     path: `${paths.workspaces}/${item.slug}`,
-  //   })),
-  // },
+  {
+    title: "Tasks",
+    icon: <SvgIcon component={FileTreeOutline} />,
+    path: paths.tasks,
+  },
 ];
 
 export const useSections = (): Section[] => {
   const { user } = useAuth<AuthContextType>();
+  const { WorkSpaces } = useWorkSpace();
 
   const filteredNavItems = useMemo(() => {
-    return navItems.filter((item) => {
+    const items = navItems.filter((item) => {
       if (!item.roles) return true;
       return item.roles.includes(user?.role ?? "");
     });
-  }, [user?.role]);
+
+    items.push({
+      title: "Workspaces",
+      path: paths.workspaces,
+      icon: <SvgIcon component={FileTreeOutline} />,
+      items: WorkSpaces.length
+        ? WorkSpaces.map((item) => ({
+            title: item.name!,
+            path: `${paths.workspaces}/${item.slug}`,
+          }))
+        : [],
+    });
+
+    return items;
+  }, [user?.role, WorkSpaces]);
 
   return useMemo(() => {
     return [{ items: filteredNavItems }];

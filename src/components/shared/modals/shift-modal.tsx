@@ -125,10 +125,6 @@ export const ShiftModal: FC<ShiftModalProps> = ({
     formik.setFieldValue("times", updatedShiftValues);
   };
 
-  useEffect(() => {
-    console.log("formik values", formik.values);
-  }, [formik.values]);
-
   return (
     <Dialog fullWidth maxWidth={"md"} open={modal} onClose={onCancel}>
       <form onSubmit={formik.handleSubmit}>
@@ -207,7 +203,6 @@ export const ShiftModal: FC<ShiftModalProps> = ({
                           },
                         }}
                         onChange={(time) => {
-                          console.log("Start time", new Date(time));
                           formik.setFieldValue(`${fieldName}.start`, time);
                         }}
                       />

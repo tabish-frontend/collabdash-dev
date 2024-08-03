@@ -15,9 +15,10 @@ import { DashboardLayout } from "src/layouts";
 import { useRouter } from "next/router";
 import { Plus } from "mdi-material-ui";
 import { useEffect, useState } from "react";
-import { WorkSpaceBoards } from "src/constants/dummyJson";
 import BoardCard from "src/components/shared/cards/boardCard";
 import { BoardsModal } from "src/components/shared/modals/boards-modal";
+import { useWorkSpace } from "src/hooks/use-workSpace";
+import { WorkSpace } from "src/types";
 
 // Helper function to format the slug
 const formatSlug = (slug: string | string[] | undefined): string => {
@@ -31,7 +32,9 @@ const BoardsComponent = () => {
   const settings = useSettings();
   const router = useRouter();
   const theme = useTheme();
-  const [boards, setBoards] = useState<any[]>([]);
+
+  const { getCurrentWorkSpace, handleAddBoard } = useWorkSpace();
+  const [workSpace, setWorkSpace] = useState<WorkSpace>();
 
   const [boardModal, setBoardModal] = useState({
     open: false,
@@ -43,19 +46,9 @@ const BoardsComponent = () => {
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const handleGetBoards = () => {
-    // Board API will call here
-    const updatedBoards = WorkSpaceBoards.filter(
-      (board) => board.workspace === workspace_slug
-    );
-
-    setBoards(updatedBoards);
-  };
-
   useEffect(() => {
-    handleGetBoards();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [workspace_slug]);
+    setWorkSpace(getCurrentWorkSpace(workspace_slug));
+  }, [getCurrentWorkSpace, workspace_slug]);
 
   return (
     <Box
@@ -105,7 +98,7 @@ const BoardsComponent = () => {
           </Stack>
 
           <Grid container spacing={2}>
-            {boards.map((board: any) => {
+            {workSpace?.boards?.map((board: any) => {
               return (
                 <Grid item xs={12} xl={3} lg={4} md={6} key={board.slug}>
                   <BoardCard
@@ -129,7 +122,14 @@ const BoardsComponent = () => {
         <BoardsModal
           modalType={boardModal.type}
           modal={boardModal.open}
+          members={workSpace!.members}
           modalValues={boardModal.values}
+          onConfirm={(values) => {
+            handleAddBoard({
+              ...values,
+              workspace: workSpace!._id,
+            });
+          }}
           onCancel={() => {
             setBoardModal({
               open: false,
@@ -137,7 +137,6 @@ const BoardsComponent = () => {
               values: {},
             });
           }}
-          // onConfirm={addAndUpdateHoliday}
         />
       )}
     </Box>
