@@ -18,7 +18,7 @@ import { DashboardLayout } from "src/layouts";
 import { useRouter } from "next/router";
 import { Plus } from "mdi-material-ui";
 import { useState } from "react";
-import BoardCard from "src/components/shared/cards/boardCard";
+import { BoardCard } from "src/components/shared";
 import { BoardsModal } from "src/components/shared/modals/boards-modal";
 import ArrowLeftIcon from "@untitled-ui/icons-react/build/esm/ArrowLeft";
 
