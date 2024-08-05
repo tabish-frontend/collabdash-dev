@@ -48,6 +48,11 @@ type MoveTaskAction = PayloadAction<{
   columnId?: string;
 }>;
 
+type MoveColumnAction = PayloadAction<{
+  columnId: string;
+  position: number;
+}>;
+
 type DeleteTaskAction = PayloadAction<string>;
 
 type AddCommentAction = PayloadAction<{ taskId: string; comment: Comment }>;
@@ -184,6 +189,18 @@ const reducers = {
       state.columns.byId[sourceColumnId].taskIds.splice(position, 0, taskId);
     }
   },
+
+  moveColumn(state: KanbanState, action: MoveColumnAction) {
+    const { columnId, position } = action.payload;
+    const columnIds = state.columns.allIds;
+    const oldIndex = columnIds.indexOf(columnId);
+
+    if (oldIndex !== -1) {
+      columnIds.splice(oldIndex, 1);
+      columnIds.splice(position, 0, columnId);
+    }
+  },
+
   deleteTask(state: KanbanState, action: DeleteTaskAction): void {
     const taskId = action.payload;
     const { columnId } = state.tasks.byId[taskId];

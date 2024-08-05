@@ -32,27 +32,6 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     [state.WorkSpaces]
   );
 
-  const handleAddBoard = useCallback(async (data: WorkSpaceBoard) => {
-    const response = await BoardsApi.addBoard(data);
-
-    setState((prev) => {
-      const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
-        if (workspace._id === data.workspace) {
-          return {
-            ...workspace,
-            boards: [...workspace.boards, response.data], // Spread the existing boards and add the new board
-          };
-        }
-        return workspace;
-      });
-
-      return {
-        ...prev,
-        WorkSpaces: updatedWorkSpaces,
-      };
-    });
-  }, []);
-
   const handleAddWorkSpace = useCallback(async (data: WorkSpace) => {
     const response = await WorkSpaceApi.addWorkSpace(data);
 
@@ -85,7 +64,71 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     // }));
   }, []);
 
-  const handleOpen = useCallback((workSpace_id?: string): void => {
+  const handleAddBoard = useCallback(async (data: WorkSpaceBoard) => {
+    const response = await BoardsApi.addBoard(data);
+    setState((prev) => {
+      const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
+        if (workspace._id === data.workspace) {
+          return {
+            ...workspace,
+            boards: [...workspace.boards, response.data],
+          };
+        }
+        return workspace;
+      });
+      return {
+        ...prev,
+        WorkSpaces: updatedWorkSpaces,
+      };
+    });
+  }, []);
+
+  const handleUpdateBoard = useCallback(
+    async (board_id: string, data: WorkSpaceBoard) => {
+      const response = await BoardsApi.updateBoard(board_id, data);
+
+      setState((prev) => {
+        const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
+          const updatedBoards = workspace.boards.map((board) =>
+            board._id === board_id ? response : board
+          );
+          return {
+            ...workspace,
+            boards: updatedBoards,
+          };
+        });
+
+        return {
+          ...prev,
+          WorkSpaces: updatedWorkSpaces,
+        };
+      });
+    },
+    []
+  );
+
+  const handleDeletBoard = useCallback(async (board_id: string) => {
+    await BoardsApi.deleteBoard(board_id);
+
+    setState((prev) => {
+      const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
+        const updatedBoards = workspace.boards.filter(
+          (board) => board._id !== board_id
+        );
+        return {
+          ...workspace,
+          boards: updatedBoards,
+        };
+      });
+
+      return {
+        ...prev,
+        WorkSpaces: updatedWorkSpaces,
+      };
+    });
+  }, []);
+
+  const handleOpen = useCallback((): void => {
     setState((prev) => ({
       ...prev,
       openModal: true,
@@ -108,12 +151,14 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     <WorkSpaceContext.Provider
       value={{
         ...state,
-        handleAddWorkSpace,
-        getCurrentWorkSpace,
-        handleUpdateWorkSpace,
-        handleAddBoard,
         handleOpen,
         handleClose,
+        getCurrentWorkSpace,
+        handleAddWorkSpace,
+        handleUpdateWorkSpace,
+        handleAddBoard,
+        handleUpdateBoard,
+        handleDeletBoard,
       }}
     >
       {children}

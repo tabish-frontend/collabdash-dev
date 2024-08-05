@@ -1,14 +1,14 @@
-import type { FC } from 'react';
-import { Draggable, Droppable } from 'react-beautiful-dnd';
-import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
+import type { FC } from "react";
+import { Draggable, Droppable } from "react-beautiful-dnd";
+import PropTypes from "prop-types";
+import Box from "@mui/material/Box";
 
-import { useSelector } from 'src/store';
-import type { Column } from 'src/types/kanban';
+import { useSelector } from "src/store";
+import type { Column } from "src/types/kanban";
 
-import { TaskAdd } from '../task-add';
-import { TaskCard } from '../task-card';
-import { ColumnHeader } from './column-header';
+import { TaskAdd } from "../task-add";
+import { TaskCard } from "../task-card";
+import { ColumnHeader } from "./column-header";
 
 const useColumn = (columnId: string): Column | undefined => {
   return useSelector((state) => {
@@ -28,7 +28,15 @@ interface ColumnCardProps {
 }
 
 export const ColumnCard: FC<ColumnCardProps> = (props) => {
-  const { columnId, onTaskAdd, onTaskOpen, onClear, onDelete, onRename, ...other } = props;
+  const {
+    columnId,
+    onTaskAdd,
+    onTaskOpen,
+    onClear,
+    onDelete,
+    onRename,
+    ...other
+  } = props;
   const column = useColumn(columnId);
 
   if (!column) {
@@ -40,61 +48,63 @@ export const ColumnCard: FC<ColumnCardProps> = (props) => {
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        maxHeight: '100%',
-        overflowX: 'hidden',
-        overflowY: 'hidden',
+        display: "flex",
+        flexDirection: "column",
+        maxHeight: "100%",
+        overflowX: "hidden",
+        overflowY: "hidden",
         width: {
           xs: 300,
-          sm: 380
-        }
+          sm: 350,
+        },
       }}
       {...other}
     >
-      <ColumnHeader
-        name={column.name}
-        onClear={onClear}
-        onDelete={onDelete}
-        onRename={onRename}
-        tasksCount={tasksCount}
-      />
       <Box
         sx={{
-          backgroundColor: (theme) => theme.palette.mode === 'dark'
-            ? 'neutral.900'
-            : 'neutral.100',
-          borderRadius: 2.5
+          backgroundColor: (theme) =>
+            theme.palette.mode === "dark" ? "neutral.900" : "neutral.100",
+          borderRadius: 2.5,
         }}
       >
-        <Droppable
-          droppableId={column.id}
-          type="task"
+        <ColumnHeader
+          name={column.name}
+          onClear={onClear}
+          onDelete={onDelete}
+          onRename={onRename}
+          tasksCount={tasksCount}
+        />
+
+        <Box
+          sx={{
+            pt: 1.5,
+            pb: 1.5,
+            px: 1,
+          }}
         >
+          <TaskAdd onAdd={onTaskAdd} />
+        </Box>
+
+        <Droppable droppableId={column.id} type="task">
           {(droppableProvider): JSX.Element => (
             <Box
               ref={droppableProvider.innerRef}
               sx={{
                 flexGrow: 1,
                 minHeight: 80,
-                overflowY: 'auto',
-                px: 3,
-                pt: 1.5
+                overflowY: "auto",
+                p: 1,
               }}
             >
               {column?.taskIds.map((taskId, index) => (
-                <Draggable
-                  key={taskId}
-                  draggableId={taskId}
-                  index={index}
-                >
+                <Draggable key={taskId} draggableId={taskId} index={index}>
                   {(draggableProvided, snapshot): JSX.Element => (
                     <Box
                       ref={draggableProvided.innerRef}
                       style={{ ...draggableProvided.draggableProps.style }}
                       sx={{
-                        outline: 'none',
-                        py: 1.5
+                        outline: "none",
+                        py: 1,
                       }}
                       {...draggableProvided.draggableProps}
                       {...draggableProvided.dragHandleProps}
@@ -113,15 +123,6 @@ export const ColumnCard: FC<ColumnCardProps> = (props) => {
             </Box>
           )}
         </Droppable>
-        <Box
-          sx={{
-            pt: 1.5,
-            pb: 3,
-            px: 3
-          }}
-        >
-          <TaskAdd onAdd={onTaskAdd} />
-        </Box>
       </Box>
     </Box>
   );
@@ -133,5 +134,5 @@ ColumnCard.propTypes = {
   onDelete: PropTypes.func,
   onRename: PropTypes.func,
   onTaskAdd: PropTypes.func,
-  onTaskOpen: PropTypes.func
+  onTaskOpen: PropTypes.func,
 };

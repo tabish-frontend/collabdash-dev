@@ -9,46 +9,66 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useSettings } from "src/hooks";
+import { useDialog, useSettings } from "src/hooks";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts";
 import { useRouter } from "next/router";
 import { Plus } from "mdi-material-ui";
 import { useEffect, useState } from "react";
-import BoardCard from "src/components/shared/cards/boardCard";
-import { BoardsModal } from "src/components/shared/modals/boards-modal";
+import {
+  BoardCard,
+  BoardsModal,
+  ConfirmationModal,
+} from "src/components/shared";
 import { useWorkSpace } from "src/hooks/use-workSpace";
 import { WorkSpace } from "src/types";
 
-// Helper function to format the slug
-const formatSlug = (slug: string | string[] | undefined): string => {
-  if (typeof slug === "string") {
-    return slug.split("_").join(" ");
-  }
-  return "";
-};
+interface BoardDialogData {
+  type: string;
+  values?: object;
+}
+
+interface DeleeBoardDialogData {
+  id: string;
+}
 
 const BoardsComponent = () => {
   const settings = useSettings();
   const router = useRouter();
   const theme = useTheme();
-
-  const { getCurrentWorkSpace, handleAddBoard } = useWorkSpace();
-  const [workSpace, setWorkSpace] = useState<WorkSpace>();
-
-  const [boardModal, setBoardModal] = useState({
-    open: false,
-    type: "",
-    values: {},
-  });
-
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const { workspace_slug } = router.query;
 
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const {
+    getCurrentWorkSpace,
+    handleAddBoard,
+    handleUpdateBoard,
+    handleDeletBoard,
+  } = useWorkSpace();
 
-  useEffect(() => {
-    setWorkSpace(getCurrentWorkSpace(workspace_slug));
-  }, [getCurrentWorkSpace, workspace_slug]);
+  const workSpace: WorkSpace = getCurrentWorkSpace(workspace_slug);
+
+  const boardDialog = useDialog<BoardDialogData>();
+  const DeleteBoardDialog = useDialog<DeleeBoardDialogData>();
+
+  const addAndUpdateBoard = async (values: any) => {
+    const { _id, ...boardValues } = values;
+    if (boardDialog.data?.type === "update") {
+      handleUpdateBoard(_id, boardValues);
+    } else {
+      handleAddBoard({
+        ...values,
+        workspace: workSpace!._id,
+      });
+    }
+    boardDialog.handleClose();
+  };
+
+  const deleteBoard = async (_id: string | undefined) => {
+    if (!_id) return null;
+    handleDeletBoard(_id);
+    DeleteBoardDialog.handleClose();
+  };
 
   return (
     <Box
@@ -66,7 +86,7 @@ const BoardsComponent = () => {
           }}
         >
           <Typography variant="h4" textTransform={"capitalize"}>
-            {formatSlug(workspace_slug)}
+            {workSpace?.name}
           </Typography>
 
           <Stack
@@ -79,17 +99,14 @@ const BoardsComponent = () => {
             <Button
               variant="contained"
               size={isSmallScreen ? "small" : "medium"}
-              //   onClick={() => router.push(`${router.pathname}/new`)}
               startIcon={
                 <SvgIcon>
                   <Plus />
                 </SvgIcon>
               }
               onClick={() => {
-                setBoardModal({
-                  open: true,
+                boardDialog.handleOpen({
                   type: "create",
-                  values: {},
                 });
               }}
             >
@@ -103,11 +120,15 @@ const BoardsComponent = () => {
                 <Grid item xs={12} xl={3} lg={4} md={6} key={board.slug}>
                   <BoardCard
                     board={board}
-                    handleUpdateBoard={() =>
-                      setBoardModal({
-                        open: true,
+                    handleUpdateBoard={() => {
+                      boardDialog.handleOpen({
                         type: "update",
                         values: board,
+                      });
+                    }}
+                    handleDeleteBoard={() =>
+                      DeleteBoardDialog.handleOpen({
+                        id: board._id,
                       })
                     }
                   />
@@ -118,24 +139,25 @@ const BoardsComponent = () => {
         </Stack>
       </Container>
 
-      {boardModal.open && (
+      {boardDialog.open && (
         <BoardsModal
-          modalType={boardModal.type}
-          modal={boardModal.open}
+          modalType={boardDialog.data?.type}
+          modal={boardDialog.open}
           members={workSpace!.members}
-          modalValues={boardModal.values}
-          onConfirm={(values) => {
-            handleAddBoard({
-              ...values,
-              workspace: workSpace!._id,
-            });
-          }}
-          onCancel={() => {
-            setBoardModal({
-              open: false,
-              type: "",
-              values: {},
-            });
+          modalValues={boardDialog.data?.values}
+          onConfirm={addAndUpdateBoard}
+          onCancel={boardDialog.handleClose}
+        />
+      )}
+
+      {DeleteBoardDialog.open && (
+        <ConfirmationModal
+          modal={DeleteBoardDialog.open}
+          onCancel={DeleteBoardDialog.handleClose}
+          onConfirm={() => deleteBoard(DeleteBoardDialog.data?.id)}
+          content={{
+            type: "Delete",
+            text: "Are you sure you want to delete that Board ?",
           }}
         />
       )}

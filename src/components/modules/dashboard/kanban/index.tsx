@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import type { NextPage } from "next";
 import type { DropResult } from "react-beautiful-dnd";
-import { DragDropContext } from "react-beautiful-dnd";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
@@ -17,7 +17,6 @@ import { thunks } from "src/thunks/kanban";
 
 const useColumnsIds = (): string[] => {
   const { columns } = useSelector((state) => state.kanban);
-
   return columns.allIds;
 };
 
@@ -41,38 +40,46 @@ const KanbanBoardComponent = () => {
   useBoard();
 
   const handleDragEnd = useCallback(
-    async ({ source, destination, draggableId }: DropResult): Promise<void> => {
+    async ({
+      source,
+      destination,
+      draggableId,
+      type,
+    }: DropResult): Promise<void> => {
+      if (!destination) return;
+
+      if (
+        source.droppableId === destination.droppableId &&
+        source.index === destination.index
+      ) {
+        return;
+      }
+
       try {
-        // Dropped outside the column
-        if (!destination) {
-          return;
-        }
-
-        // Task has not been moved
-        if (
-          source.droppableId === destination.droppableId &&
-          source.index === destination.index
-        ) {
-          return;
-        }
-
-        if (source.droppableId === destination.droppableId) {
-          // Moved to the same column on different position
+        if (type === "COLUMN") {
           await dispatch(
-            thunks.moveTask({
-              taskId: draggableId,
+            thunks.moveColumn({
+              columnId: draggableId,
               position: destination.index,
             })
           );
         } else {
-          // Moved to another column
-          await dispatch(
-            thunks.moveTask({
-              taskId: draggableId,
-              position: destination.index,
-              columnId: destination.droppableId,
-            })
-          );
+          if (source.droppableId === destination.droppableId) {
+            await dispatch(
+              thunks.moveTask({
+                taskId: draggableId,
+                position: destination.index,
+              })
+            );
+          } else {
+            await dispatch(
+              thunks.moveTask({
+                taskId: draggableId,
+                position: destination.index,
+                columnId: destination.droppableId,
+              })
+            );
+          }
         }
       } catch (err) {
         console.error(err);
@@ -191,32 +198,58 @@ const KanbanBoardComponent = () => {
           <Typography variant="h4">Tasks</Typography>
         </Box>
         <DragDropContext onDragEnd={handleDragEnd}>
-          <Box
-            sx={{
-              display: "flex",
-              flexGrow: 1,
-              flexShrink: 1,
-              overflowX: "auto",
-              overflowY: "hidden",
-              px: 3,
-              py: 3,
-            }}
+          <Droppable
+            droppableId="all-columns"
+            direction="horizontal"
+            type="COLUMN"
           >
-            <Stack alignItems="flex-start" direction="row" spacing={3}>
-              {columnsIds.map((columnId: string) => (
-                <ColumnCard
-                  key={columnId}
-                  columnId={columnId}
-                  onClear={() => handleColumnClear(columnId)}
-                  onDelete={() => handleColumnDelete(columnId)}
-                  onRename={(name) => handleColumnRename(columnId, name)}
-                  onTaskAdd={(name) => handleTaskAdd(columnId, name)}
-                  onTaskOpen={handleTaskOpen}
-                />
-              ))}
-              <ColumnAdd onAdd={handleColumnAdd} />
-            </Stack>
-          </Box>
+            {(provided) => (
+              <Box
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                sx={{
+                  display: "flex",
+                  flexGrow: 1,
+                  flexShrink: 1,
+                  overflowX: "auto",
+                  overflowY: "hidden",
+                  px: 3,
+                  py: 3,
+                }}
+              >
+                <Stack alignItems="flex-start" direction="row" spacing={3}>
+                  {columnsIds.map((columnId: string, index: number) => (
+                    <Draggable
+                      draggableId={columnId}
+                      index={index}
+                      key={columnId}
+                    >
+                      {(provided) => (
+                        <Box
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                          <ColumnCard
+                            columnId={columnId}
+                            onClear={() => handleColumnClear(columnId)}
+                            onDelete={() => handleColumnDelete(columnId)}
+                            onRename={(name) =>
+                              handleColumnRename(columnId, name)
+                            }
+                            onTaskAdd={(name) => handleTaskAdd(columnId, name)}
+                            onTaskOpen={handleTaskOpen}
+                          />
+                        </Box>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                  <ColumnAdd onAdd={handleColumnAdd} />
+                </Stack>
+              </Box>
+            )}
+          </Droppable>
         </DragDropContext>
       </Box>
       <TaskModal
