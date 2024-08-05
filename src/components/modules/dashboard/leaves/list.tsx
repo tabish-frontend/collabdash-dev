@@ -45,10 +45,12 @@ import {
   RouterLink,
 } from "src/components/shared";
 import { paths } from "src/constants/paths";
-import { LeavesStatus } from "src/constants/status";
 import { DatePicker } from "@mui/x-date-pickers";
 import Tooltip from "@mui/material/Tooltip";
 import { Scrollbar } from "src/utils/scrollbar";
+import UpdateLeavesStatus from "src/components/shared/leaves-status";
+import UpdateAction from "src/components/shared/update-action";
+import DeleteAction from "src/components/shared/delete-action";
 
 const employee_Screen = [
   "Applied Date",
@@ -325,93 +327,35 @@ const LeavesListComponent = () => {
 
                               {(user?.role === ROLES.Admin ||
                                 user?.role === ROLES.HR) && (
-                                <TableCell>
-                                  <Stack direction={"row"} width={150}>
-                                    <Tooltip title="Approved">
-                                      <span>
-                                        <IconButton
-                                          onClick={() =>
-                                            handleUpdateStatus(
-                                              leave._id,
-                                              LeavesStatus.Approved
-                                            )
-                                          }
-                                          disabled={
-                                            leave.status ===
-                                            LeavesStatus.Approved
-                                          }
-                                          sx={{
-                                            "&:hover": {
-                                              backgroundColor: "green",
-                                              color: "white",
-                                            },
-                                            color: "green",
-                                          }}
-                                        >
-                                          <CheckCircleOutline />
-                                        </IconButton>
-                                      </span>
-                                    </Tooltip>
-
-                                    <Tooltip title="Rejected">
-                                      <span>
-                                        <IconButton
-                                          onClick={() =>
-                                            handleUpdateStatus(
-                                              leave._id,
-                                              LeavesStatus.Rejected
-                                            )
-                                          }
-                                          disabled={
-                                            leave.status ===
-                                            LeavesStatus.Rejected
-                                          }
-                                          sx={{
-                                            "&:hover": {
-                                              backgroundColor: "red",
-                                              color: "white",
-                                            },
-                                            color: "red",
-                                          }}
-                                        >
-                                          <CloseCircleOutline />
-                                        </IconButton>
-                                      </span>
-                                    </Tooltip>
-                                  </Stack>
-                                </TableCell>
+                                <UpdateLeavesStatus
+                                  handleUpdateStatus={handleUpdateStatus}
+                                  leaveId={leave._id}
+                                  leaveStatus={leave.status}
+                                />
                               )}
 
                               <TableCell>
-                                <Stack direction={"row"} spacing={1}>
-                                  <Tooltip title="Edit">
-                                    <span>
-                                      <SquareEditOutline
-                                        color="success"
-                                        sx={{ cursor: "pointer" }}
-                                        onClick={() => {
-                                          LeaveDialog.handleOpen({
-                                            type: "update",
-                                            values: leave,
-                                          });
-                                        }}
-                                      />
-                                    </span>
-                                  </Tooltip>
+                                <Stack
+                                  direction={"row"}
+                                  justifyContent={"center"}
+                                  spacing={1}
+                                >
+                                  <UpdateAction
+                                    handleUpdateDialog={() =>
+                                      LeaveDialog.handleOpen({
+                                        type: "update",
+                                        values: leave,
+                                      })
+                                    }
+                                  />
 
-                                  <Tooltip title="Delete">
-                                    <span>
-                                      <TrashCanOutline
-                                        color="error"
-                                        sx={{ cursor: "pointer" }}
-                                        onClick={() =>
-                                          DeleteLeaveDialog.handleOpen({
-                                            id: leave._id,
-                                          })
-                                        }
-                                      />
-                                    </span>
-                                  </Tooltip>
+                                  <DeleteAction
+                                    handleDeleteDialog={() =>
+                                      DeleteLeaveDialog.handleOpen({
+                                        id: leave._id,
+                                      })
+                                    }
+                                  />
                                 </Stack>
                               </TableCell>
                             </TableRow>
