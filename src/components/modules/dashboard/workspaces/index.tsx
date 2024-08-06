@@ -14,7 +14,6 @@ import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts";
 import { useRouter } from "next/router";
 import { Plus } from "mdi-material-ui";
-import { useEffect, useState } from "react";
 import {
   BoardCard,
   BoardsModal,
@@ -32,7 +31,7 @@ interface DeleeBoardDialogData {
   id: string;
 }
 
-const BoardsComponent = () => {
+const WorkSpacesComponent = () => {
   const settings = useSettings();
   const router = useRouter();
   const theme = useTheme();
@@ -85,16 +84,14 @@ const BoardsComponent = () => {
             lg: 4,
           }}
         >
-          <Typography variant="h4" textTransform={"capitalize"}>
-            {workSpace?.name}
-          </Typography>
+          <Typography variant="h5">Boards</Typography>
 
           <Stack
             direction={"row"}
             justifyContent="space-between"
             flexWrap={"wrap"}
           >
-            <Typography variant="h5">Boards</Typography>
+            <Typography variant="h6">{workSpace?.name}</Typography>
 
             <Button
               variant="contained"
@@ -165,10 +162,10 @@ const BoardsComponent = () => {
   );
 };
 
-const Boards: NextPage = () => {
-  return <BoardsComponent />;
+const WorkSpaces: NextPage = () => {
+  return <WorkSpacesComponent />;
 };
 
-Boards.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+WorkSpaces.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
-export { Boards };
+export { WorkSpaces };

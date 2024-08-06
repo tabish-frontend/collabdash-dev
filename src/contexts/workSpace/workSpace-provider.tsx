@@ -7,6 +7,7 @@ import { WorkSpaceContext, initialState } from "./workSpace-context";
 import { WorkSpace, WorkSpaceBoard } from "src/types";
 import { WorkSpaceApi } from "src/api/kanban/workSpace";
 import { BoardsApi } from "src/api/kanban/boards";
+import { ColumnApi } from "src/api/kanban/column";
 
 interface WorkSpaceProviderProps {
   children?: ReactNode;
@@ -66,6 +67,8 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
 
   const handleAddBoard = useCallback(async (data: WorkSpaceBoard) => {
     const response = await BoardsApi.addBoard(data);
+
+    console.log("response", response);
     setState((prev) => {
       const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
         if (workspace._id === data.workspace) {
@@ -107,6 +110,20 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     []
   );
 
+  const getCurrentBoard = useCallback(
+    (
+      workspace_slug: string | string[] | undefined,
+      board_slug: string | string[] | undefined
+    ) => {
+      const workspace = state.WorkSpaces.find(
+        (item) => item.slug === workspace_slug
+      );
+      if (!workspace) return undefined;
+      return workspace.boards.find((board) => board.slug === board_slug);
+    },
+    [state.WorkSpaces]
+  );
+
   const handleDeletBoard = useCallback(async (board_id: string) => {
     await BoardsApi.deleteBoard(board_id);
 
@@ -127,6 +144,137 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
       };
     });
   }, []);
+
+  const handleAddColumn = useCallback(
+    async (data: { name: string; board: string }) => {
+      const response = await ColumnApi.addColumn(data);
+
+      setState((prev) => {
+        const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
+          const updatedBoards = workspace.boards.map((board) => {
+            if (board._id === data.board) {
+              return {
+                ...board,
+
+                columns: [...board.columns, response.data],
+              };
+            }
+            return board;
+          });
+          return {
+            ...workspace,
+            boards: updatedBoards,
+          };
+        });
+        return {
+          ...prev,
+          WorkSpaces: updatedWorkSpaces,
+        };
+      });
+    },
+    []
+  );
+
+  const handleUpdateColumn = useCallback(
+    async (column_id: string, data: { name: string }) => {
+      const response = await ColumnApi.updateColumn(column_id, data);
+
+      setState((prev) => {
+        const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
+          const updatedBoards = workspace.boards.map((board) => {
+            const updatedColumns = board.columns.map((column) =>
+              column._id === column_id ? response.data : column
+            );
+            return {
+              ...board,
+              columns: updatedColumns,
+            };
+          });
+          return {
+            ...workspace,
+            boards: updatedBoards,
+          };
+        });
+
+        return {
+          ...prev,
+          WorkSpaces: updatedWorkSpaces,
+        };
+      });
+    },
+    []
+  );
+
+  const handleDeleteColumn = useCallback(async (column_id: string) => {
+    await ColumnApi.deleteColumn(column_id);
+
+    setState((prev) => {
+      const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
+        const updatedBoards = workspace.boards.map((board) => {
+          const updatedColumns = board.columns.filter(
+            (column) => column._id !== column_id
+          );
+          return {
+            ...board,
+            columns: updatedColumns,
+          };
+        });
+        return {
+          ...workspace,
+          boards: updatedBoards,
+        };
+      });
+
+      return {
+        ...prev,
+        WorkSpaces: updatedWorkSpaces,
+      };
+    });
+  }, []);
+
+  const handleMoveColumn = useCallback(
+    async (data: { board_id: string; column_id: string; index: number }) => {
+      const { board_id, ...resValues } = data;
+
+      setState((prev) => {
+        const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
+          const updatedBoards = workspace.boards.map((board) => {
+            if (board._id === board_id) {
+              const columns = [...board.columns];
+              const columnIndex = columns.findIndex(
+                (column) => column._id === resValues.column_id
+              );
+
+              if (columnIndex !== -1) {
+                const [movedColumn] = columns.splice(columnIndex, 1);
+                columns.splice(resValues.index, 0, movedColumn);
+              }
+
+              return {
+                ...board,
+                columns,
+              };
+            }
+
+            return board;
+          });
+
+          return {
+            ...workspace,
+            boards: updatedBoards,
+          };
+        });
+
+        return {
+          ...prev,
+          WorkSpaces: updatedWorkSpaces,
+        };
+      });
+
+      await ColumnApi.moveColumn(board_id, resValues);
+    },
+    []
+  );
 
   const handleOpen = useCallback((): void => {
     setState((prev) => ({
@@ -156,9 +304,14 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
         getCurrentWorkSpace,
         handleAddWorkSpace,
         handleUpdateWorkSpace,
+        getCurrentBoard,
         handleAddBoard,
         handleUpdateBoard,
         handleDeletBoard,
+        handleAddColumn,
+        handleUpdateColumn,
+        handleDeleteColumn,
+        handleMoveColumn,
       }}
     >
       {children}

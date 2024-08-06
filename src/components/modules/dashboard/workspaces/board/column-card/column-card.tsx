@@ -9,17 +9,10 @@ import type { Column } from "src/types/kanban";
 import { TaskAdd } from "../task-add";
 import { TaskCard } from "../task-card";
 import { ColumnHeader } from "./column-header";
-
-const useColumn = (columnId: string): Column | undefined => {
-  return useSelector((state) => {
-    const { columns } = state.kanban;
-
-    return columns.byId[columnId];
-  });
-};
+import { WorkSpaceBoardColumn, WorkSpaceBoardColumnTasks } from "src/types";
 
 interface ColumnCardProps {
-  columnId: string;
+  column: WorkSpaceBoardColumn;
   onClear?: () => void;
   onDelete?: () => void;
   onRename?: (name: string) => void;
@@ -29,7 +22,7 @@ interface ColumnCardProps {
 
 export const ColumnCard: FC<ColumnCardProps> = (props) => {
   const {
-    columnId,
+    column,
     onTaskAdd,
     onTaskOpen,
     onClear,
@@ -37,13 +30,12 @@ export const ColumnCard: FC<ColumnCardProps> = (props) => {
     onRename,
     ...other
   } = props;
-  const column = useColumn(columnId);
 
   if (!column) {
     return null;
   }
 
-  const tasksCount = column.taskIds.length;
+  const tasksCount = column.tasks.length;
 
   return (
     <Box
@@ -85,7 +77,7 @@ export const ColumnCard: FC<ColumnCardProps> = (props) => {
           <TaskAdd onAdd={onTaskAdd} />
         </Box>
 
-        <Droppable droppableId={column.id} type="task">
+        <Droppable droppableId={column._id} type="task">
           {(droppableProvider): JSX.Element => (
             <Box
               ref={droppableProvider.innerRef}
@@ -96,8 +88,8 @@ export const ColumnCard: FC<ColumnCardProps> = (props) => {
                 p: 1,
               }}
             >
-              {column?.taskIds.map((taskId, index) => (
-                <Draggable key={taskId} draggableId={taskId} index={index}>
+              {column?.tasks.map((task: WorkSpaceBoardColumnTasks, index) => (
+                <Draggable key={task._id} draggableId={task._id} index={index}>
                   {(draggableProvided, snapshot): JSX.Element => (
                     <Box
                       ref={draggableProvided.innerRef}
@@ -110,10 +102,10 @@ export const ColumnCard: FC<ColumnCardProps> = (props) => {
                       {...draggableProvided.dragHandleProps}
                     >
                       <TaskCard
-                        key={taskId}
+                        key={task._id}
                         dragging={snapshot.isDragging}
-                        onOpen={() => onTaskOpen?.(taskId)}
-                        taskId={taskId}
+                        onOpen={() => onTaskOpen?.(task._id)}
+                        taskId={task._id}
                       />
                     </Box>
                   )}
@@ -128,11 +120,11 @@ export const ColumnCard: FC<ColumnCardProps> = (props) => {
   );
 };
 
-ColumnCard.propTypes = {
-  columnId: PropTypes.string.isRequired,
-  onClear: PropTypes.func,
-  onDelete: PropTypes.func,
-  onRename: PropTypes.func,
-  onTaskAdd: PropTypes.func,
-  onTaskOpen: PropTypes.func,
-};
+// ColumnCard.propTypes = {
+//   column: PropTypes.W.isRequired,
+//   onClear: PropTypes.func,
+//   onDelete: PropTypes.func,
+//   onRename: PropTypes.func,
+//   onTaskAdd: PropTypes.func,
+//   onTaskOpen: PropTypes.func,
+// };

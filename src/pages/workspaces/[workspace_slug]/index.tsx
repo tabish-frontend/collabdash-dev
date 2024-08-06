@@ -1,3 +1,3 @@
-import { Boards } from "src/components";
+import { WorkSpaces } from "src/components";
 
-export default Boards;
+export default WorkSpaces;
