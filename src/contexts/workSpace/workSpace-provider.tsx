@@ -8,6 +8,7 @@ import { WorkSpace, WorkSpaceBoard } from "src/types";
 import { WorkSpaceApi } from "src/api/kanban/workSpace";
 import { BoardsApi } from "src/api/kanban/boards";
 import { ColumnApi } from "src/api/kanban/column";
+import { TaskApi } from "src/api/kanban/tasks";
 
 interface WorkSpaceProviderProps {
   children?: ReactNode;
@@ -276,6 +277,48 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     []
   );
 
+  const handleAddTask = useCallback(
+    async (data: { title: string; board: string; column: string }) => {
+      const response = await TaskApi.addTask(data);
+      const newTask = response.data;
+
+      setState((prev) => {
+        const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
+          const updatedBoards = workspace.boards.map((board) => {
+            if (board._id === data.board) {
+              const updatedColumns = board.columns.map((column) => {
+                if (column._id === data.column) {
+                  return {
+                    ...column,
+                    tasks: [...column.tasks, newTask],
+                  };
+                }
+                return column;
+              });
+
+              return {
+                ...board,
+                columns: updatedColumns,
+              };
+            }
+            return board;
+          });
+
+          return {
+            ...workspace,
+            boards: updatedBoards,
+          };
+        });
+
+        return {
+          ...prev,
+          WorkSpaces: updatedWorkSpaces,
+        };
+      });
+    },
+    []
+  );
+
   const handleOpen = useCallback((): void => {
     setState((prev) => ({
       ...prev,
@@ -312,6 +355,7 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
         handleUpdateColumn,
         handleDeleteColumn,
         handleMoveColumn,
+        handleAddTask,
       }}
     >
       {children}

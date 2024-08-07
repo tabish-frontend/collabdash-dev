@@ -6,7 +6,7 @@ export interface WorkSpaceBoardColumnTasks {
   title: string;
   description?: string;
   board: Board;
-  column: WorkSpaceBoardColumn;
+  column: string;
   assignedTo: Employee[];
   owner: Employee;
   attachments: string[];
@@ -17,7 +17,7 @@ export interface WorkSpaceBoardColumn {
   name: string;
   owner?: Employee;
   board: WorkSpaceBoard;
-  tasks: [];
+  tasks: WorkSpaceBoardColumnTasks[];
 }
 
 export interface WorkSpaceBoard {

@@ -38,6 +38,7 @@ import { TaskComment } from "./task-comment";
 import { TaskCommentAdd } from "./task-comment-add";
 import { TaskLabels } from "./task-labels";
 import { TaskStatus } from "./task-status";
+import { WorkSpaceBoardColumn, WorkSpaceBoardColumnTasks } from "src/types";
 
 const useColumns = (): Column[] => {
   return useSelector((state) => {
@@ -100,22 +101,22 @@ const useAssignees = (assigneesIds?: string[]): Member[] => {
 interface TaskModalProps {
   onClose?: () => void;
   open?: boolean;
-  taskId?: string;
+  task?: WorkSpaceBoardColumnTasks;
+  boardColumns?: WorkSpaceBoardColumn[];
 }
 
 export const TaskModal: FC<TaskModalProps> = (props) => {
-  const { taskId, onClose, open = false, ...other } = props;
+  const { task, boardColumns, onClose, open = false, ...other } = props;
   const user = useMockedUser();
   const dispatch = useDispatch();
-  const columns = useColumns();
-  const task = useTask(taskId);
-  const column = useColumn(task?.columnId);
-  const author = useAuthor(task?.authorId);
-  const assignees = useAssignees(task?.assigneesIds);
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("md"));
   const [currentTab, setCurrentTab] = useState<string>("overview");
-  const [nameCopy, setNameCopy] = useState<string>(task?.name || "");
+  const [nameCopy, setNameCopy] = useState<string>(task?.title || "");
   const debounceMs = 500;
+
+  useEffect(() => {
+    console.log("taskModal task", task);
+  }, [task]);
 
   const handleTabsReset = useCallback(() => {
     setCurrentTab("overview");
@@ -127,11 +128,11 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
       handleTabsReset();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [taskId]
+    [task?._id]
   );
 
   const handleNameReset = useCallback(() => {
-    setNameCopy(task?.name || "");
+    setNameCopy(task?.title || "");
   }, [task]);
 
   // Reset task name copy
@@ -155,7 +156,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
       try {
         await dispatch(
           thunks.moveTask({
-            taskId: task!.id,
+            taskId: task!._id,
             position: 0,
             columnId,
           })
@@ -173,7 +174,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     try {
       await dispatch(
         thunks.deleteTask({
-          taskId: task!.id,
+          taskId: task!._id,
         })
       );
       onClose?.();
@@ -188,7 +189,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
       try {
         await dispatch(
           thunks.updateTask({
-            taskId: task!.id,
+            taskId: task!._id,
             update: {
               name,
             },
@@ -204,11 +205,11 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
 
   const handleNameBlur = useCallback(() => {
     if (!nameCopy) {
-      setNameCopy(task!.name);
+      setNameCopy(task!.title);
       return;
     }
 
-    if (nameCopy === task!.name) {
+    if (nameCopy === task!.title) {
       return;
     }
 
@@ -225,7 +226,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
   const handleNameKeyUp = useCallback(
     (event: KeyboardEvent<HTMLInputElement>): void => {
       if (event.code === "Enter") {
-        if (nameCopy && nameCopy !== task!.name) {
+        if (nameCopy && nameCopy !== task!.title) {
           handleNameUpdate(nameCopy);
         }
       }
@@ -239,7 +240,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
         try {
           await dispatch(
             thunks.updateTask({
-              taskId: task!.id,
+              taskId: task!._id,
               update: {
                 description,
               },
@@ -264,7 +265,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     try {
       await dispatch(
         thunks.updateTask({
-          taskId: task!.id,
+          taskId: task!._id,
           update: { isSubscribed: true },
         })
       );
@@ -278,7 +279,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     try {
       await dispatch(
         thunks.updateTask({
-          taskId: task!.id,
+          taskId: task!._id,
           update: { isSubscribed: false },
         })
       );
@@ -293,7 +294,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
       try {
         await dispatch(
           thunks.updateTask({
-            taskId: task!.id,
+            taskId: task!._id,
             update: {
               labels,
             },
@@ -311,7 +312,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     try {
       await dispatch(
         thunks.addChecklist({
-          taskId: task!.id,
+          taskId: task!._id,
           name: "Untitled Checklist",
         })
       );
@@ -326,7 +327,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
       try {
         await dispatch(
           thunks.updateChecklist({
-            taskId: task!.id,
+            taskId: task!._id,
             checklistId,
             update: { name },
           })
@@ -344,7 +345,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
       try {
         await dispatch(
           thunks.deleteChecklist({
-            taskId: task!.id,
+            taskId: task!._id,
             checklistId,
           })
         );
@@ -361,7 +362,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
       try {
         await dispatch(
           thunks.addCheckItem({
-            taskId: task!.id,
+            taskId: task!._id,
             checklistId,
             name,
           })
@@ -379,7 +380,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
       try {
         await dispatch(
           thunks.deleteCheckItem({
-            taskId: task!.id,
+            taskId: task!._id,
             checklistId,
             checkItemId,
           })
@@ -397,7 +398,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
       try {
         await dispatch(
           thunks.updateCheckItem({
-            taskId: task!.id,
+            taskId: task!._id,
             checklistId,
             checkItemId,
             update: {
@@ -418,7 +419,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
       try {
         await dispatch(
           thunks.updateCheckItem({
-            taskId: task!.id,
+            taskId: task!._id,
             checklistId,
             checkItemId,
             update: {
@@ -443,7 +444,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
       try {
         await dispatch(
           thunks.updateCheckItem({
-            taskId: task!.id,
+            taskId: task!._id,
             checklistId,
             checkItemId,
             update: {
@@ -464,7 +465,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
       try {
         await dispatch(
           thunks.addComment({
-            taskId: task!.id,
+            taskId: task!._id,
             message,
           })
         );
@@ -477,16 +478,16 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
   );
 
   const statusOptions = useMemo(() => {
-    return columns.map((column) => {
+    return boardColumns?.map((column) => {
       return {
         label: column.name,
-        value: column.id,
+        value: column._id,
       };
     });
-  }, [columns]);
+  }, [boardColumns]);
 
   const content =
-    task && column ? (
+    task && task.column ? (
       <>
         <Stack
           alignItems={{
@@ -506,7 +507,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
             <TaskStatus
               onChange={(columnId) => handleMove(columnId)}
               options={statusOptions}
-              value={column.id}
+              value={task.column}
             />
           </div>
           <Stack
@@ -515,7 +516,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
             direction="row"
             spacing={1}
           >
-            {task.isSubscribed ? (
+            {/* {task.isSubscribed ? (
               <IconButton onClick={handleUnsubscribe}>
                 <SvgIcon>
                   <EyeOffIcon />
@@ -527,7 +528,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                   <EyeIcon />
                 </SvgIcon>
               </IconButton>
-            )}
+            )} */}
             <IconButton onClick={handleDelete}>
               <SvgIcon>
                 <ArchiveIcon />
@@ -585,7 +586,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                 </Typography>
               </Grid>
               <Grid xs={12} sm={8}>
-                {author && <Avatar src={author.avatar || undefined} />}
+                {task.owner && <Avatar src={task.owner.avatar || undefined} />}
               </Grid>
               <Grid xs={12} sm={4}>
                 <Typography color="text.secondary" variant="caption">
@@ -600,9 +601,9 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                   spacing={1}
                 >
                   <AvatarGroup max={5}>
-                    {assignees.map((assignee) => (
+                    {task.assignedTo.map((assignee) => (
                       <Avatar
-                        key={assignee.id}
+                        key={assignee._id}
                         src={assignee.avatar || undefined}
                       />
                     ))}
@@ -626,7 +627,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                   flexWrap="wrap"
                   spacing={1}
                 >
-                  {task.attachments.map((attachment) => (
+                  {/* {task.attachments.map((attachment) => (
                     <Avatar
                       key={attachment.id}
                       src={attachment.url || undefined}
@@ -636,7 +637,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                       }}
                       variant="rounded"
                     />
-                  ))}
+                  ))} */}
                   <IconButton disabled>
                     <SvgIcon fontSize="small">
                       <PlusIcon />
@@ -650,9 +651,9 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                 </Typography>
               </Grid>
               <Grid xs={12} sm={8}>
-                {task.due && (
+                {/* {task.due && (
                   <Chip size="small" label={format(task.due, "MMM dd, yyyy")} />
-                )}
+                )} */}
               </Grid>
               <Grid xs={12} sm={4}>
                 <Typography color="text.secondary" variant="caption">
@@ -660,10 +661,10 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                 </Typography>
               </Grid>
               <Grid xs={12} sm={8}>
-                <TaskLabels
+                {/* <TaskLabels
                   labels={task.labels}
                   onChange={handleLabelsChange}
-                />
+                /> */}
               </Grid>
               <Grid xs={12} sm={4}>
                 <Typography color="text.secondary" variant="caption">
@@ -692,7 +693,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
           )}
           {currentTab === "checklists" && (
             <Stack spacing={2}>
-              {task.checklists.map((checklist) => (
+              {/* {task.checklists.map((checklist) => (
                 <TaskChecklist
                   key={checklist.id}
                   checklist={checklist}
@@ -714,7 +715,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                   onDelete={() => handleChecklistDelete(checklist.id)}
                   onRename={(name) => handleChecklistRename(checklist.id, name)}
                 />
-              ))}
+              ))} */}
               <Button
                 startIcon={
                   <SvgIcon>
@@ -730,9 +731,9 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
           )}
           {currentTab === "comments" && (
             <Stack spacing={2}>
-              {task.comments.map((comment) => (
+              {/* {task.comments.map((comment) => (
                 <TaskComment key={comment.id} comment={comment} />
-              ))}
+              ))} */}
               <TaskCommentAdd avatar={user.avatar} onAdd={handleCommentAdd} />
             </Stack>
           )}
@@ -757,8 +758,8 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
   );
 };
 
-TaskModal.propTypes = {
-  onClose: PropTypes.func,
-  open: PropTypes.bool,
-  taskId: PropTypes.string,
-};
+// TaskModal.propTypes = {
+//   onClose: PropTypes.func,
+//   open: PropTypes.bool,
+//   taskId: PropTypes.string,
+// };

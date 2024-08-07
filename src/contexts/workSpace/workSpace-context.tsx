@@ -32,6 +32,11 @@ export interface WorkSpaceContextType extends State {
     column_id: string;
     index: number;
   }) => void;
+  handleAddTask: (data: {
+    title: string;
+    board: string;
+    column: string;
+  }) => void;
 }
 
 export const WorkSpaceContext = createContext<WorkSpaceContextType>({
@@ -49,4 +54,5 @@ export const WorkSpaceContext = createContext<WorkSpaceContextType>({
   handleUpdateColumn: () => {},
   handleDeleteColumn: () => {},
   handleMoveColumn: () => {},
+  handleAddTask: () => {},
 });

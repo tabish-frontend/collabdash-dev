@@ -21,7 +21,11 @@ import ArrowLeftIcon from "@untitled-ui/icons-react/build/esm/ArrowLeft";
 import { Scrollbar } from "src/utils/scrollbar";
 import { minHeight } from "@mui/system";
 import { useWorkSpace } from "src/hooks/use-workSpace";
-import { WorkSpaceBoard, WorkSpaceBoardColumn } from "src/types";
+import {
+  WorkSpaceBoard,
+  WorkSpaceBoardColumn,
+  WorkSpaceBoardColumnTasks,
+} from "src/types";
 
 const formatSlug = (slug: string | string[] | undefined): string => {
   if (typeof slug === "string") {
@@ -33,7 +37,8 @@ const formatSlug = (slug: string | string[] | undefined): string => {
 const BoardComponent = () => {
   const dispatch = useDispatch();
   // const columnsIds = useColumnsIds();
-  const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
+  const [currentTaskId, setCurrentTaskId] =
+    useState<WorkSpaceBoardColumnTasks | null>(null);
 
   const settings = useSettings();
   const router = useRouter();
@@ -48,6 +53,7 @@ const BoardComponent = () => {
     handleUpdateColumn,
     handleDeleteColumn,
     handleMoveColumn,
+    handleAddTask,
   } = useWorkSpace();
 
   const workSpaceBoard: WorkSpaceBoard = getCurrentBoard(
@@ -130,30 +136,37 @@ const BoardComponent = () => {
     [dispatch]
   );
 
-  const handleTaskAdd = useCallback(
-    async (columnId: string, name?: string): Promise<void> => {
-      try {
-        await dispatch(
-          thunks.createTask({
-            columnId,
-            name: name || "Untitled Task",
-          })
-        );
-      } catch (err) {
-        console.error(err);
-        toast.error("Something went wrong!");
-      }
-    },
-    [dispatch]
-  );
+  // const handleTaskAdd = useCallback(
+  //   async (columnId: string, name?: string): Promise<void> => {
+  //     try {
+  //       await dispatch(
+  //         thunks.createTask({
+  //           columnId,
+  //           name: name || "Untitled Task",
+  //         })
+  //       );
+  //     } catch (err) {
+  //       console.error(err);
+  //       toast.error("Something went wrong!");
+  //     }
+  //   },
+  //   [dispatch]
+  // );
 
-  const handleTaskOpen = useCallback((taskId: string): void => {
-    setCurrentTaskId(taskId);
-  }, []);
+  const handleTaskOpen = useCallback(
+    (task: WorkSpaceBoardColumnTasks): void => {
+      setCurrentTaskId(task);
+    },
+    []
+  );
 
   const handleTaskClose = useCallback((): void => {
     setCurrentTaskId(null);
   }, []);
+
+  useEffect(() => {
+    console.log("currentTaskId", currentTaskId);
+  }, [currentTaskId]);
 
   return (
     <>
@@ -227,7 +240,11 @@ const BoardComponent = () => {
                                 })
                               }
                               onTaskAdd={(name) =>
-                                handleTaskAdd(column._id, name)
+                                handleAddTask({
+                                  title: name || "Untitled Task",
+                                  column: column._id,
+                                  board: workSpaceBoard._id,
+                                })
                               }
                               onTaskOpen={handleTaskOpen}
                             />
@@ -254,7 +271,8 @@ const BoardComponent = () => {
       <TaskModal
         onClose={handleTaskClose}
         open={!!currentTaskId}
-        taskId={currentTaskId || undefined}
+        task={currentTaskId || undefined}
+        boardColumns={workSpaceBoard?.columns}
       />
     </>
   );

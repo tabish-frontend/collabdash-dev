@@ -17,6 +17,7 @@ import Typography from "@mui/material/Typography";
 import type { RootState } from "src/store";
 import { useSelector } from "src/store";
 import type { Member, Task } from "src/types/kanban";
+import { Employee, WorkSpaceBoardColumnTasks } from "src/types";
 
 const useTask = (taskId: string): Task | undefined => {
   return useSelector((state: RootState) => {
@@ -41,26 +42,26 @@ const useAssignees = (assigneesIds?: string[]): Member[] => {
 };
 
 interface TaskCardProps {
-  taskId: string;
+  task: WorkSpaceBoardColumnTasks;
   dragging?: boolean;
   onOpen?: () => void;
 }
 
 export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
   function TaskCard(props, ref) {
-    const { taskId, dragging = false, onOpen, ...other } = props;
-    const task = useTask(taskId);
-    const assignees = useAssignees(task?.assigneesIds);
+    const { task, dragging = false, onOpen, ...other } = props;
+    // const task = useTask(taskId);
+    // const assignees = useAssignees(task?.assigneesIds);
 
     if (!task) {
       return null;
     }
 
-    const hasAssignees = task.assigneesIds.length > 0;
-    const hasAttachments = task.attachments.length > 0;
-    const hasChecklists = task.checklists.length > 0;
-    const hasComments = task.comments.length > 0;
-    const hasLabels = task.labels.length > 0;
+    const hasAssignees = task.assignedTo.length > 0;
+    const hasAttachments = task.assignedTo.length > 0;
+    // const hasChecklists = task.checklists.length > 0;
+    // const hasComments = task.comments.length > 0;
+    // const hasLabels = task.labels.length > 0;
 
     return (
       <Card
@@ -90,7 +91,7 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
       >
         {hasAttachments && (
           <CardMedia
-            image={task.attachments[0].url}
+            image={task.attachments[0]}
             sx={{
               borderRadius: 1.5,
               height: 120,
@@ -98,8 +99,8 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
             }}
           />
         )}
-        <Typography variant="subtitle1">{task.name}</Typography>
-        {hasLabels && (
+        <Typography variant="subtitle1">{task.title}</Typography>
+        {/* {hasLabels && (
           <Box
             sx={{
               alignItems: "center",
@@ -113,7 +114,7 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
               <Chip key={label} label={label} size="small" sx={{ m: 1 }} />
             ))}
           </Box>
-        )}
+        )} */}
         <Stack
           alignItems="center"
           direction="row"
@@ -121,31 +122,31 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
           spacing={2}
         >
           <Stack alignItems="center" direction="row" spacing={2} sx={{ mt: 2 }}>
-            {task.isSubscribed && (
+            {/* {task.isSubscribed && (
               <SvgIcon color="action">
                 <EyeIcon />
               </SvgIcon>
-            )}
+            )} */}
             {hasAttachments && (
               <SvgIcon color="action">
                 <FileCheck03Icon />
               </SvgIcon>
             )}
-            {hasChecklists && (
+            {/* {hasChecklists && (
               <SvgIcon color="action">
                 <ListIcon />
               </SvgIcon>
-            )}
-            {hasComments && (
+            )} */}
+            {/* {hasComments && (
               <SvgIcon color="action">
                 <MessageDotsCircleIcon />
               </SvgIcon>
-            )}
+            )} */}
           </Stack>
           {hasAssignees && (
             <AvatarGroup max={3}>
-              {assignees.map((assignee) => (
-                <Avatar key={assignee.id} src={assignee.avatar || undefined} />
+              {task.assignedTo.map((assignee: Employee) => (
+                <Avatar key={assignee._id} src={assignee.avatar || undefined} />
               ))}
             </AvatarGroup>
           )}
@@ -155,8 +156,8 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
   }
 );
 
-TaskCard.propTypes = {
-  taskId: PropTypes.string.isRequired,
-  dragging: PropTypes.bool,
-  onOpen: PropTypes.func,
-};
+// TaskCard.propTypes = {
+//   task: PropTypes.string.isRequired,
+//   dragging: PropTypes.bool,
+//   onOpen: PropTypes.func,
+// };

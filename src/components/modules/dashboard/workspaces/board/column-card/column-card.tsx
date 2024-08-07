@@ -17,7 +17,7 @@ interface ColumnCardProps {
   onDelete?: () => void;
   onRename?: (name: string) => void;
   onTaskAdd?: (name?: string) => void;
-  onTaskOpen?: (taskId: string) => void;
+  onTaskOpen?: (task: WorkSpaceBoardColumnTasks) => void;
 }
 
 export const ColumnCard: FC<ColumnCardProps> = (props) => {
@@ -104,8 +104,8 @@ export const ColumnCard: FC<ColumnCardProps> = (props) => {
                       <TaskCard
                         key={task._id}
                         dragging={snapshot.isDragging}
-                        onOpen={() => onTaskOpen?.(task._id)}
-                        taskId={task._id}
+                        onOpen={() => onTaskOpen?.(task)}
+                        task={task}
                       />
                     </Box>
                   )}

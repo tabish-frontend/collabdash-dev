@@ -1,7 +1,7 @@
 import Axios from "src/config/axios";
 import { WorkSpaceBoardColumn } from "src/types";
 
-class columnAPI {
+class ColumnAPI {
   async addColumn(body: { name: string; board: string }) {
     const response = await Axios.post(`/column`, body);
     return response;
@@ -26,4 +26,4 @@ class columnAPI {
   }
 }
 
-export const ColumnApi = new columnAPI();
+export const ColumnApi = new ColumnAPI();
