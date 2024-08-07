@@ -57,11 +57,11 @@ const navItems: Item[] = [
     path: paths.leaves,
   },
 
-  // {
-  //   title: "Tasks",
-  //   icon: <SvgIcon component={FileTreeOutline} />,
-  //   path: paths.tasks,
-  // },
+  {
+    title: "Tasks",
+    icon: <SvgIcon component={FileTreeOutline} />,
+    path: paths.tasks,
+  },
 
   // {
   //   title: "Workspaces",
