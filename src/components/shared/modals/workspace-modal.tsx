@@ -28,16 +28,25 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
   modal,
   onCancel,
 }) => {
-  const workSpace = useWorkSpace();
+  const { currentWorkspace, handleAddWorkSpace, handleUpdateWorkSpace } =
+    useWorkSpace();
 
   const formik = useFormik({
-    initialValues: workSpaceInitialValues,
+    initialValues: {
+      ...currentWorkspace,
+      members: currentWorkspace.members.map((user: any) => user._id),
+    },
 
     enableReinitialize: true,
     onSubmit: async (values, helpers): Promise<void> => {
+      if (currentWorkspace._id) {
+        await handleUpdateWorkSpace(values);
+      } else {
+        await handleAddWorkSpace(values);
+      }
+
       helpers.setStatus({ success: true });
       helpers.setSubmitting(false);
-      workSpace.handleAddWorkSpace(values);
     },
   });
 
@@ -67,7 +76,7 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
       <form onSubmit={formik.handleSubmit}>
         <Paper elevation={12}>
           <DialogTitle sx={{ m: 0, p: 3, fontSize: 24, fontWeight: 600 }}>
-            Create Workspace
+            {currentWorkspace._id ? "Update  Workspace" : "Create Workspace"}
           </DialogTitle>
           <IconButton
             aria-label="close"
