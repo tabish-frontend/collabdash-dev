@@ -76,6 +76,7 @@ export const useSections = (): Section[] => {
         ? WorkSpaces.map((item) => ({
             title: item.name!,
             path: `${paths.workspaces}/${item.slug}`,
+            slug: item.slug,
           }))
         : [],
     });

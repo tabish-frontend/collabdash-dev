@@ -7,6 +7,7 @@ import { WorkSpaceContext, initialState } from "./workSpace-context";
 import { WorkSpace, WorkSpaceBoard } from "src/types";
 import { WorkSpaceApi } from "src/api/kanban/workSpace";
 import { BoardsApi } from "src/api/kanban/boards";
+import { workSpaceInitialValues } from "src/formik";
 import { ColumnApi } from "src/api/kanban/column";
 import { TaskApi } from "src/api/kanban/tasks";
 
@@ -33,6 +34,10 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     },
     [state.WorkSpaces]
   );
+
+  // const getCurrentWorkSpace = (slug: string | string[] | undefined) => {
+  //   return state.WorkSpaces.find((item) => item.slug === slug);
+  // };
 
   const handleAddWorkSpace = useCallback(async (data: WorkSpace) => {
     const response = await WorkSpaceApi.addWorkSpace(data);
@@ -319,12 +324,27 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     []
   );
 
-  const handleOpen = useCallback((): void => {
-    setState((prev) => ({
-      ...prev,
-      openModal: true,
-    }));
-  }, []);
+  const handleOpen = useCallback(
+    (slug: string | undefined): void => {
+      if (slug) {
+        const current = getCurrentWorkSpace(slug);
+        if (current) {
+          setState((prev) => ({
+            ...prev,
+            openModal: true,
+            currentWorkspace: current,
+          }));
+        }
+      } else {
+        setState((prev) => ({
+          ...prev,
+          openModal: true,
+          currentWorkspace: workSpaceInitialValues,
+        }));
+      }
+    },
+    [getCurrentWorkSpace]
+  );
 
   const handleClose = useCallback((): void => {
     setState((prev) => ({
