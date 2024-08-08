@@ -16,8 +16,11 @@ import {
   SvgIcon,
   Tabs,
   Tab,
+  Button,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useRef, useState } from "react";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts/dashboard";
 import { AllUserAttendance } from "./tabs/all-user-attendance";
@@ -65,14 +68,27 @@ const TabStatus = [
   },
 ];
 
+interface AllUserAttendanceRef {
+  downloadAttendanceCsv: () => void;
+}
+
 const AttendanceListComponent = () => {
   const settings = useSettings();
   const router = useRouter();
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
+  const theme = useTheme();
 
   const { date: queryDate } = router.query;
   const { user } = useAuth<AuthContextType>();
+
+  const attendanceRef = useRef<AllUserAttendanceRef>(null);
+
+  const handleDownloadCsv = () => {
+    if (attendanceRef.current) {
+      attendanceRef.current.downloadAttendanceCsv();
+    }
+  };
 
   const initialDate = queryDate ? new Date(queryDate as string) : currentDate;
 
@@ -140,6 +156,8 @@ const AttendanceListComponent = () => {
   if (!user || !user.role) {
     return null; // or some fallback UI
   }
+
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <Box
@@ -243,17 +261,29 @@ const AttendanceListComponent = () => {
           <Stack>
             <Card>
               <CardContent>
-                <Tabs
-                  indicatorColor="primary"
-                  onChange={handleTabChange}
-                  value={tabValue}
+                <Stack
+                  direction={{
+                    xs: "column",
+                    md: "row",
+                  }}
+                  spacing={2}
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
                   sx={{
+                    width: "100%",
                     borderBottom: 1,
                     borderColor: "#ddd",
+                    pb: 1,
                   }}
                 >
-                  {TabStatus.filter((tab) => tab.roles.includes(user.role)).map(
-                    (tab) => (
+                  <Tabs
+                    indicatorColor="primary"
+                    onChange={handleTabChange}
+                    value={tabValue}
+                  >
+                    {TabStatus.filter((tab) =>
+                      tab.roles.includes(user.role)
+                    ).map((tab) => (
                       <Tab
                         key={tab.value}
                         value={tab.value}
@@ -264,12 +294,20 @@ const AttendanceListComponent = () => {
                           </Box>
                         }
                       />
-                    )
-                  )}
-                </Tabs>
+                    ))}
+                  </Tabs>
+
+                  <Button
+                    variant="contained"
+                    size={isSmallScreen ? "small" : "medium"}
+                    onClick={handleDownloadCsv}
+                  >
+                    Download CSV
+                  </Button>
+                </Stack>
 
                 {tabValue === "employee_attendance" ? (
-                  <AllUserAttendance filters={filters} />
+                  <AllUserAttendance ref={attendanceRef} filters={filters} />
                 ) : (
                   <MyAttendance filters={filters} />
                 )}
