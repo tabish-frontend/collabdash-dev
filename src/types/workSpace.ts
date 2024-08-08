@@ -34,7 +34,7 @@ export interface WorkSpaceBoard {
 
 export interface WorkSpace {
   _id: string;
-  name?: string;
+  name: string;
   slug?: string;
   owner?: string;
   members: Employee[];

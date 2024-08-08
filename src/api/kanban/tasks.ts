@@ -7,14 +7,14 @@ class TaskAPI {
     return response;
   }
 
+  async deleteTask(task_id: string) {
+    const response = await Axios.delete(`/task/${task_id}`);
+    return response.data;
+  }
+
   //   async updateColumn(column_id: string, body: { name: String }) {
   //     const response = await Axios.patch(`/column/${column_id}`, body);
   //     return response;
-  //   }
-
-  //   async deleteColumn(column_id: string) {
-  //     const response = await Axios.delete(`/column/${column_id}`);
-  //     return response.data;
   //   }
 
   //   async moveColumn(

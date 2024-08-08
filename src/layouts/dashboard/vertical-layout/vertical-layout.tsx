@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import type { Theme } from "@mui/material/styles/createTheme";
 import { styled } from "@mui/material/styles";
-
 import type { NavColor } from "src/types/settings";
 
 import type { Section } from "../config";
@@ -12,7 +11,6 @@ import { SideNav } from "./side-nav";
 import { TopNav } from "./top-nav";
 import { useMobileNav } from "./use-mobile-nav";
 import { WorkspaceModal } from "src/components/shared";
-import { useSettings } from "src/hooks";
 import { useWorkSpace } from "src/hooks/use-workSpace";
 
 const SIDE_NAV_WIDTH = 240;
@@ -44,8 +42,6 @@ export const VerticalLayout: FC<VerticalLayoutProps> = (props) => {
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
   const mobileNav = useMobileNav();
 
-  const workSpace = useWorkSpace();
-
   return (
     <>
       <TopNav onMobileNavOpen={mobileNav.handleOpen} />
@@ -59,18 +55,7 @@ export const VerticalLayout: FC<VerticalLayoutProps> = (props) => {
         />
       )}
       <VerticalLayoutRoot>
-        <VerticalLayoutContainer>
-          {children}
-
-          {workSpace.openModal && (
-            <WorkspaceModal
-              modal={workSpace.openModal}
-              onCancel={() => {
-                workSpace.handleClose();
-              }}
-            />
-          )}
-        </VerticalLayoutContainer>
+        <VerticalLayoutContainer>{children}</VerticalLayoutContainer>
       </VerticalLayoutRoot>
     </>
   );

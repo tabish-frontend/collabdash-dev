@@ -39,6 +39,7 @@ import { TaskCommentAdd } from "./task-comment-add";
 import { TaskLabels } from "./task-labels";
 import { TaskStatus } from "./task-status";
 import { WorkSpaceBoardColumn, WorkSpaceBoardColumnTasks } from "src/types";
+import { useWorkSpace } from "src/hooks/use-workSpace";
 
 const useColumns = (): Column[] => {
   return useSelector((state) => {
@@ -107,16 +108,16 @@ interface TaskModalProps {
 
 export const TaskModal: FC<TaskModalProps> = (props) => {
   const { task, boardColumns, onClose, open = false, ...other } = props;
+
+  const { handleDeleteTask } = useWorkSpace();
+
   const user = useMockedUser();
   const dispatch = useDispatch();
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("md"));
+
   const [currentTab, setCurrentTab] = useState<string>("overview");
   const [nameCopy, setNameCopy] = useState<string>(task?.title || "");
   const debounceMs = 500;
-
-  useEffect(() => {
-    console.log("taskModal task", task);
-  }, [task]);
 
   const handleTabsReset = useCallback(() => {
     setCurrentTab("overview");
@@ -170,19 +171,19 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     [dispatch, task, onClose]
   );
 
-  const handleDelete = useCallback(async (): Promise<void> => {
-    try {
-      await dispatch(
-        thunks.deleteTask({
-          taskId: task!._id,
-        })
-      );
-      onClose?.();
-    } catch (err) {
-      console.error(err);
-      toast.error("Something went wrong!");
-    }
-  }, [dispatch, task, onClose]);
+  // const handleDelete = useCallback(async (): Promise<void> => {
+  //   try {
+  //     await dispatch(
+  //       thunks.deleteTask({
+  //         taskId: task!._id,
+  //       })
+  //     );
+  //     onClose?.();
+  //   } catch (err) {
+  //     console.error(err);
+  //     toast.error("Something went wrong!");
+  //   }
+  // }, [dispatch, task, onClose]);
 
   const handleNameUpdate = useCallback(
     async (name: string) => {
@@ -529,7 +530,12 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                 </SvgIcon>
               </IconButton>
             )} */}
-            <IconButton onClick={handleDelete}>
+            <IconButton
+              onClick={() => {
+                handleDeleteTask(task._id);
+                onClose?.();
+              }}
+            >
               <SvgIcon>
                 <ArchiveIcon />
               </SvgIcon>

@@ -27,13 +27,6 @@ import {
   WorkSpaceBoardColumnTasks,
 } from "src/types";
 
-const formatSlug = (slug: string | string[] | undefined): string => {
-  if (typeof slug === "string") {
-    return slug.split("_").join(" ");
-  }
-  return "";
-};
-
 const BoardComponent = () => {
   const dispatch = useDispatch();
   // const columnsIds = useColumnsIds();
@@ -47,7 +40,6 @@ const BoardComponent = () => {
   const { boards_slug } = router.query;
 
   const {
-    WorkSpaces,
     getCurrentBoard,
     handleAddColumn,
     handleUpdateColumn,
@@ -56,12 +48,7 @@ const BoardComponent = () => {
     handleAddTask,
   } = useWorkSpace();
 
-  const workSpaceBoard: WorkSpaceBoard = getCurrentBoard(
-    workspace_slug,
-    boards_slug
-  );
-
-  console.log("workSpaceBoard", workSpaceBoard);
+  const workSpaceBoard = getCurrentBoard(workspace_slug, boards_slug);
 
   const handleDragEnd = useCallback(
     async ({
@@ -164,10 +151,6 @@ const BoardComponent = () => {
     setCurrentTaskId(null);
   }, []);
 
-  useEffect(() => {
-    console.log("currentTaskId", currentTaskId);
-  }, [currentTaskId]);
-
   return (
     <>
       <Box
@@ -192,7 +175,7 @@ const BoardComponent = () => {
 
         <Box sx={{ px: 3, py: 3 }}>
           <Typography variant="h6" textTransform={"capitalize"}>
-            {`${formatSlug(workspace_slug)} - ${formatSlug(boards_slug)}`}
+            {`${workSpaceBoard?.workspace.name} - ${workSpaceBoard?.name}`}
           </Typography>
         </Box>
 

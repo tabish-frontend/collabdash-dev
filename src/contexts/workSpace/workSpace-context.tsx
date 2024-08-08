@@ -3,24 +3,22 @@ import { workSpaceInitialValues } from "src/formik";
 import { WorkSpace, WorkSpaceBoard } from "src/types";
 
 export interface State {
-  openModal: boolean;
   WorkSpaces: WorkSpace[];
-  currentWorkspace: WorkSpace;
 }
 
 export const initialState: State = {
   WorkSpaces: [],
-  openModal: false,
-  currentWorkspace: workSpaceInitialValues,
 };
 
 export interface WorkSpaceContextType extends State {
-  // handleOpen: (type: "create" | "update", slug?: string) => void;
-  handleOpen: (slug?: string) => void;
-  handleClose: () => void;
   getCurrentWorkSpace: (slug: string | string[] | undefined) => any;
   handleAddWorkSpace: (data: WorkSpace) => void;
-  handleUpdateWorkSpace: (settings: WorkSpace) => void;
+  handleUpdateWorkSpace: (data: {
+    _id: string;
+    name: string;
+    members: string[];
+  }) => void;
+  handleDeleteWorkSpace: (_id: string) => void;
   getCurrentBoard: (
     workspace_slug: string | string[] | undefined,
     board_slug: string | string[] | undefined
@@ -41,14 +39,14 @@ export interface WorkSpaceContextType extends State {
     board: string;
     column: string;
   }) => void;
+  handleDeleteTask: (_id: string) => void;
 }
 
 export const WorkSpaceContext = createContext<WorkSpaceContextType>({
   ...initialState,
-  handleOpen: () => {},
-  handleClose: () => {},
   getCurrentWorkSpace: (slug) => initialState.WorkSpaces,
   handleUpdateWorkSpace: () => {},
+  handleDeleteWorkSpace: () => {},
   handleAddWorkSpace: () => {},
   getCurrentBoard: () => {},
   handleAddBoard: () => {},
@@ -59,4 +57,5 @@ export const WorkSpaceContext = createContext<WorkSpaceContextType>({
   handleDeleteColumn: () => {},
   handleMoveColumn: () => {},
   handleAddTask: () => {},
+  handleDeleteTask: () => {},
 });

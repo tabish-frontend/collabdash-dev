@@ -13,7 +13,7 @@ import { useFormik } from "formik";
 import { CloseCircleOutline } from "mdi-material-ui";
 import { useEffect, useState, type FC } from "react";
 import { employeesApi } from "src/api";
-import { Employee } from "src/types";
+import { Employee, WorkSpace } from "src/types";
 import { SelectMultipleUsers } from "src/components/shared";
 import { LoadingButton } from "@mui/lab";
 import { useWorkSpace } from "src/hooks/use-workSpace";
@@ -21,32 +21,40 @@ import { workSpaceInitialValues } from "src/formik";
 
 interface WorkspaceModalProps {
   modal: boolean;
+  madal_type?: string;
+  workSpaceValues: WorkSpace;
   onCancel: () => void;
 }
 
 export const WorkspaceModal: FC<WorkspaceModalProps> = ({
   modal,
+  madal_type,
+  workSpaceValues,
   onCancel,
 }) => {
-  const { currentWorkspace, handleAddWorkSpace, handleUpdateWorkSpace } =
-    useWorkSpace();
+  const { handleAddWorkSpace, handleUpdateWorkSpace } = useWorkSpace();
 
   const formik = useFormik({
     initialValues: {
-      ...currentWorkspace,
-      members: currentWorkspace.members.map((user: any) => user._id),
+      ...workSpaceValues,
+      members: workSpaceValues.members.map((user: any) => user._id),
     },
 
     enableReinitialize: true,
     onSubmit: async (values, helpers): Promise<void> => {
-      if (currentWorkspace._id) {
-        await handleUpdateWorkSpace(values);
+      if (madal_type === "Update") {
+        await handleUpdateWorkSpace({
+          _id: values._id,
+          name: values.name,
+          members: values.members,
+        });
       } else {
         await handleAddWorkSpace(values);
       }
 
       helpers.setStatus({ success: true });
       helpers.setSubmitting(false);
+      onCancel();
     },
   });
 
@@ -76,7 +84,7 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
       <form onSubmit={formik.handleSubmit}>
         <Paper elevation={12}>
           <DialogTitle sx={{ m: 0, p: 3, fontSize: 24, fontWeight: 600 }}>
-            {currentWorkspace._id ? "Update  Workspace" : "Create Workspace"}
+            {`${madal_type} Workspace`}
           </DialogTitle>
           <IconButton
             aria-label="close"

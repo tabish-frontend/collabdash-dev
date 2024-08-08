@@ -10,6 +10,8 @@ import { BoardsApi } from "src/api/kanban/boards";
 import { workSpaceInitialValues } from "src/formik";
 import { ColumnApi } from "src/api/kanban/column";
 import { TaskApi } from "src/api/kanban/tasks";
+import { useRouter } from "next/router";
+import { paths } from "src/constants/paths";
 
 interface WorkSpaceProviderProps {
   children?: ReactNode;
@@ -18,6 +20,7 @@ interface WorkSpaceProviderProps {
 export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
   const { children } = props;
   const [state, setState] = useState<State>(initialState);
+  const router = useRouter();
 
   const handleGetWorkSpaces = useCallback(async () => {
     const response = await WorkSpaceApi.getAllWorkSpaces();
@@ -35,10 +38,6 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     [state.WorkSpaces]
   );
 
-  // const getCurrentWorkSpace = (slug: string | string[] | undefined) => {
-  //   return state.WorkSpaces.find((item) => item.slug === slug);
-  // };
-
   const handleAddWorkSpace = useCallback(async (data: WorkSpace) => {
     const response = await WorkSpaceApi.addWorkSpace(data);
 
@@ -49,32 +48,68 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     }));
   }, []);
 
-  const handleUpdateWorkSpace = useCallback((data: WorkSpace): void => {
-    // setState((prevState) => {
-    //   // storeSettings({
-    //   //   colorPreset: prevState.colorPreset,
-    //   //   layout: prevState.layout,
-    //   //   navColor: prevState.navColor,
-    //   //   paletteMode: prevState.paletteMode,
-    //   //   responsiveFontSizes: prevState.responsiveFontSizes,
-    //   //   stretch: prevState.stretch,
-    //   //   ...settings,
-    //   // });
-    //   return {
-    //     ...prevState,
-    //     ...data,
-    //   };
-    // });
-    // setState((prevState) => ({
-    //   ...data,
-    //   openModal: false,
-    // }));
-  }, []);
+  const handleUpdateWorkSpace = useCallback(
+    async (data: { _id: string; name: string; members: string[] }) => {
+      const { _id, name, members } = data;
 
-  const handleAddBoard = useCallback(async (data: WorkSpaceBoard) => {
+      const response = await WorkSpaceApi.updateWorkSpace(_id, {
+        name,
+        members,
+      });
+
+      // Update the state with the response data
+      setState((prev) => {
+        const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
+          return workspace._id === _id
+            ? { ...workspace, ...response }
+            : workspace;
+        });
+
+        return {
+          ...prev,
+          WorkSpaces: updatedWorkSpaces,
+        };
+      });
+
+      const { boards_slug } = router.query;
+      const updatedSlug = response.slug;
+
+      if (boards_slug) {
+        router.push(`${paths.workspaces}/${updatedSlug}/boards/${boards_slug}`);
+      } else {
+        router.push(`${paths.workspaces}/${updatedSlug}`);
+      }
+    },
+    [router]
+  );
+
+  const handleDeleteWorkSpace = useCallback(
+    async (_id: string) => {
+      await WorkSpaceApi.deleteWorkSpace(_id);
+
+      setState((prev) => {
+        const updatedWorkSpaces = prev.WorkSpaces.filter(
+          (workspace) => workspace._id !== _id
+        );
+
+        return {
+          ...prev,
+          WorkSpaces: updatedWorkSpaces,
+        };
+      });
+
+      const { workspace_slug } = router.query;
+
+      if (workspace_slug) {
+        router.push(paths.index);
+      }
+    },
+    [router]
+  );
+
+  const handleAddBoard = useCallback(async (data: any) => {
     const response = await BoardsApi.addBoard(data);
 
-    console.log("response", response);
     setState((prev) => {
       const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
         if (workspace._id === data.workspace) {
@@ -124,8 +159,21 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
       const workspace = state.WorkSpaces.find(
         (item) => item.slug === workspace_slug
       );
+
       if (!workspace) return undefined;
-      return workspace.boards.find((board) => board.slug === board_slug);
+
+      const board = workspace.boards.find((board) => board.slug === board_slug);
+
+      if (!board) return undefined;
+
+      return {
+        ...board,
+        workspace: {
+          _id: workspace._id,
+          name: workspace.name,
+          slug: workspace.slug,
+        },
+      };
     },
     [state.WorkSpaces]
   );
@@ -324,49 +372,54 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     []
   );
 
-  const handleOpen = useCallback(
-    (slug: string | undefined): void => {
-      if (slug) {
-        const current = getCurrentWorkSpace(slug);
-        if (current) {
-          setState((prev) => ({
-            ...prev,
-            openModal: true,
-            currentWorkspace: current,
-          }));
-        }
-      } else {
-        setState((prev) => ({
-          ...prev,
-          openModal: true,
-          currentWorkspace: workSpaceInitialValues,
-        }));
-      }
-    },
-    [getCurrentWorkSpace]
-  );
+  const handleDeleteTask = useCallback(async (_id: string) => {
+    await TaskApi.deleteTask(_id);
 
-  const handleClose = useCallback((): void => {
-    setState((prev) => ({
-      ...prev,
-      openModal: false,
-    }));
+    setState((prev) => {
+      const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
+        const updatedBoards = workspace.boards.map((board) => {
+          const updatedColumns = board.columns.map((column) => {
+            const updatedTasks = column.tasks.filter(
+              (task) => task._id !== _id
+            );
+
+            return {
+              ...column,
+              tasks: updatedTasks,
+            };
+          });
+
+          return {
+            ...board,
+            columns: updatedColumns,
+          };
+        });
+
+        return {
+          ...workspace,
+          boards: updatedBoards,
+        };
+      });
+
+      return {
+        ...prev,
+        WorkSpaces: updatedWorkSpaces,
+      };
+    });
   }, []);
 
   useEffect(() => {
     handleGetWorkSpaces();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [handleGetWorkSpaces]);
 
   return (
     <WorkSpaceContext.Provider
       value={{
         ...state,
-        handleOpen,
-        handleClose,
         getCurrentWorkSpace,
         handleAddWorkSpace,
         handleUpdateWorkSpace,
+        handleDeleteWorkSpace,
         getCurrentBoard,
         handleAddBoard,
         handleUpdateBoard,
@@ -376,6 +429,7 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
         handleDeleteColumn,
         handleMoveColumn,
         handleAddTask,
+        handleDeleteTask,
       }}
     >
       {children}

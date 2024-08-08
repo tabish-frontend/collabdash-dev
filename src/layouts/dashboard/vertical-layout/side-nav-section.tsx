@@ -17,7 +17,19 @@ import Add from "@mui/icons-material/Add";
 import { useWorkSpace } from "src/hooks/use-workSpace";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Edit, DeleteOutline } from "@mui/icons-material";
-import { ConfirmationModal } from "src/components";
+import { ConfirmationModal, WorkspaceModal } from "src/components";
+import { WorkSpace } from "src/types";
+import { useDialog } from "src/hooks";
+import { workSpaceInitialValues } from "src/formik";
+
+interface WorkSpaceDialogData {
+  type: string;
+  values?: WorkSpace;
+}
+
+interface DeletWorkSpaceDialogData {
+  _id?: string;
+}
 
 interface Item {
   disabled?: boolean;
@@ -40,8 +52,11 @@ export const SideNavSection: FC<SideNavSectionProps> = (props) => {
   const { items = [], pathname, subheader = "", ...other } = props;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedWorkspace, setSelectedWorkspace] = useState<Item | null>(null);
-  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
-  const workSpace = useWorkSpace();
+
+  const { getCurrentWorkSpace, handleDeleteWorkSpace } = useWorkSpace();
+
+  const WorkSpaceDialog = useDialog<WorkSpaceDialogData>();
+  const DeleteWorkSpaceDialog = useDialog<DeletWorkSpaceDialogData>();
 
   const handleOptionsClick = (
     event: React.MouseEvent<HTMLElement>,
@@ -55,20 +70,11 @@ export const SideNavSection: FC<SideNavSectionProps> = (props) => {
     setAnchorEl(null);
   };
 
-  const handleDeleteClick = () => {
-    setDeleteModalOpen(true);
-    handleClose();
-  };
+  const deleteWorkSpace = async () => {
+    if (!DeleteWorkSpaceDialog.data?._id) return null;
 
-  const handleConfirmDelete = () => {
-    if (selectedWorkspace?.slug) {
-      // workSpace.deleteWorkspace(selectedWorkspace.slug);
-    }
-    setDeleteModalOpen(false);
-  };
-
-  const handleCancelDelete = () => {
-    setDeleteModalOpen(false);
+    await handleDeleteWorkSpace(DeleteWorkSpaceDialog.data._id);
+    DeleteWorkSpaceDialog.handleClose();
   };
 
   const open = Boolean(anchorEl);
@@ -104,21 +110,20 @@ export const SideNavSection: FC<SideNavSectionProps> = (props) => {
                 p: 0,
               }}
             >
-              <div style={{ marginLeft: "0px", width: "100%" }}>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  color="info"
-                  sx={{ mb: 0.5 }}
-                  fullWidth
-                  onClick={() => {
-                    workSpace.handleOpen();
-                  }}
-                >
-                  Add New Workspace
-                  <Add sx={{ ml: 1 }} fontSize="small" />
-                </Button>
-              </div>
+              <Button
+                size="small"
+                variant="outlined"
+                color="info"
+                sx={{ mb: 0.5 }}
+                onClick={() => {
+                  WorkSpaceDialog.handleOpen({
+                    type: "Create",
+                  });
+                }}
+              >
+                <Add sx={{ ml: 1 }} fontSize="small" />
+                Add New Workspace
+              </Button>
 
               {item.items.map((subItem, index) => {
                 const subItemMatch = subItem.path === pathname;
@@ -237,28 +242,53 @@ export const SideNavSection: FC<SideNavSectionProps> = (props) => {
       >
         <MenuItem
           onClick={() => {
-            workSpace.handleOpen(selectedWorkspace?.slug);
+            WorkSpaceDialog.handleOpen({
+              type: "Update",
+              values: getCurrentWorkSpace(selectedWorkspace?.slug),
+            });
             handleClose();
           }}
         >
           <Edit fontSize="small" sx={{ mr: 1 }} />
           Edit
         </MenuItem>
-        <MenuItem onClick={handleDeleteClick}>
+        <MenuItem
+          onClick={() => {
+            DeleteWorkSpaceDialog.handleOpen({
+              _id: getCurrentWorkSpace(selectedWorkspace?.slug)._id,
+            });
+            handleClose();
+          }}
+        >
           <DeleteOutline fontSize="small" sx={{ mr: 1 }} />
           Delete
         </MenuItem>
       </Popover>
 
-      <ConfirmationModal
-        modal={deleteModalOpen}
-        onConfirm={handleConfirmDelete}
-        onCancel={handleCancelDelete}
-        content={{
-          type: "Delete Workspace",
-          text: `Are you sure you want to delete ${selectedWorkspace?.title} workspace? `,
-        }}
-      />
+      {DeleteWorkSpaceDialog.open && (
+        <ConfirmationModal
+          modal={DeleteWorkSpaceDialog.open}
+          onConfirm={deleteWorkSpace}
+          onCancel={DeleteWorkSpaceDialog.handleClose}
+          content={{
+            type: "Delete Workspace",
+            text: `Are you sure you want to delete ${selectedWorkspace?.title} workspace? `,
+          }}
+        />
+      )}
+
+      {WorkSpaceDialog.open && (
+        <WorkspaceModal
+          modal={WorkSpaceDialog.open}
+          madal_type={WorkSpaceDialog.data?.type}
+          workSpaceValues={
+            WorkSpaceDialog.data?.values || workSpaceInitialValues
+          }
+          onCancel={() => {
+            WorkSpaceDialog.handleClose();
+          }}
+        />
+      )}
     </Stack>
   );
 };

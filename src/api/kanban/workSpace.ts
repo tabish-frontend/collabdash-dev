@@ -1,5 +1,5 @@
 import Axios from "src/config/axios";
-import { WorkSpace } from "src/types";
+import { Employee, WorkSpace } from "src/types";
 
 class WorkSpaceAPI {
   async addWorkSpace(body: WorkSpace) {
@@ -10,6 +10,19 @@ class WorkSpaceAPI {
   async getAllWorkSpaces() {
     const response = await Axios.get(`/workspace`);
     return response;
+  }
+
+  async updateWorkSpace(
+    workspace_id: string,
+    body: { name: string; members: string[] }
+  ) {
+    const response = await Axios.patch(`/workspace/${workspace_id}`, body);
+    return response.data;
+  }
+
+  async deleteWorkSpace(_id: string) {
+    const response = await Axios.delete(`/workspace/${_id}`);
+    return response.data;
   }
 }
 
