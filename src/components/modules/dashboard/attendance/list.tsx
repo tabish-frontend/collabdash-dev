@@ -153,9 +153,9 @@ const AttendanceListComponent = () => {
 
   const { DatePickerLabel, DatePickerViews } = getPickerConfig();
 
-  if (!user || !user.role) {
-    return null; // or some fallback UI
-  }
+  // if (!user || !user.role) {
+  //   return null; // or some fallback UI
+  // }
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -282,7 +282,7 @@ const AttendanceListComponent = () => {
                     value={tabValue}
                   >
                     {TabStatus.filter((tab) =>
-                      tab.roles.includes(user.role)
+                      tab.roles.includes(user?.role || "")
                     ).map((tab) => (
                       <Tab
                         key={tab.value}
@@ -297,13 +297,15 @@ const AttendanceListComponent = () => {
                     ))}
                   </Tabs>
 
-                  <Button
-                    variant="contained"
-                    size={isSmallScreen ? "small" : "medium"}
-                    onClick={handleDownloadCsv}
-                  >
-                    Download CSV
-                  </Button>
+                  {(user?.role === ROLES.Admin || user?.role === ROLES.HR) && (
+                    <Button
+                      variant="contained"
+                      size={isSmallScreen ? "small" : "medium"}
+                      onClick={handleDownloadCsv}
+                    >
+                      Download CSV
+                    </Button>
+                  )}
                 </Stack>
 
                 {tabValue === "employee_attendance" ? (
