@@ -12,16 +12,17 @@ class ColumnAPI {
     return response;
   }
 
-  async deleteColumn(column_id: string) {
-    const response = await Axios.delete(`/column/${column_id}`);
+  async clearAnddeleteColumn(column_id: string, type: string) {
+    const response = await Axios.delete(`/column/${column_id}?type=${type}`);
     return response.data;
   }
 
-  async moveColumn(
-    board_id: string,
-    body: { column_id: string; index: number }
-  ) {
-    const response = await Axios.patch(`/column/move/${board_id}`, body);
+  async moveColumn(body: {
+    board_id: string;
+    column_id: string;
+    index: number;
+  }) {
+    const response = await Axios.post(`/column/move`, body);
     return response.data;
   }
 }

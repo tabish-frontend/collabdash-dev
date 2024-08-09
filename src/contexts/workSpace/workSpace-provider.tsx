@@ -260,7 +260,7 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
   );
 
   const handleDeleteColumn = useCallback(async (column_id: string) => {
-    await ColumnApi.deleteColumn(column_id);
+    await ColumnApi.clearAnddeleteColumn(column_id, "delete");
 
     setState((prev) => {
       const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
@@ -286,22 +286,56 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     });
   }, []);
 
+  const handleClearColumn = useCallback(async (column_id: string) => {
+    await ColumnApi.clearAnddeleteColumn(column_id, "clear");
+
+    // Update the state to remove tasks from the column
+    setState((prev) => {
+      const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
+        const updatedBoards = workspace.boards.map((board) => {
+          const updatedColumns = board.columns.map((column) => {
+            if (column._id === column_id) {
+              return {
+                ...column,
+                tasks: [],
+              };
+            }
+            return column;
+          });
+
+          return {
+            ...board,
+            columns: updatedColumns,
+          };
+        });
+
+        return {
+          ...workspace,
+          boards: updatedBoards,
+        };
+      });
+
+      return {
+        ...prev,
+        WorkSpaces: updatedWorkSpaces,
+      };
+    });
+  }, []);
+
   const handleMoveColumn = useCallback(
     async (data: { board_id: string; column_id: string; index: number }) => {
-      const { board_id, ...resValues } = data;
-
       setState((prev) => {
         const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
           const updatedBoards = workspace.boards.map((board) => {
-            if (board._id === board_id) {
+            if (board._id === data.board_id) {
               const columns = [...board.columns];
               const columnIndex = columns.findIndex(
-                (column) => column._id === resValues.column_id
+                (column) => column._id === data.column_id
               );
 
               if (columnIndex !== -1) {
                 const [movedColumn] = columns.splice(columnIndex, 1);
-                columns.splice(resValues.index, 0, movedColumn);
+                columns.splice(data.index, 0, movedColumn);
               }
 
               return {
@@ -325,7 +359,7 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
         };
       });
 
-      await ColumnApi.moveColumn(board_id, resValues);
+      await ColumnApi.moveColumn(data);
     },
     []
   );
@@ -408,6 +442,63 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     });
   }, []);
 
+  const handleMoveTask = useCallback(
+    async (data: { task_id: string; index: number; column_id?: string }) => {
+      setState((prev) => {
+        const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
+          const updatedBoards = workspace.boards.map((board) => {
+            const columns = [...board.columns];
+
+            // Find the current column containing the task
+            let movedTask;
+            const currentColumn = columns.find((column) =>
+              column.tasks.some((task) => task._id === data.task_id)
+            );
+
+            // Remove the task from the current column and save the task object
+            if (currentColumn) {
+              const taskIndex = currentColumn.tasks.findIndex(
+                (task) => task._id === data.task_id
+              );
+              [movedTask] = currentColumn.tasks.splice(taskIndex, 1);
+            }
+
+            // If column_id is provided, move the task to the new column
+            if (data.column_id && movedTask) {
+              const targetColumn = columns.find(
+                (column) => column._id === data.column_id
+              );
+              if (targetColumn) {
+                targetColumn.tasks.splice(data.index, 0, movedTask);
+              }
+            } else if (currentColumn && movedTask) {
+              // Move task within the same column
+              currentColumn.tasks.splice(data.index, 0, movedTask);
+            }
+
+            return {
+              ...board,
+              columns,
+            };
+          });
+
+          return {
+            ...workspace,
+            boards: updatedBoards,
+          };
+        });
+
+        return {
+          ...prev,
+          WorkSpaces: updatedWorkSpaces,
+        };
+      });
+
+      await TaskApi.moveTask(data);
+    },
+    []
+  );
+
   useEffect(() => {
     handleGetWorkSpaces();
   }, [handleGetWorkSpaces]);
@@ -427,9 +518,11 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
         handleAddColumn,
         handleUpdateColumn,
         handleDeleteColumn,
+        handleClearColumn,
         handleMoveColumn,
         handleAddTask,
         handleDeleteTask,
+        handleMoveTask,
       }}
     >
       {children}

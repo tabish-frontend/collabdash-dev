@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import type { NextPage } from "next";
 import type { DropResult } from "react-beautiful-dnd";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -6,34 +6,20 @@ import { toast } from "react-toastify";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-
-import { Seo } from "src/components/shared/seo";
 import { DashboardLayout } from "src/layouts";
 import { TaskModal } from "./task-modal";
 import { ColumnCard } from "./column-card";
 import { ColumnAdd } from "./column-add";
-import { useDispatch, useSelector } from "src/store";
-import { thunks } from "src/thunks/kanban";
-import { Button, Container, SvgIcon, Tooltip } from "@mui/material";
-import { useSettings } from "src/hooks";
+import { Button, SvgIcon, Tooltip } from "@mui/material";
 import { useRouter } from "next/router";
 import ArrowLeftIcon from "@untitled-ui/icons-react/build/esm/ArrowLeft";
-import { Scrollbar } from "src/utils/scrollbar";
-import { minHeight } from "@mui/system";
 import { useWorkSpace } from "src/hooks/use-workSpace";
-import {
-  WorkSpaceBoard,
-  WorkSpaceBoardColumn,
-  WorkSpaceBoardColumnTasks,
-} from "src/types";
+import { WorkSpaceBoardColumn, WorkSpaceBoardColumnTasks } from "src/types";
 
 const BoardComponent = () => {
-  const dispatch = useDispatch();
-  // const columnsIds = useColumnsIds();
-  const [currentTaskId, setCurrentTaskId] =
+  const [currentTask, setCurrentTask] =
     useState<WorkSpaceBoardColumnTasks | null>(null);
 
-  const settings = useSettings();
   const router = useRouter();
 
   const { workspace_slug } = router.query;
@@ -44,8 +30,10 @@ const BoardComponent = () => {
     handleAddColumn,
     handleUpdateColumn,
     handleDeleteColumn,
+    handleClearColumn,
     handleMoveColumn,
     handleAddTask,
+    handleMoveTask,
   } = useWorkSpace();
 
   const workSpaceBoard = getCurrentBoard(workspace_slug, boards_slug);
@@ -59,96 +47,52 @@ const BoardComponent = () => {
     }: DropResult): Promise<void> => {
       if (!destination) return;
 
-      handleMoveColumn({
-        board_id: workSpaceBoard._id,
-        column_id: draggableId,
-        index: destination.index,
-      });
+      if (
+        source.droppableId === destination.droppableId &&
+        source.index === destination.index
+      ) {
+        return;
+      }
 
-      // if (
-      //   source.droppableId === destination.droppableId &&
-      //   source.index === destination.index
-      // ) {
-      //   return;
-      // }
-
-      // try {
-      //   if (type === "COLUMN") {
-      //     handleMoveColumn({
-      //       board_id: workSpaceBoard._id,
-      //       column_id: draggableId,
-      //       index: destination.index,
-      //     });
-      //   } else {
-      //     if (source.droppableId === destination.droppableId) {
-      //       // await dispatch(
-      //       //   thunks.moveTask({
-      //       //     taskId: draggableId,
-      //       //     position: destination.index,
-      //       //   })
-      //       // );
-      //     } else {
-      //       // await dispatch(
-      //       //   thunks.moveTask({
-      //       //     taskId: draggableId,
-      //       //     position: destination.index,
-      //       //     columnId: destination.droppableId,
-      //       //   })
-      //       // );
-      //     }
-      //   }
-      // } catch (err) {
-      //   console.error(err);
-      //   toast.error("Something went wrong!");
-      // }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [workSpaceBoard]
-  );
-
-  const handleColumnClear = useCallback(
-    async (columnId: string): Promise<void> => {
       try {
-        await dispatch(
-          thunks.clearColumn({
-            columnId,
-          })
-        );
-        toast.success("Column cleared");
+        if (type === "COLUMN") {
+          handleMoveColumn({
+            board_id: workSpaceBoard._id,
+            column_id: draggableId,
+            index: destination.index,
+          });
+        } else {
+          if (source.droppableId === destination.droppableId) {
+            handleMoveTask({
+              task_id: draggableId,
+              index: destination.index,
+            });
+          } else {
+            handleMoveTask({
+              task_id: draggableId,
+              index: destination.index,
+              column_id: destination.droppableId,
+            });
+          }
+        }
       } catch (err) {
         console.error(err);
         toast.error("Something went wrong!");
       }
     },
-    [dispatch]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [workSpaceBoard]
   );
-
-  // const handleTaskAdd = useCallback(
-  //   async (columnId: string, name?: string): Promise<void> => {
-  //     try {
-  //       await dispatch(
-  //         thunks.createTask({
-  //           columnId,
-  //           name: name || "Untitled Task",
-  //         })
-  //       );
-  //     } catch (err) {
-  //       console.error(err);
-  //       toast.error("Something went wrong!");
-  //     }
-  //   },
-  //   [dispatch]
-  // );
 
   const handleTaskOpen = useCallback(
     (task: WorkSpaceBoardColumnTasks): void => {
-      setCurrentTaskId(task);
+      setCurrentTask(task);
     },
     []
   );
 
   const handleTaskClose = useCallback((): void => {
-    setCurrentTaskId(null);
+    setCurrentTask(null);
   }, []);
 
   return (
@@ -215,7 +159,7 @@ const BoardComponent = () => {
                           >
                             <ColumnCard
                               column={column}
-                              onClear={() => handleColumnClear(column._id)}
+                              onClear={() => handleClearColumn(column._id)}
                               onDelete={() => handleDeleteColumn(column._id)}
                               onRename={(name) =>
                                 handleUpdateColumn(column._id, {
@@ -253,8 +197,8 @@ const BoardComponent = () => {
       </Box>
       <TaskModal
         onClose={handleTaskClose}
-        open={!!currentTaskId}
-        task={currentTaskId || undefined}
+        open={!!currentTask}
+        task={currentTask || undefined}
         boardColumns={workSpaceBoard?.columns}
       />
     </>

@@ -29,6 +29,7 @@ export interface WorkSpaceContextType extends State {
   handleAddColumn: (data: { name: string; board: string }) => void;
   handleUpdateColumn: (column_id: string, data: { name: string }) => void;
   handleDeleteColumn: (column_id: string) => void;
+  handleClearColumn: (column_id: string) => void;
   handleMoveColumn: (data: {
     board_id: string;
     column_id: string;
@@ -40,6 +41,11 @@ export interface WorkSpaceContextType extends State {
     column: string;
   }) => void;
   handleDeleteTask: (_id: string) => void;
+  handleMoveTask: (data: {
+    task_id: string;
+    index: number;
+    column_id?: string;
+  }) => void;
 }
 
 export const WorkSpaceContext = createContext<WorkSpaceContextType>({
@@ -55,7 +61,9 @@ export const WorkSpaceContext = createContext<WorkSpaceContextType>({
   handleAddColumn: () => {},
   handleUpdateColumn: () => {},
   handleDeleteColumn: () => {},
+  handleClearColumn: () => {},
   handleMoveColumn: () => {},
   handleAddTask: () => {},
   handleDeleteTask: () => {},
+  handleMoveTask: () => {},
 });

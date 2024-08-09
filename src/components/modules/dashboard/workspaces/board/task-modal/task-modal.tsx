@@ -109,7 +109,7 @@ interface TaskModalProps {
 export const TaskModal: FC<TaskModalProps> = (props) => {
   const { task, boardColumns, onClose, open = false, ...other } = props;
 
-  const { handleDeleteTask } = useWorkSpace();
+  const { handleDeleteTask, handleMoveTask } = useWorkSpace();
 
   const user = useMockedUser();
   const dispatch = useDispatch();
@@ -123,7 +123,6 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     setCurrentTab("overview");
   }, []);
 
-  // Reset tab on task change
   useEffect(
     () => {
       handleTabsReset();
@@ -136,7 +135,6 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     setNameCopy(task?.title || "");
   }, [task]);
 
-  // Reset task name copy
   useEffect(
     () => {
       handleNameReset();
@@ -151,39 +149,6 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     },
     []
   );
-
-  const handleMove = useCallback(
-    async (columnId: string): Promise<void> => {
-      try {
-        await dispatch(
-          thunks.moveTask({
-            taskId: task!._id,
-            position: 0,
-            columnId,
-          })
-        );
-        onClose?.();
-      } catch (err) {
-        console.error(err);
-        toast.error("Something went wrong!");
-      }
-    },
-    [dispatch, task, onClose]
-  );
-
-  // const handleDelete = useCallback(async (): Promise<void> => {
-  //   try {
-  //     await dispatch(
-  //       thunks.deleteTask({
-  //         taskId: task!._id,
-  //       })
-  //     );
-  //     onClose?.();
-  //   } catch (err) {
-  //     console.error(err);
-  //     toast.error("Something went wrong!");
-  //   }
-  // }, [dispatch, task, onClose]);
 
   const handleNameUpdate = useCallback(
     async (name: string) => {
@@ -506,7 +471,13 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
         >
           <div>
             <TaskStatus
-              onChange={(columnId) => handleMove(columnId)}
+              onChange={(columnId) =>
+                handleMoveTask({
+                  task_id: task!._id,
+                  index: 0,
+                  column_id: columnId,
+                })
+              }
               options={statusOptions}
               value={task.column}
             />
@@ -517,19 +488,6 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
             direction="row"
             spacing={1}
           >
-            {/* {task.isSubscribed ? (
-              <IconButton onClick={handleUnsubscribe}>
-                <SvgIcon>
-                  <EyeOffIcon />
-                </SvgIcon>
-              </IconButton>
-            ) : (
-              <IconButton onClick={handleSubscribe}>
-                <SvgIcon>
-                  <EyeIcon />
-                </SvgIcon>
-              </IconButton>
-            )} */}
             <IconButton
               onClick={() => {
                 handleDeleteTask(task._id);
