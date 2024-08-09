@@ -83,6 +83,97 @@ export const AllUserAttendance = forwardRef<unknown, AllUserAttendanceProps>(
       handleGetAttendances();
     };
 
+    // Define styles with correct types
+    const getHeaderStyle = (): Partial<ExcelJS.Style> => ({
+      font: { bold: true, size: 14 },
+      alignment: { horizontal: "center" as "center" },
+    });
+
+    const getCellStyle = (): Partial<ExcelJS.Style> => ({
+      font: { size: 12 },
+      alignment: { horizontal: "center" as "center" },
+    });
+
+    const getStatusStyles = (): { [key: string]: Partial<ExcelJS.Style> } => ({
+      Absent: { font: { color: { argb: "FFFF0000" }, size: 12 } },
+      "Full Day Present": { font: { color: { argb: "41ab46" }, size: 12 } },
+      "Half Day Present": { font: { color: { argb: "ff8f00" }, size: 12 } },
+      "Short Attendance": { font: { color: { argb: "debd47" }, size: 12 } },
+      Online: { font: { color: { argb: "84fa69" }, size: 12 } },
+    });
+
+    const generateRow = (
+      worksheet: ExcelJS.Worksheet,
+      employee: any,
+      date: Date
+    ) => {
+      const cellData = CellValues(employee, date);
+
+      if (cellData.status === "Not Joined") return;
+
+      const statusStyles = getStatusStyles();
+      const cellStyle = getCellStyle();
+
+      worksheet
+        .addRow([
+          employee.full_name,
+          dayjs(date).format("YYYY-MM-DD"),
+          cellData.attendance.clockIn
+            ? formatTime(cellData.attendance.clockIn)
+            : "--",
+          cellData.attendance.clockOut
+            ? formatTime(cellData.attendance.clockOut)
+            : "--",
+          cellData.status,
+          cellData.attendance.duration || "--",
+        ])
+        .eachCell({ includeEmpty: true }, (cell, colNumber) => {
+          if (colNumber === 5) {
+            const status = cell.value as string;
+            cell.style =
+              status in statusStyles
+                ? { ...cellStyle, ...statusStyles[status] }
+                : cellStyle;
+          } else {
+            cell.style = cellStyle;
+          }
+        });
+    };
+
+    const addHeaders = (worksheet: ExcelJS.Worksheet) => {
+      const headerStyle = getHeaderStyle();
+      worksheet
+        .addRow([
+          "Employee Name",
+          "Date",
+          "Time In",
+          "Time Out",
+          "Status",
+          "Duration",
+        ])
+        .eachCell({ includeEmpty: true }, (cell) => {
+          cell.style = headerStyle;
+        });
+
+      worksheet.addRow([]); // Add an empty row for spacing
+    };
+
+    const adjustColumnWidths = (worksheet: ExcelJS.Worksheet) => {
+      // Adjust column widths after adding data
+      worksheet.columns.forEach((column) => {
+        if (column && column.eachCell) {
+          let maxLength = 0;
+          column.eachCell({ includeEmpty: true }, (cell) => {
+            const columnLength = cell.value ? cell.value.toString().length : 10;
+            if (columnLength > maxLength) {
+              maxLength = columnLength;
+            }
+          });
+          column.width = maxLength + 8; // Add some extra space to each column
+        }
+      });
+    };
+
     const exportAttendanceSheet = async (
       employeesAttendance: any,
       filters: any
@@ -97,81 +188,10 @@ export const AllUserAttendance = forwardRef<unknown, AllUserAttendanceProps>(
 
       const workbook = new ExcelJS.Workbook();
 
-      // Define styles with correct types
-      const headerStyle: Partial<ExcelJS.Style> = {
-        font: { bold: true, size: 14 },
-        alignment: { horizontal: "center" as "center" },
-      };
-
-      const cellStyle: Partial<ExcelJS.Style> = {
-        font: { size: 12 },
-        alignment: { horizontal: "center" as "center" },
-      };
-
-      const statusStyles: { [key: string]: Partial<ExcelJS.Style> } = {
-        Absent: { font: { color: { argb: "FFFF0000" }, size: 12 } }, // Red color for Absent
-        "Full Day Present": { font: { color: { argb: "41ab46" }, size: 12 } }, // Dark Green color for Full Day Present
-        "Half Day Present": { font: { color: { argb: "ff8f00" }, size: 12 } }, // Orange color for Half Day Present
-        "Short Attendance": { font: { color: { argb: "debd47" }, size: 12 } }, // Yellow color for Half Day Present
-        Online: { font: { color: { argb: "84fa69" }, size: 12 } }, // Light green color for Half Day Present
-        // Add more styles as needed
-      };
-
-      const generateRow = (
-        worksheet: ExcelJS.Worksheet,
-        employee: any,
-        date: Date
-      ) => {
-        const cellData = CellValues(employee, date);
-
-        if (cellData.status === "Not Joined") return;
-
-        worksheet
-          .addRow([
-            employee.full_name,
-            dayjs(date).format("YYYY-MM-DD"),
-            cellData.attendance.clockIn
-              ? formatTime(cellData.attendance.clockIn)
-              : "--",
-            cellData.attendance.clockOut
-              ? formatTime(cellData.attendance.clockOut)
-              : "--",
-            cellData.status,
-            cellData.attendance.duration || "--",
-          ])
-          .eachCell({ includeEmpty: true }, (cell, colNumber) => {
-            if (colNumber === 5) {
-              // Status column index
-              const status = cell.value as string;
-              if (status in statusStyles) {
-                cell.style = { ...cellStyle, ...statusStyles[status] };
-              } else {
-                cell.style = cellStyle;
-              }
-            } else {
-              cell.style = cellStyle;
-            }
-          });
-      };
-
       employeesAttendance.forEach((employee: any) => {
         const worksheet = workbook.addWorksheet(employee.full_name);
 
-        // Add headers
-        worksheet
-          .addRow([
-            "Employee Name",
-            "Date",
-            "Time In",
-            "Time Out",
-            "Status",
-            "Duration",
-          ])
-          .eachCell({ includeEmpty: true }, (cell) => {
-            cell.style = headerStyle;
-          });
-
-        worksheet.addRow([]);
+        addHeaders(worksheet);
 
         if (filterType === "day") {
           generateRow(worksheet, employee, selectedDate.toDate());
@@ -186,21 +206,7 @@ export const AllUserAttendance = forwardRef<unknown, AllUserAttendanceProps>(
           }
         }
 
-        // Adjust column widths after adding data
-        worksheet.columns.forEach((column) => {
-          if (column && column.eachCell) {
-            let maxLength = 0;
-            column.eachCell({ includeEmpty: true }, (cell) => {
-              const columnLength = cell.value
-                ? cell.value.toString().length
-                : 10;
-              if (columnLength > maxLength) {
-                maxLength = columnLength;
-              }
-            });
-            column.width = maxLength + 8; // Add some extra space to each column
-          }
-        });
+        adjustColumnWidths(worksheet);
       });
 
       // Generate XLSX file and download
