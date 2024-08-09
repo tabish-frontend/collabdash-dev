@@ -56,22 +56,6 @@ const navItems: Item[] = [
     icon: <SvgIcon component={CardAccountDetailsStarOutline} />,
     path: paths.leaves,
   },
-
-  // {
-  //   title: "Tasks",
-  //   icon: <SvgIcon component={FileTreeOutline} />,
-  //   path: paths.tasks,
-  // },
-
-  // {
-  //   title: "Workspaces",
-  //   path: paths.attendance,
-  //   icon: <SvgIcon component={FileTreeOutline} />,
-  //   items: WorkSpaces.map((item) => ({
-  //     title: item.title,
-  //     path: `${paths.workspaces}/${item.slug}`,
-  //   })),
-  // },
 ];
 
 export const useSections = (): Section[] => {
