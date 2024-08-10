@@ -125,8 +125,8 @@ export const SideNavSection: FC<SideNavSectionProps> = (props) => {
                 Add New Workspace
               </Button>
 
-              {item.items.map((subItem, index) => {
-                const subItemMatch = subItem.path === pathname;
+              {item.items.map((subItem: any, index) => {
+                const subItemMatch = pathname?.startsWith(subItem.path);
                 return (
                   <Box
                     key={index}
