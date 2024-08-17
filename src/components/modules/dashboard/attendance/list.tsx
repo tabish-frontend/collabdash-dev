@@ -68,10 +68,6 @@ const TabStatus = [
   },
 ];
 
-interface AllUserAttendanceRef {
-  downloadAttendanceCsv: () => void;
-}
-
 const AttendanceListComponent = () => {
   const settings = useSettings();
   const router = useRouter();
@@ -82,11 +78,13 @@ const AttendanceListComponent = () => {
   const { date: queryDate } = router.query;
   const { user } = useAuth<AuthContextType>();
 
-  const attendanceRef = useRef<AllUserAttendanceRef>(null);
+  const [downloadAttendanceCsv, setDownloadAttendanceCsv] = useState<
+    (() => void) | null
+  >(null);
 
   const handleDownloadCsv = () => {
-    if (attendanceRef.current) {
-      attendanceRef.current.downloadAttendanceCsv();
+    if (downloadAttendanceCsv) {
+      downloadAttendanceCsv();
     }
   };
 
@@ -297,19 +295,23 @@ const AttendanceListComponent = () => {
                     ))}
                   </Tabs>
 
-                  {(user?.role === ROLES.Admin || user?.role === ROLES.HR) && (
-                    <Button
-                      variant="contained"
-                      size={isSmallScreen ? "small" : "medium"}
-                      onClick={handleDownloadCsv}
-                    >
-                      Download CSV
-                    </Button>
-                  )}
+                  {(user?.role === ROLES.Admin || user?.role === ROLES.HR) &&
+                    tabValue === "employee_attendance" && (
+                      <Button
+                        variant="contained"
+                        size={isSmallScreen ? "small" : "medium"}
+                        onClick={handleDownloadCsv}
+                      >
+                        Download CSV
+                      </Button>
+                    )}
                 </Stack>
 
                 {tabValue === "employee_attendance" ? (
-                  <AllUserAttendance ref={attendanceRef} filters={filters} />
+                  <AllUserAttendance
+                    setDownloadAttendanceCsv={setDownloadAttendanceCsv}
+                    filters={filters}
+                  />
                 ) : (
                   <MyAttendance filters={filters} />
                 )}
