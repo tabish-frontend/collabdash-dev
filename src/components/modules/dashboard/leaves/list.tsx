@@ -1,80 +1,33 @@
 import {
-  Paper,
-  TableBody,
-  TableCell,
   Typography,
   Card,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Table,
   Stack,
   Button,
   SvgIcon,
-  Link,
   Box,
-  IconButton,
   Container,
   CardContent,
-  Skeleton,
-  useMediaQuery,
-  useTheme,
-  CardHeader,
+  Tabs,
+  Tab,
 } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { SyntheticEvent, useCallback, useEffect, useState } from "react";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts/dashboard";
-import {
-  Plus,
-  SquareEditOutline,
-  TrashCanOutline,
-  CheckCircleOutline,
-  CloseCircleOutline,
-} from "mdi-material-ui";
+import { Plus } from "mdi-material-ui";
 
 import { useAuth, useDialog, useSettings } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { ROLES } from "src/constants/roles";
 import { LeaveModal } from "./leave-modal";
 import { leavesApi } from "src/api";
-import { formatDate } from "src/utils/helpers";
-import {
-  ConfirmationModal,
-  ImageAvatar,
-  NoRecordFound,
-  RouterLink,
-} from "src/components/shared";
-import { paths } from "src/constants/paths";
+import { ConfirmationModal } from "src/components/shared";
 import { DatePicker } from "@mui/x-date-pickers";
-import Tooltip from "@mui/material/Tooltip";
-import { Scrollbar } from "src/utils/scrollbar";
-import UpdateLeavesStatus from "src/components/shared/leaves-status";
-import UpdateAction from "src/components/shared/update-action";
-import DeleteAction from "src/components/shared/delete-action";
-
-const employee_Screen = [
-  "Applied Date",
-  "Leave Type",
-  "Leave From",
-  "Leave To",
-  "Reason",
-  "Status",
-  "Action",
-];
-const HR_Screen = [
-  "Employee Name",
-  "Applied Date",
-  "Leave Type",
-  "Leave From",
-  "Leave To",
-  "Reason",
-  "Status",
-  "Manage Leave",
-  "Action",
-];
+import { AllUserLeaves } from "./tabs/all-user-leaves";
+import { MyLeaves } from "./tabs/my-leaves";
 
 interface LeaveDialogData {
   type: string;
+  isEmployee: boolean;
   values?: object;
 }
 
@@ -82,19 +35,34 @@ interface DeleteLeaveDialogData {
   id: string;
 }
 
+const TabStatus = [
+  {
+    label: "Employees Leaves",
+    value: "employees_leaves",
+    roles: ["admin", "hr"], // Accessible by admin and HR
+  },
+  {
+    label: "My Leaves",
+    value: "my_leaves",
+    roles: ["employee", "hr"], // Accessible by employees and HR
+  },
+];
+
 const LeavesListComponent = () => {
   const settings = useSettings();
+  const { user } = useAuth<AuthContextType>();
+
+  const [tabValue, setTabValue] = useState<string | string[]>(
+    user?.role === ROLES.Employee ? "my_leaves" : "employees_leaves"
+  );
+
+  const handleTabChange = (event: SyntheticEvent, newValue: string) => {
+    setTabValue(newValue);
+  };
 
   const currentYear = new Date().getFullYear();
 
   const [datePickerDate, setDatePickerDate] = useState<Date>(new Date());
-
-  const { user } = useAuth<AuthContextType>();
-
-  const columns =
-    user?.role === ROLES.Admin || user?.role === ROLES.HR
-      ? HR_Screen
-      : employee_Screen;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [leavesList, setLeavesList] = useState<any[]>([]);
@@ -102,15 +70,16 @@ const LeavesListComponent = () => {
   const getLeaves = useCallback(async () => {
     setIsLoading(true);
     let response = [];
-    if (user?.role === ROLES.HR || user?.role === ROLES.Admin) {
+
+    if (tabValue === "employees_leaves") {
       response = await leavesApi.getAllUserLeaves(datePickerDate);
     } else {
       response = await leavesApi.getMyLeaves(datePickerDate);
     }
+
     setLeavesList(response);
     setIsLoading(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [datePickerDate]);
+  }, [datePickerDate, tabValue]);
 
   useEffect(() => {
     getLeaves();
@@ -125,7 +94,7 @@ const LeavesListComponent = () => {
     if (LeaveDialog.data?.type === "update") {
       await leavesApi.updateLeave(_id, LeaveValues);
     } else {
-      if (user?.role === ROLES.Employee) {
+      if (LeaveDialog.data?.isEmployee) {
         await leavesApi.apllyForLeave(values);
       } else {
         await leavesApi.addLeave(values);
@@ -143,15 +112,15 @@ const LeavesListComponent = () => {
   };
 
   const handleUpdateStatus = async (leave_id: string, status: string) => {
-    await leavesApi.updateLeaveStatus({ leave_id, status });
     setLeavesList((prevList) =>
       prevList.map((leave) =>
         leave._id === leave_id ? { ...leave, status } : leave
       )
     );
+    await leavesApi.updateLeaveStatus({ leave_id, status });
   };
 
-  const minDate = new Date(currentYear - 3, 0, 1); // January 1st, 5 years ago
+  const minDate = new Date(currentYear - 3, 0, 1);
   const maxDate = new Date(currentYear, 11, 31);
 
   return (
@@ -169,203 +138,100 @@ const LeavesListComponent = () => {
             lg: 4,
           }}
         >
-          <Stack direction={"row"} justifyContent="space-between" spacing={4}>
-            <Typography variant="h4">Leaves</Typography>
-
-            <Button
-              variant="contained"
-              startIcon={
-                <SvgIcon>
-                  <Plus />
-                </SvgIcon>
-              }
-              onClick={() => {
-                LeaveDialog.handleOpen({
-                  type: "create",
-                });
-              }}
-            >
-              {user?.role === ROLES.Admin || user?.role === ROLES.HR
-                ? "Add Leave"
-                : "Leave Apply"}
-            </Button>
-          </Stack>
+          <Typography variant="h4">Leaves</Typography>
 
           <Card>
-            <CardHeader
-              action={
-                <DatePicker
-                  label={"Month And Year"}
-                  views={["year", "month"]}
-                  openTo="month"
-                  sx={{ width: 180 }}
-                  minDate={minDate}
-                  maxDate={maxDate}
-                  value={datePickerDate}
-                  onChange={(date: Date | null) => {
-                    if (date) {
-                      setDatePickerDate(date);
-                    }
-                  }}
-                />
-              }
-            />
             <CardContent>
-              <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
-                <Scrollbar sx={{ maxHeight: 470 }}>
-                  <Table stickyHeader>
-                    <TableHead>
-                      <TableRow>
-                        {columns.map((column, index) => (
-                          <TableCell key={index}>
-                            <span style={{ fontWeight: 700 }}>{column}</span>
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {isLoading ? (
-                        [...Array(5)].map((_, index) => (
-                          <TableRow key={`skeleton-${index}`}>
-                            {columns.map((col, colIndex) => (
-                              <TableCell
-                                key={colIndex}
-                                align="center"
-                                width={150}
-                              >
-                                <Skeleton
-                                  variant="rounded"
-                                  width="100%"
-                                  height={25}
-                                />
-                              </TableCell>
-                            ))}
-                          </TableRow>
-                        ))
-                      ) : leavesList.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={columns.length}>
-                            <NoRecordFound />
-                          </TableCell>
-                        </TableRow>
-                      ) : (
-                        leavesList.map((leave, index) => {
-                          return (
-                            <TableRow hover role="checkbox" key={index}>
-                              {(user?.role === ROLES.Admin ||
-                                user?.role === ROLES.HR) && (
-                                <TableCell>
-                                  <Stack
-                                    alignItems={"center"}
-                                    direction={"row"}
-                                    justifyContent={"center"}
-                                    spacing={1}
-                                    width={150}
-                                  >
-                                    <ImageAvatar
-                                      path={leave.user.avatar || ""}
-                                      alt="user image"
-                                      width={40}
-                                      height={40}
-                                    />
+              <Stack
+                direction={{
+                  xs: "column",
+                  md: "row",
+                }}
+                spacing={2}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+                borderBottom={1}
+                borderColor={"#ddd"}
+                pb={1}
+                mb={2}
+              >
+                <Tabs
+                  indicatorColor="primary"
+                  onChange={handleTabChange}
+                  value={tabValue}
+                >
+                  {TabStatus.filter((tab) =>
+                    tab.roles.includes(user?.role || "")
+                  ).map((tab) => (
+                    <Tab key={tab.value} value={tab.value} label={tab.label} />
+                  ))}
+                </Tabs>
 
-                                    <Link
-                                      color="inherit"
-                                      component={RouterLink}
-                                      href={`${paths.employees}/${leave.user.username}`}
-                                      variant="subtitle2"
-                                      sx={{ textTransform: "capitalize" }}
-                                    >
-                                      {leave.user.full_name}
-                                    </Link>
-                                  </Stack>
-                                </TableCell>
-                              )}
+                <Stack direction={"row"} spacing={1} alignItems={"center"}>
+                  {tabValue === "my_leaves" && (
+                    <Button
+                      variant="contained"
+                      startIcon={<Plus />}
+                      onClick={() => {
+                        LeaveDialog.handleOpen({
+                          type: "create",
+                          isEmployee: true,
+                        });
+                      }}
+                    >
+                      Apply Leave
+                    </Button>
+                  )}
 
-                              <TableCell>
-                                <Typography width={150}>
-                                  {formatDate(leave.createdAt)}
-                                </Typography>
-                              </TableCell>
+                  {tabValue === "employees_leaves" && (
+                    <Button
+                      variant="contained"
+                      color="warning"
+                      startIcon={<Plus />}
+                      onClick={() => {
+                        LeaveDialog.handleOpen({
+                          type: "create",
+                          isEmployee: false,
+                        });
+                      }}
+                    >
+                      Add Leave
+                    </Button>
+                  )}
 
-                              <TableCell>
-                                <Typography width={100}>
-                                  {leave.leave_type}
-                                </Typography>
-                              </TableCell>
+                  <DatePicker
+                    label={"Month And Year"}
+                    views={["year", "month"]}
+                    openTo="month"
+                    sx={{ width: 180, height: 45 }}
+                    minDate={minDate}
+                    maxDate={maxDate}
+                    value={datePickerDate}
+                    onChange={(date: Date | null) => {
+                      if (date) {
+                        setDatePickerDate(date);
+                      }
+                    }}
+                  />
+                </Stack>
+              </Stack>
 
-                              <TableCell>
-                                <Typography width={150}>
-                                  {formatDate(leave.startDate)}
-                                </Typography>
-                              </TableCell>
-
-                              <TableCell>
-                                <Typography width={150}>
-                                  {formatDate(leave.endDate)}
-                                </Typography>
-                              </TableCell>
-
-                              <TableCell>
-                                <Tooltip
-                                  arrow
-                                  title={
-                                    <Typography>{leave.reason}</Typography>
-                                  }
-                                >
-                                  <Typography width={200} noWrap>
-                                    {leave.reason}
-                                  </Typography>
-                                </Tooltip>
-                              </TableCell>
-
-                              <TableCell>
-                                <Typography>
-                                  {leave.status.toUpperCase()}
-                                </Typography>
-                              </TableCell>
-
-                              {(user?.role === ROLES.Admin ||
-                                user?.role === ROLES.HR) && (
-                                <UpdateLeavesStatus
-                                  handleUpdateStatus={handleUpdateStatus}
-                                  leaveId={leave._id}
-                                  leaveStatus={leave.status}
-                                />
-                              )}
-
-                              <TableCell>
-                                <Stack
-                                  direction={"row"}
-                                  justifyContent={"center"}
-                                  spacing={1}
-                                >
-                                  <UpdateAction
-                                    handleUpdateDialog={() =>
-                                      LeaveDialog.handleOpen({
-                                        type: "update",
-                                        values: leave,
-                                      })
-                                    }
-                                  />
-
-                                  <DeleteAction
-                                    handleDeleteDialog={() =>
-                                      DeleteLeaveDialog.handleOpen({
-                                        id: leave._id,
-                                      })
-                                    }
-                                  />
-                                </Stack>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })
-                      )}
-                    </TableBody>
-                  </Table>
-                </Scrollbar>
-              </TableContainer>
+              {tabValue === "employees_leaves" ? (
+                <AllUserLeaves
+                  leavesList={leavesList}
+                  isLoading={isLoading}
+                  LeaveDialog={LeaveDialog}
+                  handleUpdateStatus={handleUpdateStatus}
+                  DeleteLeaveDialog={DeleteLeaveDialog}
+                />
+              ) : (
+                <MyLeaves
+                  leavesList={leavesList}
+                  isLoading={isLoading}
+                  LeaveDialog={LeaveDialog}
+                  DeleteLeaveDialog={DeleteLeaveDialog}
+                />
+              )}
             </CardContent>
           </Card>
         </Stack>
@@ -375,6 +241,7 @@ const LeavesListComponent = () => {
         <LeaveModal
           leaveValues={LeaveDialog.data?.values}
           modalType={LeaveDialog.data?.type}
+          showEmployees={!LeaveDialog.data?.isEmployee || false}
           modal={LeaveDialog.open}
           onCancel={LeaveDialog.handleClose}
           onConfirm={addAndUpdateLeaves}

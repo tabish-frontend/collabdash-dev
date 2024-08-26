@@ -23,6 +23,7 @@ import {
   Stack,
   SvgIcon,
   TableBody,
+  TextField,
   Typography,
   useMediaQuery,
   useTheme,
@@ -165,25 +166,22 @@ const HolidaysListComponent = () => {
             )}
           </Stack>
           <Card>
-            <CardHeader
-              action={
-                <FormControl sx={{ minWidth: 150 }}>
-                  <InputLabel>Year</InputLabel>
-                  <Select
-                    value={selectedYear}
-                    onChange={handleYearChange}
-                    label="Year"
-                  >
-                    {lastFourYears.map((year) => (
-                      <MenuItem key={year} value={year}>
-                        {year}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              }
-            />
             <CardContent>
+              <Stack direction={"row"} justifyContent={"flex-end"} mb={2}>
+                <TextField
+                  select
+                  label="Select Year"
+                  sx={{ width: 150, height: 50 }}
+                  value={selectedYear}
+                  onChange={handleYearChange}
+                >
+                  {lastFourYears.map((year) => (
+                    <MenuItem key={year} value={year}>
+                      {year}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Stack>
               <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
                 <Scrollbar sx={{ maxHeight: 470 }}>
                   <Table stickyHeader aria-label="sticky table">

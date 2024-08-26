@@ -20,7 +20,7 @@ import { useEffect, useState, type FC } from "react";
 import { leaveInitialValues } from "src/formik";
 
 import { employeesApi } from "src/api";
-import { LeavesTypes } from "src/constants/status";
+import { LeavesStatus, LeavesTypes } from "src/constants/status";
 import { useAuth } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { ROLES } from "src/constants/roles";
@@ -32,6 +32,7 @@ interface LeaveModalProps {
   modalType: string | undefined;
   leaveValues: any;
   onConfirm: (values: any) => void;
+  showEmployees: boolean;
   onCancel: () => void;
 }
 
@@ -40,10 +41,9 @@ export const LeaveModal: FC<LeaveModalProps> = ({
   modalType,
   leaveValues,
   onCancel,
+  showEmployees,
   onConfirm,
 }) => {
-  const { user } = useAuth<AuthContextType>();
-
   const formik = useFormik({
     initialValues: leaveValues
       ? {
@@ -51,6 +51,7 @@ export const LeaveModal: FC<LeaveModalProps> = ({
           startDate: new Date(leaveValues.startDate),
           endDate: new Date(leaveValues.endDate),
           user: leaveValues.user._id,
+          status: LeavesStatus.Pending,
         }
       : leaveInitialValues,
     enableReinitialize: true,
@@ -71,18 +72,16 @@ export const LeaveModal: FC<LeaveModalProps> = ({
       fields: "full_name,avatar",
       account_status: "active",
       search: "",
+      role: "",
     });
     setEmployees(response.users);
   };
 
   useEffect(() => {
-    if (
-      (user?.role === ROLES.Admin || user?.role === ROLES.HR) &&
-      modalType === "create"
-    ) {
+    if (showEmployees && modalType === "create") {
       handleGetEmployees();
     }
-  }, [user, modalType]);
+  }, [modalType, showEmployees]);
 
   return (
     <Dialog fullWidth maxWidth="sm" open={modal} onClose={onCancel}>
@@ -169,7 +168,7 @@ export const LeaveModal: FC<LeaveModalProps> = ({
               />
             </Grid>
 
-            {(user?.role === ROLES.Admin || user?.role === ROLES.HR) && (
+            {showEmployees && (
               <Grid item xs={12}>
                 <TextField
                   fullWidth
@@ -179,13 +178,6 @@ export const LeaveModal: FC<LeaveModalProps> = ({
                   select
                   required
                   onBlur={formik.handleBlur}
-                  SelectProps={{
-                    MenuProps: {
-                      style: {
-                        maxHeight: "300px",
-                      },
-                    },
-                  }}
                   onChange={formik.handleChange}
                   value={formik.values.user}
                 >

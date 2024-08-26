@@ -56,13 +56,11 @@ const TabName = styled("span")(({ theme }) => ({
 const TabStatus = [
   {
     label: "Employees Attendance",
-    icon: <AccountOutline />,
     value: "employee_attendance",
     roles: ["admin", "hr"], // Accessible by admin and HR
   },
   {
     label: "My Attendance",
-    icon: <LockOpenOutline />,
     value: "my_attendance",
     roles: ["employee", "hr"], // Accessible by employees and HR
   },
@@ -285,12 +283,7 @@ const AttendanceListComponent = () => {
                       <Tab
                         key={tab.value}
                         value={tab.value}
-                        label={
-                          <Box sx={{ display: "flex", alignItems: "center" }}>
-                            {tab.icon}
-                            <TabName>{tab.label}</TabName>
-                          </Box>
-                        }
+                        label={tab.label}
                       />
                     ))}
                   </Tabs>

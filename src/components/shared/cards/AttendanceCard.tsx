@@ -202,13 +202,6 @@ export const AttendanceCard = () => {
                 month: Number(e.target.value),
               }))
             }
-            SelectProps={{
-              MenuProps: {
-                style: {
-                  maxHeight: "250px",
-                },
-              },
-            }}
           >
             {monthOptions.map(({ value, label }) => (
               <MenuItem key={value} value={value}>
