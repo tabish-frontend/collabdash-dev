@@ -30,13 +30,6 @@ export const DepartmentField: React.FC<DepartmentFieldProps> = ({
       onBlur={handleBlur}
       error={!!(formikTouched && formikError)}
       helperText={formikTouched && formikError}
-      SelectProps={{
-        MenuProps: {
-          style: {
-            maxHeight: "200px",
-          },
-        },
-      }}
     >
       {DepartmentNames.map((option) => (
         <MenuItem key={option} value={option}>

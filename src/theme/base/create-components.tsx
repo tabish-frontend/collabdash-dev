@@ -364,6 +364,15 @@ export const createComponents = (): Components => {
     MuiTextField: {
       defaultProps: {
         variant: "filled",
+        SelectProps: {
+          MenuProps: {
+            PaperProps: {
+              style: {
+                maxHeight: "250px", // This will be applied if you need to override at the component level
+              },
+            },
+          },
+        },
       },
     },
   };

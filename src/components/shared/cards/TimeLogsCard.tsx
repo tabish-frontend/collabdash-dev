@@ -258,8 +258,8 @@ export const TimeLogCard = () => {
       {clockOutModal && (
         <ConfirmationModal
           content={{
-            type: "Clock Out",
-            text: "Are you sure you want to Clock Out ?",
+            type: "Time out",
+            text: "Are you sure you want to Time out ?",
           }}
           // warning_text={`Your shiftDuration is ${formatDuration(
           //   workingProgress.shiftDuration

@@ -56,21 +56,15 @@ const TabName = styled("span")(({ theme }) => ({
 const TabStatus = [
   {
     label: "Employees Attendance",
-    icon: <AccountOutline />,
     value: "employee_attendance",
     roles: ["admin", "hr"], // Accessible by admin and HR
   },
   {
     label: "My Attendance",
-    icon: <LockOpenOutline />,
     value: "my_attendance",
     roles: ["employee", "hr"], // Accessible by employees and HR
   },
 ];
-
-interface AllUserAttendanceRef {
-  downloadAttendanceCsv: () => void;
-}
 
 const AttendanceListComponent = () => {
   const settings = useSettings();
@@ -82,11 +76,13 @@ const AttendanceListComponent = () => {
   const { date: queryDate } = router.query;
   const { user } = useAuth<AuthContextType>();
 
-  const attendanceRef = useRef<AllUserAttendanceRef>(null);
+  const [downloadAttendanceCsv, setDownloadAttendanceCsv] = useState<
+    (() => void) | null
+  >(null);
 
   const handleDownloadCsv = () => {
-    if (attendanceRef.current) {
-      attendanceRef.current.downloadAttendanceCsv();
+    if (downloadAttendanceCsv) {
+      downloadAttendanceCsv();
     }
   };
 
@@ -287,29 +283,28 @@ const AttendanceListComponent = () => {
                       <Tab
                         key={tab.value}
                         value={tab.value}
-                        label={
-                          <Box sx={{ display: "flex", alignItems: "center" }}>
-                            {tab.icon}
-                            <TabName>{tab.label}</TabName>
-                          </Box>
-                        }
+                        label={tab.label}
                       />
                     ))}
                   </Tabs>
 
-                  {(user?.role === ROLES.Admin || user?.role === ROLES.HR) && (
-                    <Button
-                      variant="contained"
-                      size={isSmallScreen ? "small" : "medium"}
-                      onClick={handleDownloadCsv}
-                    >
-                      Download CSV
-                    </Button>
-                  )}
+                  {(user?.role === ROLES.Admin || user?.role === ROLES.HR) &&
+                    tabValue === "employee_attendance" && (
+                      <Button
+                        variant="contained"
+                        size={isSmallScreen ? "small" : "medium"}
+                        onClick={handleDownloadCsv}
+                      >
+                        Download CSV
+                      </Button>
+                    )}
                 </Stack>
 
                 {tabValue === "employee_attendance" ? (
-                  <AllUserAttendance ref={attendanceRef} filters={filters} />
+                  <AllUserAttendance
+                    setDownloadAttendanceCsv={setDownloadAttendanceCsv}
+                    filters={filters}
+                  />
                 ) : (
                   <MyAttendance filters={filters} />
                 )}

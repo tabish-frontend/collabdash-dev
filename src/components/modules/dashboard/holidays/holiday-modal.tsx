@@ -63,6 +63,7 @@ export const HolidayModal: FC<HolidayModalProps> = ({
       fields: "full_name,avatar,department",
       account_status: "active",
       search: "",
+      role: "admin",
     });
     setEmployees(response.users);
   };

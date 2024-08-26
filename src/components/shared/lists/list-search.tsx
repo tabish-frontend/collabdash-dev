@@ -243,13 +243,6 @@ export const ListSearch: FC<CustomerListSearchProps> = ({
               value={currentOption}
               disabled={isLoading}
               onChange={onChangeOption}
-              SelectProps={{
-                MenuProps: {
-                  style: {
-                    maxHeight: "250px",
-                  },
-                },
-              }}
               select
               fullWidth={!isMediumUp}
             >
@@ -267,13 +260,6 @@ export const ListSearch: FC<CustomerListSearchProps> = ({
               label="Select Month"
               value={setMonth}
               onChange={monchChange}
-              SelectProps={{
-                MenuProps: {
-                  style: {
-                    maxHeight: "250px",
-                  },
-                },
-              }}
               InputProps={{
                 endAdornment: isCreated && (
                   <InputAdornment position="start">
@@ -301,13 +287,6 @@ export const ListSearch: FC<CustomerListSearchProps> = ({
               label="Select Year"
               value={setYear}
               onChange={yearChange}
-              SelectProps={{
-                MenuProps: {
-                  style: {
-                    maxHeight: "250px",
-                  },
-                },
-              }}
               select
               fullWidth={!isMediumUp}
             >

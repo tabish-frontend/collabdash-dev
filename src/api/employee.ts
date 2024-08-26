@@ -3,7 +3,7 @@ import Axios from "src/config/axios";
 class EmployeesApi {
   async getAllEmployees(filters: any) {
     const response = await Axios.get(
-      `/employees?fields=${filters.fields}&account_status=${filters.account_status}&search=${filters.search}`
+      `/employees?fields=${filters.fields}&account_status=${filters.account_status}&search=${filters.search}&role=${filters.role}`
     );
 
     return response.data;

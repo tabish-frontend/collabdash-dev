@@ -33,6 +33,7 @@ interface FiltersType {
   fields: string;
   account_status: string;
   search: string;
+  role: string;
 }
 
 const EmployeeListComponent = () => {
@@ -47,6 +48,7 @@ const EmployeeListComponent = () => {
     fields: "",
     account_status: "active",
     search: "",
+    role: "",
   });
 
   const handleStatusChange = (event: SyntheticEvent, newValue: string) => {
