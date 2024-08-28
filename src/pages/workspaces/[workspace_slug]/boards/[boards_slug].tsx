@@ -1,3 +1,3 @@
-import { Tasks } from "src/components";
+import { Board } from "src/components/modules/dashboard/workspaces/board";
 
-export default Tasks;
+export default Board;

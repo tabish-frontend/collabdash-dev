@@ -13,28 +13,48 @@ import { useFormik } from "formik";
 import { CloseCircleOutline } from "mdi-material-ui";
 import { useEffect, useState, type FC } from "react";
 import { employeesApi } from "src/api";
-import { Employee } from "src/types";
+import { Employee, WorkSpace } from "src/types";
 import { SelectMultipleUsers } from "src/components/shared";
 import { LoadingButton } from "@mui/lab";
+import { useWorkSpace } from "src/hooks/use-workSpace";
+import { workSpaceInitialValues } from "src/formik";
 
 interface WorkspaceModalProps {
   modal: boolean;
+  madal_type?: string;
+  workSpaceValues: WorkSpace;
   onCancel: () => void;
 }
 
 export const WorkspaceModal: FC<WorkspaceModalProps> = ({
   modal,
+  madal_type,
+  workSpaceValues,
   onCancel,
 }) => {
+  const { handleAddWorkSpace, handleUpdateWorkSpace } = useWorkSpace();
+
   const formik = useFormik({
-    initialValues: { title: "", users: [] },
+    initialValues: {
+      ...workSpaceValues,
+      members: workSpaceValues.members.map((user: any) => user._id),
+    },
 
     enableReinitialize: true,
     onSubmit: async (values, helpers): Promise<void> => {
+      if (madal_type === "Update") {
+        await handleUpdateWorkSpace({
+          _id: values._id,
+          name: values.name,
+          members: values.members,
+        });
+      } else {
+        await handleAddWorkSpace(values);
+      }
+
       helpers.setStatus({ success: true });
       helpers.setSubmitting(false);
-
-      // API will CAll here
+      onCancel();
     },
   });
 
@@ -45,6 +65,7 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
       fields: "full_name,avatar,department",
       account_status: "active",
       search: "",
+      role: "",
     });
     setEmployees(response.users);
   };
@@ -64,7 +85,7 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
       <form onSubmit={formik.handleSubmit}>
         <Paper elevation={12}>
           <DialogTitle sx={{ m: 0, p: 3, fontSize: 24, fontWeight: 600 }}>
-            Create Workspace
+            {`${madal_type} Workspace`}
           </DialogTitle>
           <IconButton
             aria-label="close"
@@ -87,8 +108,8 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
                 fullWidth
                 label="Title"
                 required
-                value={formik.values.title}
-                name="title"
+                value={formik.values.name}
+                name="name"
                 onChange={formik.handleChange}
               />
             </Grid>
@@ -96,11 +117,11 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
             <Grid item xs={12}>
               <SelectMultipleUsers
                 employees={employees}
-                formikUsers={formik.values.users}
+                formikUsers={formik.values.members}
                 setFieldValue={(value: any) =>
-                  formik.setFieldValue("users", value)
+                  formik.setFieldValue("members", value)
                 }
-                isRequired={!formik.values.users.length}
+                isRequired={!formik.values.members.length}
               />
             </Grid>
           </Grid>

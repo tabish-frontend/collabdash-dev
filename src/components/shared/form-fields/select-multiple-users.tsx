@@ -14,9 +14,10 @@ import { Employee } from "src/types";
 
 interface SelectMultipleUsersProps {
   employees: any[];
-  formikUsers: Employee[];
+  formikUsers: string[];
   setFieldValue: (value: any) => void;
   isRequired?: boolean;
+  inputSize?: "small" | "medium";
 }
 
 export const SelectMultipleUsers: React.FC<SelectMultipleUsersProps> = ({
@@ -24,6 +25,7 @@ export const SelectMultipleUsers: React.FC<SelectMultipleUsersProps> = ({
   formikUsers,
   setFieldValue,
   isRequired = false,
+  inputSize = "medium",
 }) => {
   const [selectAll, setSelectAll] = useState(false);
 
@@ -55,6 +57,7 @@ export const SelectMultipleUsers: React.FC<SelectMultipleUsersProps> = ({
     <Autocomplete
       multiple
       options={employees}
+      size={inputSize}
       value={getSelectedUsers()}
       getOptionLabel={(option) => option.full_name}
       disableCloseOnSelect

@@ -49,6 +49,7 @@ export const ImageField: FC<ImageFieldProps> = ({ formikImage }) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile && selectedFile.type.startsWith("image/")) {
       setPhotoURL(URL.createObjectURL(selectedFile));
+
       setModal(true);
     } else {
     }

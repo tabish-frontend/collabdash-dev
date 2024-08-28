@@ -6,35 +6,33 @@ import { ConfirmationModal } from "../modals";
 import { useRouter } from "next/router";
 import { paths } from "src/constants/paths";
 
-const BoardCard = ({
+export const BoardCard = ({
   board,
   handleUpdateBoard,
+  handleDeleteBoard,
+  isAccess,
 }: {
   board: any;
-  handleUpdateBoard: any;
+  handleUpdateBoard: () => void;
+  handleDeleteBoard: () => void;
+  isAccess: boolean;
 }) => {
-  const [deleteModal, setDeleteModal] = useState({
-    open: false,
-
-    // boardID: "",
-  });
-
   const router = useRouter();
   const { workspace_slug } = router.query;
+
   return (
     <Card sx={{ cursor: "pointer" }}>
       <Box padding={3} sx={{ minHeight: "280px" }}>
         <Stack
           direction={"column"}
-          onClick={
-            () => router.push(paths.tasks)
-            // router.push(
-            //   `${paths.workspaces}/${workspace_slug}/boards/${board?.slug}`
-            // )
+          onClick={() =>
+            router.push(
+              `${paths.workspaces}/${workspace_slug}/boards/${board?.slug}`
+            )
           }
         >
           <Typography gutterBottom variant="h5" component="h1">
-            {board.title}
+            {board.name}
           </Typography>
 
           <Typography minHeight={150} fontSize={14} pt={2}>
@@ -48,52 +46,28 @@ const BoardCard = ({
           justifyContent={"space-between"}
           alignItems={"center"}
         >
-          <UserAvatarGroup users={board.users} />
+          <UserAvatarGroup users={board.members} />
 
-          <Stack direction={"row"} spacing={2}>
-            <Tooltip title="Edit">
-              <SquareEditOutline
-                color="success"
-                sx={{ cursor: "pointer" }}
-                onClick={handleUpdateBoard}
-              />
-            </Tooltip>
-            <Tooltip title="Delete">
-              <TrashCanOutline
-                color="error"
-                sx={{ cursor: "pointer" }}
-                onClick={() =>
-                  setDeleteModal({
-                    open: true,
-                  })
-                }
-              />
-            </Tooltip>
-          </Stack>
+          {isAccess && (
+            <Stack direction={"row"} spacing={2}>
+              <Tooltip title="Edit">
+                <SquareEditOutline
+                  color="success"
+                  sx={{ cursor: "pointer" }}
+                  onClick={handleUpdateBoard}
+                />
+              </Tooltip>
+              <Tooltip title="Delete">
+                <TrashCanOutline
+                  color="error"
+                  sx={{ cursor: "pointer" }}
+                  onClick={handleDeleteBoard}
+                />
+              </Tooltip>
+            </Stack>
+          )}
         </Stack>
       </Box>
-
-      {deleteModal && (
-        <ConfirmationModal
-          content={{
-            type: "Delete",
-            text: "Are you sure you want to delete the Board ?",
-          }}
-          modal={deleteModal.open}
-          onCancel={() =>
-            setDeleteModal({
-              open: false,
-            })
-          }
-          onConfirm={async () => {
-            setDeleteModal({
-              open: false,
-            });
-          }}
-        />
-      )}
     </Card>
   );
 };
-
-export default BoardCard;

@@ -11,17 +11,20 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { useFormik } from "formik";
 import { CloseCircleOutline } from "mdi-material-ui";
-import { useEffect, useState, type FC } from "react";
-import { employeesApi } from "src/api";
-import { Employee } from "src/types";
+import { useEffect, type FC } from "react";
+import { Employee, WorkSpaceBoard } from "src/types";
 import { SelectMultipleUsers } from "src/components/shared";
 import { LoadingButton } from "@mui/lab";
+import { BoardInitialValues } from "src/formik";
+import { getChangedFields } from "src/utils";
 
 interface BoardsModalProps {
   modal: boolean;
-  modalType: string;
+  modalType: string | undefined;
   modalValues: any;
   onCancel: () => void;
+  members: any[];
+  onConfirm: (values: any) => void;
 }
 
 export const BoardsModal: FC<BoardsModalProps> = ({
@@ -29,33 +32,30 @@ export const BoardsModal: FC<BoardsModalProps> = ({
   modalType,
   modalValues,
   onCancel,
+  members = [],
+  onConfirm,
 }) => {
   const formik = useFormik({
-    initialValues: { title: "", description: "", users: [] },
+    initialValues: modalValues
+      ? {
+          ...modalValues,
 
+          members: modalValues.members.map((user: Employee) => user._id),
+        }
+      : BoardInitialValues,
     enableReinitialize: true,
     onSubmit: async (values, helpers): Promise<void> => {
       helpers.setStatus({ success: true });
       helpers.setSubmitting(false);
 
-      // API will CAll here
+      const updatingValues = {
+        _id: values._id,
+        ...getChangedFields<WorkSpaceBoard>(values, formik.initialValues),
+      };
+      onConfirm(updatingValues);
+      onCancel();
     },
   });
-
-  const [employees, setEmployees] = useState<Employee[]>([]);
-
-  const handleGetEmployees = async () => {
-    const response = await employeesApi.getAllEmployees({
-      fields: "full_name,avatar,department",
-      account_status: "active",
-      search: "",
-    });
-    setEmployees(response.users);
-  };
-
-  useEffect(() => {
-    handleGetEmployees();
-  }, []);
 
   return (
     <Dialog
@@ -91,8 +91,8 @@ export const BoardsModal: FC<BoardsModalProps> = ({
                 fullWidth
                 label="Board Name"
                 required
-                value={formik.values.title}
-                name="boardname"
+                value={formik.values.name}
+                name="name"
                 onChange={formik.handleChange}
               />
             </Grid>
@@ -100,7 +100,6 @@ export const BoardsModal: FC<BoardsModalProps> = ({
               <TextField
                 fullWidth
                 label="Description"
-                required
                 value={formik.values.description}
                 name="description"
                 onChange={formik.handleChange}
@@ -109,12 +108,12 @@ export const BoardsModal: FC<BoardsModalProps> = ({
 
             <Grid item xs={12}>
               <SelectMultipleUsers
-                employees={employees}
-                formikUsers={formik.values.users}
+                employees={members}
+                formikUsers={formik.values.members}
                 setFieldValue={(value: any) =>
-                  formik.setFieldValue("users", value)
+                  formik.setFieldValue("members", value)
                 }
-                isRequired={!formik.values.users.length}
+                isRequired={!formik.values.members.length}
               />
             </Grid>
           </Grid>
