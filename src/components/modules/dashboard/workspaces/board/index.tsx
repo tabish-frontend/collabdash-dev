@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { NextPage } from "next";
 import type { DropResult } from "react-beautiful-dnd";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -10,15 +10,27 @@ import { DashboardLayout } from "src/layouts";
 import { TaskModal } from "./task-modal";
 import { ColumnCard } from "./column-card";
 import { ColumnAdd } from "./column-add";
-import { Button, SvgIcon, Tooltip } from "@mui/material";
+import { Avatar, Button, SvgIcon, Tooltip } from "@mui/material";
 import { useRouter } from "next/router";
 import ArrowLeftIcon from "@untitled-ui/icons-react/build/esm/ArrowLeft";
 import { useWorkSpace } from "src/hooks/use-workSpace";
 import { WorkSpaceBoardColumn, WorkSpaceBoardColumnTasks } from "src/types";
+import { ImageAvatar, UserAvatarGroup } from "src/components/shared";
 
 const BoardComponent = () => {
   const [currentTask, setCurrentTask] =
     useState<WorkSpaceBoardColumnTasks | null>(null);
+
+  const [selectedAssignee, setSelectedAssignee] = useState<string | null>(null);
+
+  const handleSelectedAssignee = (_id: string) => {
+    // Toggle the active avatar based on the clicked user
+    if (selectedAssignee && selectedAssignee === _id) {
+      setSelectedAssignee(null); // If the same avatar is clicked, deactivate it
+    } else {
+      setSelectedAssignee(_id); // Otherwise, set the clicked avatar as active
+    }
+  };
 
   const router = useRouter();
 
@@ -97,6 +109,10 @@ const BoardComponent = () => {
 
   console.log("Workspace Board", workSpaceBoard);
 
+  useEffect(() => {
+    console.log("Active avatar", selectedAssignee);
+  }, [selectedAssignee]);
+
   return (
     <>
       <Box
@@ -124,6 +140,35 @@ const BoardComponent = () => {
             {`${workSpaceBoard?.workspace.name} - ${workSpaceBoard?.name}`}
           </Typography>
         </Box>
+
+        <Stack
+          direction={"row"}
+          justifyContent={"flex-start"}
+          sx={{ px: 3 }}
+          spacing={0.5}
+        >
+          {workSpaceBoard?.members.map((user: any, index: number) => (
+            <Tooltip key={index} title={user.full_name} arrow>
+              <Stack
+                style={{ cursor: "pointer" }}
+                onClick={() => handleSelectedAssignee(user._id)}
+              >
+                <Avatar
+                  src={user.avatar}
+                  alt={user.full_name}
+                  sx={{
+                    width: 50,
+                    height: 50,
+                    border:
+                      selectedAssignee === user._id
+                        ? "3px solid #06aed4"
+                        : "none",
+                  }}
+                />
+              </Stack>
+            </Tooltip>
+          ))}
+        </Stack>
 
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable

@@ -16,6 +16,20 @@ class TaskAPI {
     const response = await Axios.post(`/task/move`, body);
     return response.data;
   }
+
+  async updateTask(task_id: string, body: any) {
+    const response = await Axios.patch(`/task/${task_id}`, body);
+    return response.data;
+  }
+  async submitAttachment(body: any) {
+    const response = await Axios.post(`/task/attachment`, body);
+    return response.data;
+  }
+
+  async deleteAttachment(id: string | undefined) {
+    const response = await Axios.delete(`/task/attachment/${id}`);
+    return response.data;
+  }
 }
 
 export const TaskApi = new TaskAPI();

@@ -14,7 +14,7 @@ import { Employee } from "src/types";
 
 interface SelectMultipleUsersProps {
   employees: any[];
-  formikUsers: Employee[];
+  formikUsers: string[];
   setFieldValue: (value: any) => void;
   isRequired?: boolean;
   inputSize?: "small" | "medium";
