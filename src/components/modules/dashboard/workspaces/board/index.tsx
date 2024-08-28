@@ -95,6 +95,8 @@ const BoardComponent = () => {
     setCurrentTask(null);
   }, []);
 
+  console.log("Workspace Board", workSpaceBoard);
+
   return (
     <>
       <Box
@@ -200,6 +202,7 @@ const BoardComponent = () => {
         open={!!currentTask}
         task={currentTask || undefined}
         boardColumns={workSpaceBoard?.columns}
+        boardMembers={workSpaceBoard?.members}
       />
     </>
   );
