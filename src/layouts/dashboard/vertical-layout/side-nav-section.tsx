@@ -19,8 +19,10 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Edit, DeleteOutline } from "@mui/icons-material";
 import { ConfirmationModal, WorkspaceModal } from "src/components";
 import { WorkSpace } from "src/types";
-import { useDialog } from "src/hooks";
+import { useAuth, useDialog } from "src/hooks";
 import { workSpaceInitialValues } from "src/formik";
+import { AuthContext, AuthContextType } from "src/contexts/auth";
+import { ROLES } from "src/constants/roles";
 
 interface WorkSpaceDialogData {
   type: string;
@@ -49,6 +51,7 @@ interface SideNavSectionProps {
 }
 
 export const SideNavSection: FC<SideNavSectionProps> = (props) => {
+  const { user } = useAuth<AuthContextType>();
   const { items = [], pathname, subheader = "", ...other } = props;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedWorkspace, setSelectedWorkspace] = useState<Item | null>(null);
@@ -110,20 +113,22 @@ export const SideNavSection: FC<SideNavSectionProps> = (props) => {
                 p: 0,
               }}
             >
-              <Button
-                size="small"
-                variant="outlined"
-                color="info"
-                sx={{ mb: 0.5 }}
-                onClick={() => {
-                  WorkSpaceDialog.handleOpen({
-                    type: "Create",
-                  });
-                }}
-              >
-                <Add sx={{ ml: 1 }} fontSize="small" />
-                Add New Workspace
-              </Button>
+              {user?.role !== ROLES.Employee && (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  color="info"
+                  sx={{ mb: 0.5 }}
+                  onClick={() => {
+                    WorkSpaceDialog.handleOpen({
+                      type: "Create",
+                    });
+                  }}
+                >
+                  <Add sx={{ ml: 1 }} fontSize="small" />
+                  Add New Workspace
+                </Button>
+              )}
 
               {item.items.map((subItem, index) => {
                 const subItemMatch = subItem.path === pathname;
@@ -143,13 +148,15 @@ export const SideNavSection: FC<SideNavSectionProps> = (props) => {
                       path={subItem.path}
                       title={subItem.title}
                     />
-                    <IconButton
-                      aria-describedby={id}
-                      size="small"
-                      onClick={(event) => handleOptionsClick(event, subItem)}
-                    >
-                      <MoreHorizIcon />
-                    </IconButton>
+                    {user?.role !== ROLES.Employee && (
+                      <IconButton
+                        aria-describedby={id}
+                        size="small"
+                        onClick={(event) => handleOptionsClick(event, subItem)}
+                      >
+                        <MoreHorizIcon />
+                      </IconButton>
+                    )}
                   </Box>
                 );
               })}

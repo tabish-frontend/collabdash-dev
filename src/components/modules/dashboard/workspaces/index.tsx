@@ -9,7 +9,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useDialog, useSettings } from "src/hooks";
+import { useAuth, useDialog, useSettings } from "src/hooks";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts";
 import { useRouter } from "next/router";
@@ -21,6 +21,8 @@ import {
 } from "src/components/shared";
 import { useWorkSpace } from "src/hooks/use-workSpace";
 import { WorkSpace } from "src/types";
+import { ROLES } from "src/constants/roles";
+import { AuthContextType } from "src/contexts/auth";
 
 interface BoardDialogData {
   type: string;
@@ -32,6 +34,7 @@ interface DeleeBoardDialogData {
 }
 
 const WorkSpacesComponent = () => {
+  const { user } = useAuth<AuthContextType>();
   const settings = useSettings();
   const router = useRouter();
   const theme = useTheme();
@@ -69,6 +72,8 @@ const WorkSpacesComponent = () => {
     DeleteBoardDialog.handleClose();
   };
 
+  console.log("workSpace", workSpace);
+
   return (
     <Box
       component="main"
@@ -93,22 +98,24 @@ const WorkSpacesComponent = () => {
           >
             <Typography variant="h6">{workSpace?.name}</Typography>
 
-            <Button
-              variant="contained"
-              size={isSmallScreen ? "small" : "medium"}
-              startIcon={
-                <SvgIcon>
-                  <Plus />
-                </SvgIcon>
-              }
-              onClick={() => {
-                boardDialog.handleOpen({
-                  type: "create",
-                });
-              }}
-            >
-              Add Board
-            </Button>
+            {user?.role !== ROLES.Employee && (
+              <Button
+                variant="contained"
+                size={isSmallScreen ? "small" : "medium"}
+                startIcon={
+                  <SvgIcon>
+                    <Plus />
+                  </SvgIcon>
+                }
+                onClick={() => {
+                  boardDialog.handleOpen({
+                    type: "create",
+                  });
+                }}
+              >
+                Add Board
+              </Button>
+            )}
           </Stack>
 
           <Grid container spacing={2}>
@@ -117,6 +124,7 @@ const WorkSpacesComponent = () => {
                 <Grid item xs={12} xl={3} lg={4} md={6} key={board.slug}>
                   <BoardCard
                     board={board}
+                    isAccess={user?.role !== ROLES.Employee}
                     handleUpdateBoard={() => {
                       boardDialog.handleOpen({
                         type: "update",

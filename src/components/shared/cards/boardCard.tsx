@@ -10,10 +10,12 @@ export const BoardCard = ({
   board,
   handleUpdateBoard,
   handleDeleteBoard,
+  isAccess,
 }: {
   board: any;
   handleUpdateBoard: () => void;
   handleDeleteBoard: () => void;
+  isAccess: boolean;
 }) => {
   const router = useRouter();
   const { workspace_slug } = router.query;
@@ -46,22 +48,24 @@ export const BoardCard = ({
         >
           <UserAvatarGroup users={board.members} />
 
-          <Stack direction={"row"} spacing={2}>
-            <Tooltip title="Edit">
-              <SquareEditOutline
-                color="success"
-                sx={{ cursor: "pointer" }}
-                onClick={handleUpdateBoard}
-              />
-            </Tooltip>
-            <Tooltip title="Delete">
-              <TrashCanOutline
-                color="error"
-                sx={{ cursor: "pointer" }}
-                onClick={handleDeleteBoard}
-              />
-            </Tooltip>
-          </Stack>
+          {isAccess && (
+            <Stack direction={"row"} spacing={2}>
+              <Tooltip title="Edit">
+                <SquareEditOutline
+                  color="success"
+                  sx={{ cursor: "pointer" }}
+                  onClick={handleUpdateBoard}
+                />
+              </Tooltip>
+              <Tooltip title="Delete">
+                <TrashCanOutline
+                  color="error"
+                  sx={{ cursor: "pointer" }}
+                  onClick={handleDeleteBoard}
+                />
+              </Tooltip>
+            </Stack>
+          )}
         </Stack>
       </Box>
     </Card>

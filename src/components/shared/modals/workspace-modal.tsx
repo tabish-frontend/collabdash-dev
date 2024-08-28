@@ -65,6 +65,7 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
       fields: "full_name,avatar,department",
       account_status: "active",
       search: "",
+      role: "",
     });
     setEmployees(response.users);
   };
