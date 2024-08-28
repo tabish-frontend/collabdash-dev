@@ -44,7 +44,7 @@ import {
   WorkSpaceBoardColumnTasks,
 } from "src/types";
 import { useWorkSpace } from "src/hooks/use-workSpace";
-import { SelectMultipleUsers } from "src/components/shared";
+import { SelectMultipleUsers, SeverityPill } from "src/components/shared";
 import { useFormik } from "formik";
 import { DatePicker } from "@mui/x-date-pickers";
 import { PictureAsPdf, Description } from "@mui/icons-material";
@@ -60,35 +60,26 @@ import {
 import { Close } from "mdi-material-ui";
 import { TaskApi } from "src/api/kanban/tasks";
 import ConfirmationAlert from "src/components/shared/ConfirmationAlert";
-
-interface Attachment {
-  _id: number;
-  name: string;
-  type: string;
-  url: string;
-}
+import { LoadingButton } from "@mui/lab";
+import { TaskAttachment } from "src/types/workSpace";
 
 export interface TaskModalValues {
+  _id: string;
   title: string;
   description: string;
   dueDate: Date;
   priority: string;
-  board: string;
-  column: string;
   assignedTo: string[];
-  owner: string;
-  attachments: Attachment[];
+  attachments: TaskAttachment[];
 }
 
 export const taskModalInitialValues: TaskModalValues = {
+  _id: "",
   title: "",
   description: "",
   dueDate: new Date(),
   priority: "",
-  board: "",
-  column: "",
   assignedTo: [],
-  owner: "",
   attachments: [],
 };
 
@@ -110,23 +101,33 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     ...other
   } = props;
 
-  console.log("Task", task);
-  const { handleDeleteTask } = useWorkSpace();
+  console.log("task", task);
+
+  const { handleDeleteTask, handleUpdateTask } = useWorkSpace();
 
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("md"));
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [isFormBeingChanged, setIsFormBeingChanged] = useState(false);
 
   const formik = useFormik({
     // initialValues: taskModalInitialValues,
     initialValues: task
       ? {
-          ...taskModalInitialValues,
-          title: task.title,
+          ...task,
+          // assignedTo: task.assignedTo.map((item) => item._id),
+          assignedTo: task.assignedTo.map((user: any) => user._id),
+          dueDate: new Date(task.dueDate),
         }
       : taskModalInitialValues,
     enableReinitialize: true,
     onSubmit: async (values, helpers): Promise<void> => {
-      console.log("Formik values", values);
+      console.log("submit formik values", formik.values);
       setIsFormBeingChanged(false);
+      setShowAlert(false);
+      const response = await handleUpdateTask(values);
+      onClose?.();
+      console.log("Modal response", response);
     },
   });
 
@@ -135,11 +136,8 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
       setIsFormBeingChanged(true);
       formik.setFieldValue("title", event.target.value);
     },
-    []
+    [formik]
   );
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [isFormBeingChanged, setIsFormBeingChanged] = useState(false);
 
   const handleAttemptClose = () => {
     if (isFormBeingChanged) {
@@ -169,19 +167,14 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     // event.preventDefault();
-    console.log("FileChange  Event", event);
     const selectedFile = event.target.files?.[0];
-    console.log("selected file", selectedFile?.name);
     setIsFormBeingChanged(true);
     if (selectedFile) {
       if (allowedFileTypes.includes(selectedFile.type)) {
         const formData = new FormData();
         formData.append("attachment", selectedFile);
 
-        const indexCount = formik.values.attachments.length;
-
         const newAttachment = {
-          _id: indexCount + 1,
           type: selectedFile?.type,
           name: selectedFile?.name,
           url: URL.createObjectURL(selectedFile),
@@ -213,26 +206,25 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     }
   };
 
-  const handleFileRemove = async (
-    id: number,
-    cloudinaryUrl: string | undefined
-  ) => {
-    // Filter out the attachment with the given id
-    const updatedAttachments = formik.values.attachments.filter(
-      (attachment) => attachment._id !== id
-    );
+  const handleFileRemove = async (cloudinaryUrl: string | undefined) => {
+    setIsFormBeingChanged(true);
+    console.log("Formik Attachment", formik.values.attachments);
+    if (formik.values.attachments.length) {
+      // Filter out the attachment with the given id
+      const updatedAttachments = formik.values.attachments.filter(
+        (attachment) => attachment.url !== cloudinaryUrl
+      );
 
-    formik.setFieldValue("attachments", updatedAttachments);
+      formik.setFieldValue("attachments", updatedAttachments);
 
-    const cloudinaryId = cloudinaryUrl?.split("/").pop()?.split(".")[0];
-    await TaskApi.deleteAttachment(cloudinaryId);
-
-    console.log("attachment after delete", updatedAttachments);
+      const cloudinaryId = cloudinaryUrl?.split("/").pop()?.split(".")[0];
+      await TaskApi.deleteAttachment(cloudinaryId);
+    }
   };
 
   useEffect(() => {
-    console.log("Current updated attachments", formik.values.attachments);
-  }, [formik.values.attachments]);
+    console.log("Formik values", formik.values);
+  }, [formik.values]);
 
   const content =
     task && task.column ? (
@@ -258,16 +250,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                 </IconButton>
               )}
               {showAlert && (
-                <Typography
-                  color={"white"}
-                  fontSize={12}
-                  bgcolor={"red"}
-                  p={0.5}
-                  px={2}
-                  borderRadius={10}
-                >
-                  Unsaved Changes!
-                </Typography>
+                <SeverityPill color="error">Unsaved Changes!</SeverityPill>
               )}
             </Stack>
 
@@ -399,7 +382,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                 <Stack direction="row" width="100%" flexWrap="wrap">
                   {formik.values.attachments.map((attachment, index) => (
                     <div
-                      key={attachment._id}
+                      key={attachment.url}
                       style={{
                         position: "relative",
                         marginRight: (index + 1) % 3 !== 0 ? "8px" : "0",
@@ -480,9 +463,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                       )}
 
                       <IconButton
-                        onClick={() =>
-                          handleFileRemove(attachment._id, attachment.url)
-                        }
+                        onClick={() => handleFileRemove(attachment.url)}
                         sx={{
                           position: "absolute",
                           top: 0,
@@ -505,9 +486,6 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
               </Typography>
             </Grid>
             <Grid xs={12} sm={8}>
-              {/* {task.due && (
-                  <Chip size="small" label={format(task.due, "MMM dd, yyyy")} />
-                )} */}
               <DatePicker
                 views={["year", "month", "day"]}
                 sx={{ width: "100%" }}
@@ -531,26 +509,21 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
               </Typography>
             </Grid>
             <Grid xs={12} sm={8}>
-              {/* <TaskLabels
-                  labels={task.labels}
-                  onChange={handleLabelsChange}
-                /> */}
               <FormControl fullWidth size="small">
                 <InputLabel id="label-select">Select Priority</InputLabel>
                 <Select
                   labelId="label-select"
                   id="demo-controlled-open-select"
-                  value={formik.values.priority[0] || ""} // Assuming single label selection for simplicity
+                  value={formik.values.priority} // Assuming single label selection for simplicity
                   onChange={(event) => {
                     setIsFormBeingChanged(true);
-                    formik.setFieldValue("priority", [event.target.value]); // Replace array with selected value
+                    formik.setFieldValue("priority", event.target.value); // Replace array with selected value
                   }}
                   label="Select Priority"
                 >
-                  {/* <MenuItem value="">None</MenuItem> */}
-                  <MenuItem value="Low">Low</MenuItem>
-                  <MenuItem value="Moderate">Moderate</MenuItem>
-                  <MenuItem value="High">High</MenuItem>
+                  <MenuItem value="low">Low</MenuItem>
+                  <MenuItem value="moderate">Moderate</MenuItem>
+                  <MenuItem value="high">High</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -561,7 +534,6 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
             </Grid>
             <Grid xs={12} sm={8}>
               <Input
-                // defaultValue={task.description}
                 value={formik.values.description}
                 onChange={(e) => {
                   setIsFormBeingChanged(true);
@@ -570,7 +542,6 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                 fullWidth
                 multiline
                 disableUnderline
-                // onChange={handleDescriptionChange}
                 placeholder="Leave a message"
                 rows={6}
                 sx={{
@@ -585,9 +556,18 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
 
             <Grid xs={12}>
               <Stack direction={"row"} justifyContent={"flex-end"}>
-                <Button variant="contained" type="submit">
+                <LoadingButton
+                  loading={formik.isSubmitting}
+                  loadingPosition="start"
+                  startIcon={<></>}
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    pl: formik.isSubmitting ? "40px" : "16px",
+                  }}
+                >
                   Save
-                </Button>
+                </LoadingButton>
               </Stack>
             </Grid>
           </Grid>

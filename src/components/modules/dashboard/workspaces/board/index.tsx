@@ -107,12 +107,6 @@ const BoardComponent = () => {
     setCurrentTask(null);
   }, []);
 
-  console.log("Workspace Board", workSpaceBoard);
-
-  useEffect(() => {
-    console.log("Active avatar", selectedAssignee);
-  }, [selectedAssignee]);
-
   return (
     <>
       <Box

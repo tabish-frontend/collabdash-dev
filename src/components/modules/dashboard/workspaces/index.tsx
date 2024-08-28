@@ -72,8 +72,6 @@ const WorkSpacesComponent = () => {
     DeleteBoardDialog.handleClose();
   };
 
-  console.log("workSpace", workSpace);
-
   return (
     <Box
       component="main"

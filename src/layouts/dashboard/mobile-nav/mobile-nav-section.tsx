@@ -5,13 +5,15 @@ import Stack from "@mui/material/Stack";
 
 import { MobileNavItem } from "./mobile-nav-item";
 import { useWorkSpace } from "src/hooks/use-workSpace";
-import { useDialog } from "src/hooks";
+import { useAuth, useDialog } from "src/hooks";
 import { WorkSpace } from "src/types";
 import { Button, IconButton, MenuItem, Popover } from "@mui/material";
 import { Add, DeleteOutline, Edit } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { ConfirmationModal, WorkspaceModal } from "src/components";
 import { workSpaceInitialValues } from "src/formik";
+import { ROLES } from "src/constants/roles";
+import { AuthContextType } from "src/contexts/auth";
 
 interface Item {
   disabled?: boolean;
@@ -136,6 +138,8 @@ interface MobileNavSectionProps {
 }
 
 export const MobileNavSection: FC<MobileNavSectionProps> = (props) => {
+  const { user } = useAuth<AuthContextType>();
+
   const { items = [], pathname, subheader = "", ...other } = props;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedWorkspace, setSelectedWorkspace] = useState<Item | null>(null);
@@ -197,20 +201,22 @@ export const MobileNavSection: FC<MobileNavSectionProps> = (props) => {
                 p: 0,
               }}
             >
-              <Button
-                size="small"
-                variant="outlined"
-                color="info"
-                sx={{ mb: 0.5 }}
-                onClick={() => {
-                  WorkSpaceDialog.handleOpen({
-                    type: "Create",
-                  });
-                }}
-              >
-                <Add sx={{ ml: 1 }} fontSize="small" />
-                Add New Workspace
-              </Button>
+              {user?.role !== ROLES.Employee && (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  color="info"
+                  sx={{ mb: 0.5 }}
+                  onClick={() => {
+                    WorkSpaceDialog.handleOpen({
+                      type: "Create",
+                    });
+                  }}
+                >
+                  <Add sx={{ ml: 1 }} fontSize="small" />
+                  Add New Workspace
+                </Button>
+              )}
 
               {item.items.map((subItem: any, index) => {
                 const subItemMatch = pathname?.startsWith(subItem.path);
@@ -230,13 +236,15 @@ export const MobileNavSection: FC<MobileNavSectionProps> = (props) => {
                       path={subItem.path}
                       title={subItem.title}
                     />
-                    <IconButton
-                      aria-describedby={id}
-                      size="small"
-                      onClick={(event) => handleOptionsClick(event, subItem)}
-                    >
-                      <MoreHorizIcon />
-                    </IconButton>
+                    {user?.role !== ROLES.Employee && (
+                      <IconButton
+                        aria-describedby={id}
+                        size="small"
+                        onClick={(event) => handleOptionsClick(event, subItem)}
+                      >
+                        <MoreHorizIcon />
+                      </IconButton>
+                    )}
                   </Box>
                 );
               })}

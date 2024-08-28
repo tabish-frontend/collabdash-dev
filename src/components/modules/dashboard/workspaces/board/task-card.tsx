@@ -50,18 +50,13 @@ interface TaskCardProps {
 export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
   function TaskCard(props, ref) {
     const { task, dragging = false, onOpen, ...other } = props;
-    // const task = useTask(taskId);
-    // const assignees = useAssignees(task?.assigneesIds);
 
     if (!task) {
       return null;
     }
 
     const hasAssignees = task.assignedTo.length > 0;
-    const hasAttachments = task.assignedTo.length > 0;
-    // const hasChecklists = task.checklists.length > 0;
-    // const hasComments = task.comments.length > 0;
-    // const hasLabels = task.labels.length > 0;
+    const hasAttachments = task.attachments.length > 0;
 
     return (
       <Card
@@ -91,7 +86,7 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
       >
         {hasAttachments && (
           <CardMedia
-            image={task.attachments[0]}
+            image={task.attachments[0].url}
             sx={{
               borderRadius: 1.5,
               height: 120,
@@ -100,49 +95,13 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
           />
         )}
         <Typography variant="subtitle1">{task.title}</Typography>
-        {/* {hasLabels && (
-          <Box
-            sx={{
-              alignItems: "center",
-              display: "flex",
-              flexWrap: "wrap",
-              m: -1,
-              mt: 1,
-            }}
-          >
-            {task.labels.map((label) => (
-              <Chip key={label} label={label} size="small" sx={{ m: 1 }} />
-            ))}
-          </Box>
-        )} */}
+
         <Stack
           alignItems="center"
           direction="row"
           justifyContent="space-between"
           spacing={2}
         >
-          <Stack alignItems="center" direction="row" spacing={2} sx={{ mt: 2 }}>
-            {/* {task.isSubscribed && (
-              <SvgIcon color="action">
-                <EyeIcon />
-              </SvgIcon>
-            )} */}
-            {hasAttachments && (
-              <SvgIcon color="action">
-                <FileCheck03Icon />
-              </SvgIcon>
-            )}
-            {/* {hasChecklists && (
-              <SvgIcon color="action">
-                <ListIcon />
-              </SvgIcon>
-            )} */}
-            {/* {hasComments && (
-              <SvgIcon color="action">
-                <MessageDotsCircleIcon />
-              </SvgIcon>
-            )} */}
-          </Stack>
           {hasAssignees && (
             <AvatarGroup max={3}>
               {task.assignedTo.map((assignee: Employee) => (
@@ -150,14 +109,22 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
               ))}
             </AvatarGroup>
           )}
+          <Stack alignItems="center" direction="row" spacing={2} sx={{ mt: 2 }}>
+            <Chip
+              key={task.priority}
+              label={task.priority}
+              size="small"
+              sx={{ m: 1 }}
+            />
+
+            {hasAttachments && (
+              <SvgIcon color="action">
+                <FileCheck03Icon />
+              </SvgIcon>
+            )}
+          </Stack>
         </Stack>
       </Card>
     );
   }
 );
-
-// TaskCard.propTypes = {
-//   task: PropTypes.string.isRequired,
-//   dragging: PropTypes.bool,
-//   onOpen: PropTypes.func,
-// };

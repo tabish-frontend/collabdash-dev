@@ -407,23 +407,50 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
   );
 
   const handleUpdateTask = useCallback(
-    async (board_id: string, data: WorkSpaceBoard) => {
-      // const response = await BoardsApi.updateBoard(board_id, data);
-      // setState((prev) => {
-      //   const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
-      //     const updatedBoards = workspace.boards.map((board) =>
-      //       board._id === board_id ? response : board
-      //     );
-      //     return {
-      //       ...workspace,
-      //       boards: updatedBoards,
-      //     };
-      //   });
-      //   return {
-      //     ...prev,
-      //     WorkSpaces: updatedWorkSpaces,
-      //   };
-      // });
+    async (data: {
+      _id: string;
+      board_id: string;
+      column_id: string;
+      [key: string]: any;
+    }) => {
+      const { _id: task_id, ...restValues } = data;
+
+      console.log("data", data);
+
+      const response = await TaskApi.updateTask(task_id, restValues);
+
+      console.log("Response", response);
+      setState((prev) => {
+        const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
+          const updatedBoards = workspace.boards.map((board) => {
+            const updatedColumns = board.columns.map((column) => {
+              const updatedTasks = column.tasks.map((task) =>
+                task._id === task_id ? { ...task, ...response } : task
+              );
+
+              return {
+                ...column,
+                tasks: updatedTasks,
+              };
+            });
+
+            return {
+              ...board,
+              columns: updatedColumns,
+            };
+          });
+
+          return {
+            ...workspace,
+            boards: updatedBoards,
+          };
+        });
+
+        return {
+          ...prev,
+          WorkSpaces: updatedWorkSpaces,
+        };
+      });
     },
     []
   );
@@ -545,6 +572,7 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
         handleAddTask,
         handleDeleteTask,
         handleMoveTask,
+        handleUpdateTask,
       }}
     >
       {children}
