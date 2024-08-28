@@ -7,12 +7,7 @@ import Box from "@mui/material/Box";
 import ButtonBase from "@mui/material/ButtonBase";
 import Collapse from "@mui/material/Collapse";
 import SvgIcon from "@mui/material/SvgIcon";
-
 import { RouterLink } from "src/components/shared/router-link";
-import { Button } from "@mui/material";
-import Add from "@mui/icons-material/Add";
-import { WorkspaceModal } from "src/components/shared";
-import { useSettings } from "src/hooks";
 
 interface SideNavItemProps {
   active?: boolean;
@@ -42,13 +37,9 @@ export const SideNavItem: FC<SideNavItemProps> = (props) => {
   } = props;
   const [open, setOpen] = useState<boolean>(!!openProp);
 
-  const setting = useSettings();
-
   const handleToggle = useCallback((): void => {
     setOpen((prevOpen) => !prevOpen);
   }, []);
-
-  // Icons can be defined at top level only, deep levels have bullets instead of actual icons.
 
   let startIcon: ReactNode;
 
@@ -163,21 +154,6 @@ export const SideNavItem: FC<SideNavItemProps> = (props) => {
         </ButtonBase>
 
         <Collapse in={open} sx={{ mt: 1 }}>
-          <div style={{ marginLeft: "0px", width: "100%" }}>
-            <Button
-              size="small"
-              variant="outlined"
-              color="info"
-              sx={{ mb: 0.5 }}
-              fullWidth
-              onClick={() => {
-                setting.handleUpdateWorkspaceState(true);
-              }}
-            >
-              Add New Workspace
-              <Add sx={{ ml: 1 }} fontSize="small" />
-            </Button>
-          </div>
           {children}
         </Collapse>
       </li>

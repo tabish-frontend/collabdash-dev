@@ -6,7 +6,6 @@ const getBoard =
   (): AppThunk =>
   async (dispatch): Promise<void> => {
     const data = await kanbanApi.getBoard();
-
     dispatch(slice.actions.getBoard(data));
   };
 
@@ -18,7 +17,6 @@ const createColumn =
   (params: CreateColumnParams): AppThunk =>
   async (dispatch): Promise<void> => {
     const response = await kanbanApi.createColumn(params);
-
     dispatch(slice.actions.createColumn(response));
   };
 
@@ -33,7 +31,6 @@ const updateColumn =
   (params: UpdateColumnParams): AppThunk =>
   async (dispatch): Promise<void> => {
     const response = await kanbanApi.updateColumn(params);
-
     dispatch(slice.actions.updateColumn(response));
   };
 
@@ -45,7 +42,6 @@ const clearColumn =
   (params: ClearColumnParams): AppThunk =>
   async (dispatch): Promise<void> => {
     await kanbanApi.clearColumn(params);
-
     dispatch(slice.actions.clearColumn(params.columnId));
   };
 
@@ -57,7 +53,6 @@ const deleteColumn =
   (params: DeleteColumnParams): AppThunk =>
   async (dispatch): Promise<void> => {
     await kanbanApi.deleteColumn(params);
-
     dispatch(slice.actions.deleteColumn(params.columnId));
   };
 
@@ -70,7 +65,6 @@ const createTask =
   (params: CreateTaskParams): AppThunk =>
   async (dispatch): Promise<void> => {
     const response = await kanbanApi.createTask(params);
-
     dispatch(slice.actions.createTask(response));
   };
 
@@ -88,7 +82,6 @@ const updateTask =
   (params: UpdateTaskParams): AppThunk =>
   async (dispatch): Promise<void> => {
     const response = await kanbanApi.updateTask(params);
-
     dispatch(slice.actions.updateTask(response));
   };
 
@@ -102,8 +95,21 @@ const moveTask =
   (params: MoveTaskParams): AppThunk =>
   async (dispatch): Promise<void> => {
     await kanbanApi.moveTask(params);
-
     dispatch(slice.actions.moveTask(params));
+  };
+
+// Define the MoveColumnParams type
+type MoveColumnParams = {
+  columnId: string;
+  position: number;
+};
+
+// Implement the moveColumn function
+const moveColumn =
+  (params: MoveColumnParams): AppThunk =>
+  async (dispatch): Promise<void> => {
+    // await kanbanApi.moveColumn(params);  // Ensure that this API method is implemented on your backend
+    dispatch(slice.actions.moveColumn(params)); // Ensure that this action is implemented in your slice
   };
 
 type DeleteTaskParams = {
@@ -114,7 +120,6 @@ const deleteTask =
   (params: DeleteTaskParams): AppThunk =>
   async (dispatch): Promise<void> => {
     await kanbanApi.deleteTask(params);
-
     dispatch(slice.actions.deleteTask(params.taskId));
   };
 
@@ -127,7 +132,6 @@ const addComment =
   (params: AddCommentParams): AppThunk =>
   async (dispatch): Promise<void> => {
     const response = await kanbanApi.addComment(params);
-
     dispatch(
       slice.actions.addComment({
         taskId: params.taskId,
@@ -145,7 +149,6 @@ const addChecklist =
   (params: AddCheckListParams): AppThunk =>
   async (dispatch): Promise<void> => {
     const response = await kanbanApi.addChecklist(params);
-
     dispatch(
       slice.actions.addChecklist({
         taskId: params.taskId,
@@ -164,7 +167,6 @@ const updateChecklist =
   (params: UpdateChecklistParams): AppThunk =>
   async (dispatch): Promise<void> => {
     const response = await kanbanApi.updateChecklist(params);
-
     dispatch(
       slice.actions.updateChecklist({
         taskId: params.taskId,
@@ -182,7 +184,6 @@ const deleteChecklist =
   (params: DeleteChecklistParams): AppThunk =>
   async (dispatch): Promise<void> => {
     await kanbanApi.deleteChecklist(params);
-
     dispatch(slice.actions.deleteChecklist(params));
   };
 
@@ -196,7 +197,6 @@ const addCheckItem =
   (params: AddCheckItemParams): AppThunk =>
   async (dispatch): Promise<void> => {
     const response = await kanbanApi.addCheckItem(params);
-
     dispatch(
       slice.actions.addCheckItem({
         taskId: params.taskId,
@@ -220,7 +220,6 @@ const updateCheckItem =
   (params: UpdateCheckItemParams): AppThunk =>
   async (dispatch): Promise<void> => {
     const response = await kanbanApi.updateCheckItem(params);
-
     dispatch(
       slice.actions.updateCheckItem({
         taskId: params.taskId,
@@ -240,7 +239,6 @@ const deleteCheckItem =
   (params: DeleteCheckItemParams): AppThunk =>
   async (dispatch): Promise<void> => {
     await kanbanApi.deleteCheckItem(params);
-
     dispatch(slice.actions.deleteCheckItem(params));
   };
 
@@ -257,6 +255,7 @@ export const thunks = {
   deleteTask,
   getBoard,
   moveTask,
+  moveColumn, // Add moveColumn to the thunks export
   updateCheckItem,
   updateChecklist,
   updateColumn,

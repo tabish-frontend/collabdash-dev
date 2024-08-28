@@ -42,10 +42,13 @@ Axios.interceptors.response.use(
 
       if (duplicate) {
         const isEmail = htmlResponse.includes("email");
+        const isMobile = htmlResponse.includes("mobile");
         toast.error(
           `${
-            isEmail ? "Email" : "Mobile"
-          } is duplicate please enter different ${isEmail ? "Email" : "Mobile"}`
+            isEmail ? "Email" : isMobile ? "Mobile" : "WorkSpace"
+          } is duplicate please enter different ${
+            isEmail ? "Email" : isMobile ? "Mobile" : "WorkSpace"
+          }`
         );
       } else if (startIndex !== -1 && endIndex !== -1) {
         const errorMessage = htmlResponse.substring(

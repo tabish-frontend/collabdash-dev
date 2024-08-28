@@ -7,6 +7,8 @@ import {
   ResetPassword,
   Shift,
   UpdatePassword,
+  WorkSpace,
+  WorkSpaceBoard,
 } from "src/types";
 
 // ** AUTH Initial Values
@@ -76,4 +78,25 @@ export const shiftInitialValues: Shift = {
     },
   ],
   weekends: [],
+};
+
+export const workSpaceInitialValues: WorkSpace = {
+  _id: "",
+  name: "",
+  slug: "",
+  owner: "",
+  members: [],
+  boards: [],
+};
+
+export const BoardInitialValues: WorkSpaceBoard = {
+  _id: "",
+  name: "",
+  slug: "",
+  description: "",
+  workspace: "",
+  owner: "",
+  members: [],
+  columns: [],
+  tasks: [],
 };

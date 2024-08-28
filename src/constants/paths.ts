@@ -13,7 +13,6 @@ export const paths = {
   workspaces: `/workspaces`,
   leaves: `/leaves`,
   holidays: `/holidays`,
-  tasks: "/tasks",
   account: "/account",
   notFound: "/404",
 };

@@ -67,7 +67,7 @@ export const ImageCrop: FC<ImageCrop> = ({
         setIsLoading(true);
 
         const formData = new FormData();
-        formData.append("avatar", blob, name);
+        formData.append("attachment", blob, name);
 
         await updateCurrentUser(formData);
 

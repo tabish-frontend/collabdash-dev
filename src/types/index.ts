@@ -6,3 +6,4 @@ export * from "./leaves";
 export * from "./shift";
 export * from "./kanban";
 export * from "./settings";
+export * from "./workSpace";
