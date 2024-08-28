@@ -406,6 +406,28 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     []
   );
 
+  const handleUpdateTask = useCallback(
+    async (board_id: string, data: WorkSpaceBoard) => {
+      // const response = await BoardsApi.updateBoard(board_id, data);
+      // setState((prev) => {
+      //   const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
+      //     const updatedBoards = workspace.boards.map((board) =>
+      //       board._id === board_id ? response : board
+      //     );
+      //     return {
+      //       ...workspace,
+      //       boards: updatedBoards,
+      //     };
+      //   });
+      //   return {
+      //     ...prev,
+      //     WorkSpaces: updatedWorkSpaces,
+      //   };
+      // });
+    },
+    []
+  );
+
   const handleDeleteTask = useCallback(async (_id: string) => {
     await TaskApi.deleteTask(_id);
 
