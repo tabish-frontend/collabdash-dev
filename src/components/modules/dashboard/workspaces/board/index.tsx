@@ -24,11 +24,20 @@ const BoardComponent = () => {
   const [selectedAssignee, setSelectedAssignee] = useState<string | null>(null);
 
   const handleSelectedAssignee = (_id: string) => {
-    // Toggle the active avatar based on the clicked user
-    if (selectedAssignee && selectedAssignee === _id) {
-      setSelectedAssignee(null); // If the same avatar is clicked, deactivate it
+    if (_id === "unassigned") {
+      // Toggle "Unassigned" selection
+      if (selectedAssignee === "unassigned") {
+        setSelectedAssignee(null); // Deselect if already selected
+      } else {
+        setSelectedAssignee("unassigned"); // Set "Unassigned" as the selected value
+      }
     } else {
-      setSelectedAssignee(_id); // Otherwise, set the clicked avatar as active
+      // Toggle the active avatar based on the clicked user
+      if (selectedAssignee === _id) {
+        setSelectedAssignee(null); // Deselect if the same avatar is clicked
+      } else {
+        setSelectedAssignee(_id); // Set the clicked avatar as active
+      }
     }
   };
 
@@ -107,6 +116,43 @@ const BoardComponent = () => {
     setCurrentTask(null);
   }, []);
 
+  useEffect(() => {
+    console.log("selectedAssignee", selectedAssignee);
+  }, [selectedAssignee]);
+
+  console.log("workSpaceBoard?.columns", workSpaceBoard?.columns);
+
+  const filterTasksByAssignee = (
+    column: WorkSpaceBoardColumn,
+    assigneeId: string | null
+  ) => {
+    // If assigneeId is null, filter tasks that have no assignees
+    if (assigneeId === "unassigned") {
+      const unassignedTasks = column.tasks.filter(
+        (task) => task.assignedTo.length === 0
+      );
+      return {
+        ...column,
+        tasks: unassignedTasks,
+      };
+    }
+
+    // If assigneeId is provided, filter tasks based on the given assigneeId
+    if (assigneeId) {
+      const filteredTasks = column.tasks.filter((task) =>
+        task.assignedTo.some((assignee) => assignee._id === assigneeId)
+      );
+
+      return {
+        ...column,
+        tasks: filteredTasks,
+      };
+    }
+
+    // If no assigneeId is provided, return the original column with all tasks
+    return column;
+  };
+
   return (
     <>
       <Box
@@ -143,25 +189,43 @@ const BoardComponent = () => {
         >
           {workSpaceBoard?.members.map((user: any, index: number) => (
             <Tooltip key={index} title={user.full_name} arrow>
-              <Stack
-                style={{ cursor: "pointer" }}
+              <Avatar
+                src={user.avatar}
+                alt={user.full_name}
                 onClick={() => handleSelectedAssignee(user._id)}
-              >
-                <Avatar
-                  src={user.avatar}
-                  alt={user.full_name}
-                  sx={{
-                    width: 50,
-                    height: 50,
-                    border:
-                      selectedAssignee === user._id
-                        ? "3px solid #06aed4"
-                        : "none",
-                  }}
-                />
-              </Stack>
+                sx={{
+                  width: 50,
+                  height: 50,
+                  cursor: "pointer",
+                  border:
+                    selectedAssignee === user._id
+                      ? "3px solid #06aed4"
+                      : "none",
+                }}
+              />
             </Tooltip>
           ))}
+
+          <Tooltip key="unassigned" title="Unassigned" arrow>
+            <Stack
+              style={{ cursor: "pointer" }}
+              onClick={() => handleSelectedAssignee("unassigned")}
+            >
+              <Avatar
+                alt="Unassigned"
+                sx={{
+                  width: 50,
+                  height: 50,
+                  border:
+                    selectedAssignee === "unassigned"
+                      ? "3px solid #06aed4"
+                      : "none",
+                }}
+              >
+                U
+              </Avatar>
+            </Stack>
+          </Tooltip>
         </Stack>
 
         <DragDropContext onDragEnd={handleDragEnd}>
@@ -199,7 +263,10 @@ const BoardComponent = () => {
                             {...provided.dragHandleProps}
                           >
                             <ColumnCard
-                              column={column}
+                              column={filterTasksByAssignee(
+                                column,
+                                selectedAssignee
+                              )}
                               onClear={() => handleClearColumn(column._id)}
                               onDelete={() => handleDeleteColumn(column._id)}
                               onRename={(name) =>

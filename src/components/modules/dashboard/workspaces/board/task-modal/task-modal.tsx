@@ -47,7 +47,7 @@ import { useWorkSpace } from "src/hooks/use-workSpace";
 import { SelectMultipleUsers, SeverityPill } from "src/components/shared";
 import { useFormik } from "formik";
 import { DatePicker } from "@mui/x-date-pickers";
-import { PictureAsPdf, Description } from "@mui/icons-material";
+import { Description } from "@mui/icons-material";
 import {
   Alert,
   FormControl,
@@ -91,6 +91,13 @@ interface TaskModalProps {
   boardMembers?: any;
 }
 
+const allowedFileTypes = [
+  "image/png",
+  "image/jpeg",
+  "application/pdf",
+  // "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
+
 export const TaskModal: FC<TaskModalProps> = (props) => {
   const {
     task,
@@ -100,8 +107,6 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     open = false,
     ...other
   } = props;
-
-  console.log("task", task);
 
   const { handleDeleteTask, handleUpdateTask } = useWorkSpace();
 
@@ -158,16 +163,9 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     setShowAlert(false);
   };
 
-  const allowedFileTypes = [
-    "image/png",
-    "image/jpeg",
-    // "application/pdf",
-    // "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  ];
-
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    // event.preventDefault();
     const selectedFile = event.target.files?.[0];
+    console.log("selectedFile", selectedFile);
     setIsFormBeingChanged(true);
     if (selectedFile) {
       if (allowedFileTypes.includes(selectedFile.type)) {
@@ -208,7 +206,6 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
 
   const handleFileRemove = async (cloudinaryUrl: string | undefined) => {
     setIsFormBeingChanged(true);
-    console.log("Formik Attachment", formik.values.attachments);
     if (formik.values.attachments.length) {
       // Filter out the attachment with the given id
       const updatedAttachments = formik.values.attachments.filter(
@@ -221,10 +218,6 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
       await TaskApi.deleteAttachment(cloudinaryId);
     }
   };
-
-  useEffect(() => {
-    console.log("Formik values", formik.values);
-  }, [formik.values]);
 
   const content =
     task && task.column ? (
@@ -347,7 +340,6 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                   setIsFormBeingChanged(true);
                   formik.setFieldValue("assignedTo", value);
                 }}
-                isRequired={!formik.values.assignedTo.length}
               />
             </Grid>
             <Grid xs={12} sm={4}>
@@ -574,6 +566,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
         </Box>
       </form>
     ) : null;
+
   return (
     <Drawer
       anchor="right"

@@ -14,15 +14,12 @@ import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts";
 import { useRouter } from "next/router";
 import { Plus } from "mdi-material-ui";
-import {
-  BoardCard,
-  BoardsModal,
-  ConfirmationModal,
-} from "src/components/shared";
+import { BoardCard, ConfirmationModal } from "src/components/shared";
 import { useWorkSpace } from "src/hooks/use-workSpace";
 import { WorkSpace } from "src/types";
 import { ROLES } from "src/constants/roles";
 import { AuthContextType } from "src/contexts/auth";
+import { BoardsModal } from "./board/boards-modal";
 
 interface BoardDialogData {
   type: string;

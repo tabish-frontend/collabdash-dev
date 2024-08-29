@@ -18,6 +18,8 @@ import type { RootState } from "src/store";
 import { useSelector } from "src/store";
 import type { Member, Task } from "src/types/kanban";
 import { Employee, WorkSpaceBoardColumnTasks } from "src/types";
+import { Tooltip } from "@mui/material";
+import { Description } from "@mui/icons-material";
 
 const useTask = (taskId: string): Task | undefined => {
   return useSelector((state: RootState) => {
@@ -85,14 +87,20 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
         {...other}
       >
         {hasAttachments && (
-          <CardMedia
-            image={task.attachments[0].url}
-            sx={{
-              borderRadius: 1.5,
-              height: 120,
-              mb: 1,
-            }}
-          />
+          <>
+            {task.attachments[0].type.startsWith("image/") ? (
+              <CardMedia
+                image={task.attachments[0].url}
+                sx={{
+                  borderRadius: 1.5,
+                  height: 120,
+                  mb: 1,
+                }}
+              />
+            ) : (
+              <img src="/assets/icons/icon-other.svg" />
+            )}
+          </>
         )}
         <Typography variant="subtitle1">{task.title}</Typography>
 
@@ -105,7 +113,12 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
           {hasAssignees && (
             <AvatarGroup max={3}>
               {task.assignedTo.map((assignee: Employee) => (
-                <Avatar key={assignee._id} src={assignee.avatar || undefined} />
+                <Tooltip key={assignee._id} title={assignee.full_name} arrow>
+                  <Avatar
+                    key={assignee._id}
+                    src={assignee.avatar || undefined}
+                  />
+                </Tooltip>
               ))}
             </AvatarGroup>
           )}
