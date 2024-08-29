@@ -73,9 +73,7 @@ export const ShiftModal: FC<ShiftModalProps> = ({
         };
       });
 
-      onConfirm(processedValues);
-      helpers.setStatus({ success: true });
-      helpers.setSubmitting(false);
+      await onConfirm(processedValues);
     },
   });
 
