@@ -50,7 +50,7 @@ export const EditAttendanceModal: FC<EditAttendanceModalProps> = ({
     initialValues: attendanceValues,
     validationSchema: validationSchema,
     onSubmit: async (values, helpers): Promise<void> => {
-      onConfirm(values);
+      await onConfirm(values);
       helpers.setStatus({ success: true });
       helpers.setSubmitting(false);
     },
