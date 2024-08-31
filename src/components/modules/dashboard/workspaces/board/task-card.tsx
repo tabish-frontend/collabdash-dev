@@ -1,9 +1,5 @@
 import { forwardRef } from "react";
-import PropTypes from "prop-types";
-import EyeIcon from "@untitled-ui/icons-react/build/esm/Eye";
 import FileCheck03Icon from "@untitled-ui/icons-react/build/esm/FileCheck03";
-import ListIcon from "@untitled-ui/icons-react/build/esm/List";
-import MessageDotsCircleIcon from "@untitled-ui/icons-react/build/esm/MessageDotsCircle";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import Box from "@mui/material/Box";
@@ -13,38 +9,11 @@ import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import SvgIcon from "@mui/material/SvgIcon";
 import Typography from "@mui/material/Typography";
-
-import type { RootState } from "src/store";
-import { useSelector } from "src/store";
-import type { Member, Task } from "src/types/kanban";
-import { Employee, WorkSpaceBoardColumnTasks } from "src/types";
+import { Employee, Tasks } from "src/types";
 import { Tooltip } from "@mui/material";
-import { Description } from "@mui/icons-material";
-
-const useTask = (taskId: string): Task | undefined => {
-  return useSelector((state: RootState) => {
-    const { tasks } = state.kanban;
-
-    return tasks.byId[taskId];
-  });
-};
-
-const useAssignees = (assigneesIds?: string[]): Member[] => {
-  return useSelector((state: RootState) => {
-    const { members } = state.kanban;
-
-    if (!assigneesIds) {
-      return [];
-    }
-
-    return assigneesIds
-      .map((assigneeId: string) => members.byId[assigneeId])
-      .filter((assignee) => !!assignee);
-  });
-};
 
 interface TaskCardProps {
-  task: WorkSpaceBoardColumnTasks;
+  task: Tasks;
   dragging?: boolean;
   onOpen?: () => void;
 }
@@ -98,7 +67,7 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
                 }}
               />
             ) : (
-              <img src="/assets/icons/icon-other.svg" />
+              <img src="/assets/icons/file.svg" />
             )}
           </>
         )}

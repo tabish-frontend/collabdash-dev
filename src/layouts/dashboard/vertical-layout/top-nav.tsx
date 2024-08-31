@@ -10,12 +10,9 @@ import { Settings } from "src/types/settings";
 import PropTypes from "prop-types";
 import { useCallback, type FC } from "react";
 import { ModeToggler } from "src/components/shared/ModeToggler";
-
-import {
-  AccountButton,
-  NotificationsButton,
-} from "src/components/shared/buttons";
 import { useSettings } from "src/hooks";
+import { AccountButton } from "../account-button";
+import { NotificationsButton } from "../notifications-button";
 
 const TOP_NAV_HEIGHT = 64;
 const SIDE_NAV_WIDTH = 280;

@@ -102,7 +102,7 @@ export const MonthViewAttendance = ({
             </TableHead>
 
             <TableBody>
-              {employeesAttendance.map((item: any, index: number) => (
+              {employeesAttendance?.map((item: any, index: number) => (
                 <TableRow key={index}>
                   <TableCell
                     sx={{

@@ -1,57 +1,49 @@
+import { Employee } from "./employee";
+
 export interface Attachment {
-  id: string;
-  type: 'image' | 'file';
+  _id: string;
+  name: string;
+  type: string;
   url: string;
 }
-
-export interface CheckItem {
-  id: string;
-  name: string;
-  state: 'incomplete' | 'complete';
-}
-
-export interface Checklist {
-  id: string;
-  checkItems: CheckItem[];
-  name: string;
-}
-
-export interface Comment {
-  id: string;
-  authorId: string;
-  createdAt: number;
-  message: string;
-}
-
-export interface Task {
-  id: string;
-  assigneesIds: string[];
+export interface Tasks {
+  _id: string;
+  title: string;
+  description?: string;
+  dueDate: Date;
+  priority: string;
+  board: Board;
+  column: string;
+  assignedTo: Employee[];
+  owner: Employee;
   attachments: Attachment[];
-  authorId: string;
-  checklists: Checklist[];
-  columnId: string;
-  comments: Comment[];
-  description: string | null;
-  due: number | null;
-  isSubscribed: boolean;
-  labels: string[];
-  name: string;
 }
 
 export interface Column {
-  id: string;
-  taskIds: string[];
+  _id: string;
   name: string;
-}
-
-export interface Member {
-  id: string;
-  avatar: string | null;
-  name: string;
+  owner?: Employee;
+  board: Board;
+  tasks: Tasks[];
 }
 
 export interface Board {
-  members: Member[];
+  _id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  workspace: string;
+  owner: string;
+  members: Employee[];
   columns: Column[];
-  tasks: Task[];
+  tasks: [];
+}
+
+export interface WorkSpace {
+  _id: string;
+  name: string;
+  slug?: string;
+  owner?: string;
+  members: Employee[];
+  boards: Board[];
 }

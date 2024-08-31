@@ -14,7 +14,6 @@ import { paths } from "src/constants/paths";
 import type { NavColor } from "src/types/settings";
 
 import type { Section } from "../config";
-import { TenantSwitch } from "../../dashboard/tenant-switch";
 import { MobileNavSection } from "./mobile-nav-section";
 
 const MOBILE_NAV_WIDTH = 240;
@@ -158,7 +157,7 @@ export const MobileNav: FC<MobileNavProps> = (props) => {
                 textDecoration: "none",
               }}
             >
-              <Logo textColor="#F3F3F3" />
+              <Logo />
             </Box>
           </Stack>
           <Stack

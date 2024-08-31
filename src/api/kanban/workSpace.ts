@@ -1,5 +1,5 @@
 import Axios from "src/config/axios";
-import { Employee, WorkSpace } from "src/types";
+import { WorkSpace } from "src/types";
 
 class WorkSpaceAPI {
   async addWorkSpace(body: WorkSpace) {

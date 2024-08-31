@@ -89,7 +89,7 @@ const Page: NextPage = () => {
         <Img
           height="487"
           alt="error-illustration"
-          src="/images/pages/404.png"
+          src="/assets/pages/404.png"
         />
         <Link passHref href={paths.index}>
           <Button component="a" variant="contained" sx={{ px: 5.5 }}>

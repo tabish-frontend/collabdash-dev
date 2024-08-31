@@ -1,23 +1,19 @@
 import type { FC } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
-import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
-
-import { useSelector } from "src/store";
-import type { Column } from "src/types/kanban";
 
 import { TaskAdd } from "../task-add";
 import { TaskCard } from "../task-card";
 import { ColumnHeader } from "./column-header";
-import { WorkSpaceBoardColumn, WorkSpaceBoardColumnTasks } from "src/types";
+import { Column, Tasks } from "src/types";
 
 interface ColumnCardProps {
-  column: WorkSpaceBoardColumn;
+  column: Column;
   onClear?: () => void;
   onDelete?: () => void;
   onRename?: (name: string) => void;
   onTaskAdd?: (name?: string) => void;
-  onTaskOpen?: (task: WorkSpaceBoardColumnTasks) => void;
+  onTaskOpen?: (task: Tasks) => void;
 }
 
 export const ColumnCard: FC<ColumnCardProps> = (props) => {
@@ -88,7 +84,7 @@ export const ColumnCard: FC<ColumnCardProps> = (props) => {
                 p: 1,
               }}
             >
-              {column?.tasks.map((task: WorkSpaceBoardColumnTasks, index) => (
+              {column?.tasks.map((task: Tasks, index) => (
                 <Draggable key={task._id} draggableId={task._id} index={index}>
                   {(draggableProvided, snapshot): JSX.Element => (
                     <Box

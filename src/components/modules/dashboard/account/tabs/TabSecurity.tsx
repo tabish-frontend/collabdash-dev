@@ -91,7 +91,7 @@ export const TabSecurity = () => {
               width={183}
               alt="avatar"
               height={256}
-              src="/images/pages/pose-m-1.png"
+              src="/assets/pages/pose-m-1.png"
             />
           </Grid>
 
@@ -111,8 +111,6 @@ export const TabSecurity = () => {
           </Grid>
         </Grid>
       </CardContent>
-
-      {/* <CardContent></CardContent> */}
     </form>
   );
 };

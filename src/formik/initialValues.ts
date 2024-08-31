@@ -8,7 +8,7 @@ import {
   Shift,
   UpdatePassword,
   WorkSpace,
-  WorkSpaceBoard,
+  Board,
 } from "src/types";
 
 // ** AUTH Initial Values
@@ -89,7 +89,7 @@ export const workSpaceInitialValues: WorkSpace = {
   boards: [],
 };
 
-export const BoardInitialValues: WorkSpaceBoard = {
+export const BoardInitialValues: Board = {
   _id: "",
   name: "",
   slug: "",

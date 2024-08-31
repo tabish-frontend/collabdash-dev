@@ -1,13 +1,13 @@
 import Axios from "src/config/axios";
-import { WorkSpaceBoard } from "src/types";
+import { Board } from "src/types";
 
 class BoardsAPI {
-  async addBoard(body: WorkSpaceBoard) {
+  async addBoard(body: Board) {
     const response = await Axios.post(`/boards`, body);
     return response;
   }
 
-  async updateBoard(board_id: string, body: WorkSpaceBoard) {
+  async updateBoard(board_id: string, body: Board) {
     const response = await Axios.patch(`/boards/${board_id}`, body);
     return response.data;
   }

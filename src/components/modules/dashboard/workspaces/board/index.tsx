@@ -14,12 +14,10 @@ import { Avatar, Button, SvgIcon, Tooltip } from "@mui/material";
 import { useRouter } from "next/router";
 import ArrowLeftIcon from "@untitled-ui/icons-react/build/esm/ArrowLeft";
 import { useWorkSpace } from "src/hooks/use-workSpace";
-import { WorkSpaceBoardColumn, WorkSpaceBoardColumnTasks } from "src/types";
-import { ImageAvatar, UserAvatarGroup } from "src/components/shared";
+import { Column, Tasks } from "src/types";
 
 const BoardComponent = () => {
-  const [currentTask, setCurrentTask] =
-    useState<WorkSpaceBoardColumnTasks | null>(null);
+  const [currentTask, setCurrentTask] = useState<Tasks | null>(null);
 
   const [selectedAssignee, setSelectedAssignee] = useState<string | null>(null);
 
@@ -105,12 +103,9 @@ const BoardComponent = () => {
     [workSpaceBoard]
   );
 
-  const handleTaskOpen = useCallback(
-    (task: WorkSpaceBoardColumnTasks): void => {
-      setCurrentTask(task);
-    },
-    []
-  );
+  const handleTaskOpen = useCallback((task: Tasks): void => {
+    setCurrentTask(task);
+  }, []);
 
   const handleTaskClose = useCallback((): void => {
     setCurrentTask(null);
@@ -122,10 +117,7 @@ const BoardComponent = () => {
 
   console.log("workSpaceBoard?.columns", workSpaceBoard?.columns);
 
-  const filterTasksByAssignee = (
-    column: WorkSpaceBoardColumn,
-    assigneeId: string | null
-  ) => {
+  const filterTasksByAssignee = (column: Column, assigneeId: string | null) => {
     // If assigneeId is null, filter tasks that have no assignees
     if (assigneeId === "unassigned") {
       const unassignedTasks = column.tasks.filter(
@@ -250,7 +242,7 @@ const BoardComponent = () => {
               >
                 <Stack alignItems="flex-start" direction="row" spacing={1}>
                   {workSpaceBoard?.columns.map(
-                    (column: WorkSpaceBoardColumn, index: number) => (
+                    (column: Column, index: number) => (
                       <Draggable
                         draggableId={column._id}
                         index={index}

@@ -42,7 +42,7 @@ export const WelcomeCard = () => {
       <CardContent sx={{ height: 220 }}>
         <TriangleImg
           alt="triangle background"
-          src={`/images/misc/${imageSrc}`}
+          src={`/assets/misc/${imageSrc}`}
         />
         <Box
           sx={{

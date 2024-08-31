@@ -4,7 +4,6 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
-
 import { GuestGuard } from "src/components";
 import { Typography } from "@mui/material";
 
@@ -12,7 +11,6 @@ const LayoutRoot = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
   backgroundRepeat: "no-repeat",
   backgroundPosition: "top center",
-  backgroundImage: 'url("/assets/gradient-bg.svg")',
   display: "flex",
   flex: "1 1 auto",
   flexDirection: "column",
@@ -54,7 +52,11 @@ export const AuthLayout: FC<LayoutProps> = (props) => {
                 justifyContent: "center",
               }}
             >
-              <img src="/images/work-dock-logo.png" alt="logo" width={50} />
+              <img
+                src="/assets/logos/work-dock-logo.png"
+                alt="logo"
+                width={50}
+              />
               <Typography
                 variant="h6"
                 sx={{

@@ -1,18 +1,16 @@
-import type { ChangeEvent, FC } from 'react';
-import { useCallback, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import Trash02Icon from '@untitled-ui/icons-react/build/esm/Trash02';
-import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import Input from '@mui/material/Input';
-import Stack from '@mui/material/Stack';
-import SvgIcon from '@mui/material/SvgIcon';
-
-import type { CheckItem } from 'src/types/kanban';
+import type { ChangeEvent, FC } from "react";
+import { useCallback, useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import Trash02Icon from "@untitled-ui/icons-react/build/esm/Trash02";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
+import IconButton from "@mui/material/IconButton";
+import Input from "@mui/material/Input";
+import Stack from "@mui/material/Stack";
+import SvgIcon from "@mui/material/SvgIcon";
 
 interface TaskCheckItemProps {
-  checkItem: CheckItem;
+  checkItem: any;
   isRenaming?: boolean;
   onCheck?: () => void;
   onDelete?: () => void;
@@ -36,12 +34,9 @@ export const TaskCheckItem: FC<TaskCheckItemProps> = (props) => {
   } = props;
   const [nameCopy, setNameCopy] = useState<string>(checkItem.name);
 
-  const handleNameReset = useCallback(
-    () => {
-      setNameCopy(checkItem.name);
-    },
-    [checkItem]
-  );
+  const handleNameReset = useCallback(() => {
+    setNameCopy(checkItem.name);
+  }, [checkItem]);
 
   useEffect(
     () => {
@@ -69,22 +64,16 @@ export const TaskCheckItem: FC<TaskCheckItemProps> = (props) => {
     []
   );
 
-  const handleRenameCancel = useCallback(
-    (): void => {
-      setNameCopy(checkItem.name);
-      onRenameCancel?.();
-    },
-    [checkItem, onRenameCancel]
-  );
+  const handleRenameCancel = useCallback((): void => {
+    setNameCopy(checkItem.name);
+    onRenameCancel?.();
+  }, [checkItem, onRenameCancel]);
 
-  const handleRenameComplete = useCallback(
-    async (): Promise<void> => {
-      onRenameComplete?.(nameCopy);
-    },
-    [nameCopy, onRenameComplete]
-  );
+  const handleRenameComplete = useCallback(async (): Promise<void> => {
+    onRenameComplete?.(nameCopy);
+  }, [nameCopy, onRenameComplete]);
 
-  const isChecked = checkItem.state === 'complete';
+  const isChecked = checkItem.state === "complete";
   const isDashed = !isRenaming && isChecked;
 
   return (
@@ -94,15 +83,11 @@ export const TaskCheckItem: FC<TaskCheckItemProps> = (props) => {
       spacing={1}
       sx={{
         px: 3,
-        py: 1
+        py: 1,
       }}
       {...other}
     >
-      <Checkbox
-        edge="start"
-        checked={isChecked}
-        onChange={handleCheckChange}
-      />
+      <Checkbox edge="start" checked={isChecked} onChange={handleCheckChange} />
       <Stack
         alignItems="center"
         direction="row"
@@ -116,54 +101,45 @@ export const TaskCheckItem: FC<TaskCheckItemProps> = (props) => {
           onClick={onRenameInit}
           sx={{
             ...(isDashed && {
-              textDecoration: 'line-through'
+              textDecoration: "line-through",
             }),
-            '& .MuiInputBase-input': {
+            "& .MuiInputBase-input": {
               borderRadius: 1.5,
               fontWeight: 500,
-              overflow: 'hidden',
+              overflow: "hidden",
               px: 2,
               py: 1,
-              textOverflow: 'ellipsis',
-              wordWrap: 'break-word',
-              '&:hover, &:focus': {
-                backgroundColor: (theme) => theme.palette.mode === 'dark'
-                  ? 'neutral.800'
-                  : 'neutral.100',
-                borderRadius: 1
-              }
-            }
+              textOverflow: "ellipsis",
+              wordWrap: "break-word",
+              "&:hover, &:focus": {
+                backgroundColor: (theme) =>
+                  theme.palette.mode === "dark" ? "neutral.800" : "neutral.100",
+                borderRadius: 1,
+              },
+            },
           }}
           value={nameCopy}
         />
-        {
-          isRenaming
-            ? (
-              <>
-                <Button
-                  onClick={handleRenameComplete}
-                  size="small"
-                  variant="contained"
-                >
-                  Update
-                </Button>
-                <Button
-                  color="inherit"
-                  onClick={handleRenameCancel}
-                  size="small"
-                >
-                  Cancel
-                </Button>
-              </>
-            )
-            : (
-              <IconButton onClick={onDelete}>
-                <SvgIcon fontSize="small">
-                  <Trash02Icon />
-                </SvgIcon>
-              </IconButton>
-            )
-        }
+        {isRenaming ? (
+          <>
+            <Button
+              onClick={handleRenameComplete}
+              size="small"
+              variant="contained"
+            >
+              Update
+            </Button>
+            <Button color="inherit" onClick={handleRenameCancel} size="small">
+              Cancel
+            </Button>
+          </>
+        ) : (
+          <IconButton onClick={onDelete}>
+            <SvgIcon fontSize="small">
+              <Trash02Icon />
+            </SvgIcon>
+          </IconButton>
+        )}
       </Stack>
     </Stack>
   );
@@ -178,5 +154,5 @@ TaskCheckItem.propTypes = {
   onRenameCancel: PropTypes.func,
   onRenameComplete: PropTypes.func,
   onRenameInit: PropTypes.func,
-  onUncheck: PropTypes.func
+  onUncheck: PropTypes.func,
 };

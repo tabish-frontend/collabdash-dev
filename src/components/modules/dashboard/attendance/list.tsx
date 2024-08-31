@@ -1,8 +1,3 @@
-/* eslint-disable */
-
-// ** MUI Imports
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
 import {
   styled,
   Box,
@@ -11,6 +6,7 @@ import {
   Card,
   CardContent,
   TextField,
+  Typography,
   MenuItem,
   IconButton,
   SvgIcon,
@@ -20,7 +16,13 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { SyntheticEvent, useRef, useState } from "react";
+import {
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts/dashboard";
 import { AllUserAttendance } from "./tabs/all-user-attendance";
@@ -29,15 +31,12 @@ import { useAuth, useSettings } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { ROLES } from "src/constants/roles";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import {
-  AccountOutline,
-  ChevronLeft,
-  ChevronRight,
-  LockOpenOutline,
-} from "mdi-material-ui";
+import { ChevronLeft, ChevronRight } from "mdi-material-ui";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import { DateView } from "@mui/x-date-pickers";
+import { attendanceApi } from "src/api";
+import { downloadAttendanceSheet } from "./download-attendance";
 
 interface FiltersType {
   view: string;
@@ -72,21 +71,14 @@ const AttendanceListComponent = () => {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const { date: queryDate } = router.query;
   const { user } = useAuth<AuthContextType>();
 
-  const [downloadAttendanceCsv, setDownloadAttendanceCsv] = useState<
-    (() => void) | null
-  >(null);
-
-  const handleDownloadCsv = () => {
-    if (downloadAttendanceCsv) {
-      downloadAttendanceCsv();
-    }
-  };
-
   const initialDate = queryDate ? new Date(queryDate as string) : currentDate;
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [filters, setFilters] = useState<FiltersType>({
     view: "month",
@@ -96,6 +88,21 @@ const AttendanceListComponent = () => {
   const [tabValue, setTabValue] = useState<string | string[]>(
     user?.role === ROLES.Employee ? "my_attendance" : "employee_attendance"
   );
+
+  const [employees, setEmployees] = useState();
+
+  const GetAllUserWithAttendance = useCallback(async () => {
+    setIsLoading(true);
+    const response = await attendanceApi.getAllUserAttendance(filters);
+    setEmployees(response.data);
+    setIsLoading(false);
+  }, [filters]);
+
+  useEffect(() => {
+    if (tabValue === "employee_attendance") {
+      GetAllUserWithAttendance();
+    }
+  }, [GetAllUserWithAttendance, tabValue]);
 
   const handleTabChange = (event: SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
@@ -148,12 +155,6 @@ const AttendanceListComponent = () => {
   };
 
   const { DatePickerLabel, DatePickerViews } = getPickerConfig();
-
-  // if (!user || !user.role) {
-  //   return null; // or some fallback UI
-  // }
-
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <Box
@@ -293,7 +294,9 @@ const AttendanceListComponent = () => {
                       <Button
                         variant="contained"
                         size={isSmallScreen ? "small" : "medium"}
-                        onClick={handleDownloadCsv}
+                        onClick={() =>
+                          downloadAttendanceSheet(employees, filters)
+                        }
                       >
                         Download CSV
                       </Button>
@@ -302,8 +305,9 @@ const AttendanceListComponent = () => {
 
                 {tabValue === "employee_attendance" ? (
                   <AllUserAttendance
-                    setDownloadAttendanceCsv={setDownloadAttendanceCsv}
                     filters={filters}
+                    employees={employees}
+                    isLoading={isLoading}
                   />
                 ) : (
                   <MyAttendance filters={filters} />

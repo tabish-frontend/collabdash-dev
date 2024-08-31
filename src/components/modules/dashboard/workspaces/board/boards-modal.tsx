@@ -11,8 +11,8 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { useFormik } from "formik";
 import { CloseCircleOutline } from "mdi-material-ui";
-import { useEffect, type FC } from "react";
-import { Employee, WorkSpaceBoard } from "src/types";
+import { type FC } from "react";
+import { Employee, Board } from "src/types";
 import { SelectMultipleUsers } from "src/components/shared";
 import { LoadingButton } from "@mui/lab";
 import { BoardInitialValues } from "src/formik";
@@ -50,7 +50,7 @@ export const BoardsModal: FC<BoardsModalProps> = ({
 
       const updatingValues = {
         _id: values._id,
-        ...getChangedFields<WorkSpaceBoard>(values, formik.initialValues),
+        ...getChangedFields<Board>(values, formik.initialValues),
       };
       onConfirm(updatingValues);
       onCancel();

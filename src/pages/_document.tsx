@@ -13,7 +13,7 @@ const Favicon: FC = () => (
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href="/images/apple-touch-icon.png"
+      href="/assets/fav-icons/favicon-lg"
     />
 
     <link rel="shortcut icon" href="/images/favicon-16x16.png" />

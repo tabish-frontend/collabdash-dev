@@ -11,7 +11,7 @@ export const NoRecordFound = () => {
         width={isSmallScreen ? 200 : 400}
         height={isSmallScreen ? 150 : 300}
         alt="error-illustration"
-        src="/images/pages/nodata.png"
+        src="/assets/pages/nodata.png"
       />
     </Stack>
   );

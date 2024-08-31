@@ -11,7 +11,6 @@ import {
   EmployeesAvailability,
   TotalEmployees,
   AttendanceCard,
-  TopPerformers,
 } from "src/components/shared";
 
 const OverviewComponent = () => {
@@ -62,10 +61,6 @@ const OverviewComponent = () => {
               <Grid xs={12}>
                 <AttendanceCard />
               </Grid>
-
-              {/* <Grid xs={12}>
-                <TopPerformers />
-              </Grid> */}
             </>
           )}
         </Grid>

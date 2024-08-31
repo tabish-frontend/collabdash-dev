@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 import type { State } from "./workSpace-context";
 import { WorkSpaceContext, initialState } from "./workSpace-context";
-import { WorkSpace, WorkSpaceBoard } from "src/types";
+import { WorkSpace, Board } from "src/types";
 import { WorkSpaceApi } from "src/api/kanban/workSpace";
 import { BoardsApi } from "src/api/kanban/boards";
 import { workSpaceInitialValues } from "src/formik";
@@ -128,7 +128,7 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
   }, []);
 
   const handleUpdateBoard = useCallback(
-    async (board_id: string, data: WorkSpaceBoard) => {
+    async (board_id: string, data: Board) => {
       const response = await BoardsApi.updateBoard(board_id, data);
 
       setState((prev) => {

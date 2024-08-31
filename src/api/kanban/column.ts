@@ -1,5 +1,4 @@
 import Axios from "src/config/axios";
-import { WorkSpaceBoardColumn } from "src/types";
 
 class ColumnAPI {
   async addColumn(body: { name: string; board: string }) {

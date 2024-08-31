@@ -1,48 +1,22 @@
-import type { ChangeEvent, FC, KeyboardEvent } from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import PropTypes from "prop-types";
+import type { ChangeEvent, FC } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
-import { format } from "date-fns";
-import debounce from "lodash.debounce";
 import ArchiveIcon from "@untitled-ui/icons-react/build/esm/Archive";
-import EyeIcon from "@untitled-ui/icons-react/build/esm/Eye";
-import EyeOffIcon from "@untitled-ui/icons-react/build/esm/EyeOff";
 import PlusIcon from "@untitled-ui/icons-react/build/esm/Plus";
 import XIcon from "@untitled-ui/icons-react/build/esm/X";
 import Avatar from "@mui/material/Avatar";
-import AvatarGroup from "@mui/material/AvatarGroup";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Chip from "@mui/material/Chip";
-import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import Grid from "@mui/material/Unstable_Grid2";
 import IconButton from "@mui/material/IconButton";
 import Input from "@mui/material/Input";
 import Stack from "@mui/material/Stack";
 import SvgIcon from "@mui/material/SvgIcon";
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import type { Theme } from "@mui/material/styles/createTheme";
 
-import { useMockedUser } from "src/hooks/use-mocked-user";
-import type { RootState } from "src/store";
-import { useDispatch, useSelector } from "src/store";
-import { thunks } from "src/thunks/kanban";
-import type { Column, Member, Task } from "src/types/kanban";
-
-import { TaskChecklist } from "./task-checklist";
-import { TaskComment } from "./task-comment";
-import { TaskCommentAdd } from "./task-comment-add";
-import { TaskLabels } from "./task-labels";
-import { TaskStatus } from "./task-status";
-import {
-  Employee,
-  WorkSpaceBoardColumn,
-  WorkSpaceBoardColumnTasks,
-} from "src/types";
+import { Column, Tasks, Attachment } from "src/types";
 import { useWorkSpace } from "src/hooks/use-workSpace";
 import { SelectMultipleUsers, SeverityPill } from "src/components/shared";
 import { useFormik } from "formik";
@@ -61,7 +35,6 @@ import { Close } from "mdi-material-ui";
 import { TaskApi } from "src/api/kanban/tasks";
 import ConfirmationAlert from "src/components/shared/ConfirmationAlert";
 import { LoadingButton } from "@mui/lab";
-import { TaskAttachment } from "src/types/workSpace";
 
 export interface TaskModalValues {
   _id: string;
@@ -70,7 +43,7 @@ export interface TaskModalValues {
   dueDate: Date;
   priority: string;
   assignedTo: string[];
-  attachments: TaskAttachment[];
+  attachments: Attachment[];
 }
 
 export const taskModalInitialValues: TaskModalValues = {
@@ -86,8 +59,8 @@ export const taskModalInitialValues: TaskModalValues = {
 interface TaskModalProps {
   onClose?: () => void;
   open?: boolean;
-  task?: WorkSpaceBoardColumnTasks;
-  boardColumns?: WorkSpaceBoardColumn[];
+  task?: Tasks;
+  boardColumns?: Column[];
   boardMembers?: any;
 }
 

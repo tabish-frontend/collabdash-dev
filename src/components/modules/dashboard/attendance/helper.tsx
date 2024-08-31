@@ -13,28 +13,29 @@ import {
 } from "src/utils";
 import { StatusIndicator } from "src/constants/attendance-status";
 import { getStatusDetails } from "src/utils/get-attendance-status";
-export const CellValues = (employeeAttendance: any, date: any) => {
+
+export const CellValues = (employee: any, date: any) => {
   const dayOfDate = date.toLocaleString("en-US", { weekday: "long" });
-  const shiftDay = employeeAttendance.shift?.times.find((item: any) =>
+  const shiftDay = employee.shift?.times.find((item: any) =>
     item.days.includes(dayOfDate)
   );
 
   const shiftValues = {
-    type: employeeAttendance.shift?.shift_type || "--",
+    type: employee.shift?.shift_type || "--",
     start:
-      employeeAttendance.shift?.shift_type === "Fixed"
+      employee.shift?.shift_type === "Fixed"
         ? shiftDay
           ? formatTime(shiftDay?.start)
           : "-"
         : "-",
     end:
-      employeeAttendance.shift?.shift_type === "Fixed"
+      employee.shift?.shift_type === "Fixed"
         ? shiftDay
           ? formatTime(shiftDay?.end)
           : "-"
         : "-",
-    hours: employeeAttendance.shift
-      ? employeeAttendance.shift.shift_type === "Fixed"
+    hours: employee.shift
+      ? employee.shift.shift_type === "Fixed"
         ? shiftDay
           ? `${Math.round(
               (new Date(shiftDay?.end).getTime() -
@@ -42,13 +43,12 @@ export const CellValues = (employeeAttendance: any, date: any) => {
                 3600000
             )} hours`
           : "-"
-        : `${employeeAttendance.shift?.hours} hours`
+        : `${employee.shift?.hours} hours`
       : "-",
   };
 
-  const dayAttendance = employeeAttendance.attendance.find(
-    (attendanceItem: any) =>
-      dayjs(attendanceItem.date).isSame(dayjs(date), "day")
+  const dayAttendance = employee.attendance.find((attendanceItem: any) =>
+    dayjs(attendanceItem.date).isSame(dayjs(date), "day")
   );
 
   const attendanceValues = {
@@ -116,13 +116,7 @@ export const CellValues = (employeeAttendance: any, date: any) => {
     };
   }
 
-  if (
-    isOnWeekend(
-      date,
-      employeeAttendance.shift,
-      new Date(employeeAttendance.join_date)
-    )
-  ) {
+  if (isOnWeekend(date, employee.shift, new Date(employee.join_date))) {
     return {
       icon: <StatusIndicator status="Weekend" />,
       tooltip: "Weekend",
@@ -132,7 +126,7 @@ export const CellValues = (employeeAttendance: any, date: any) => {
     };
   }
 
-  if (isOnHoliday(date, employeeAttendance.holidays)) {
+  if (isOnHoliday(date, employee.holidays)) {
     return {
       icon: <StatusIndicator status="Holiday" />,
       tooltip: "Holiday",
@@ -142,7 +136,7 @@ export const CellValues = (employeeAttendance: any, date: any) => {
     };
   }
 
-  if (isOnLeave(date, employeeAttendance.leaves)) {
+  if (isOnLeave(date, employee.leaves)) {
     return {
       icon: <StatusIndicator status="Leave" />,
       tooltip: "On Leave",
@@ -152,14 +146,12 @@ export const CellValues = (employeeAttendance: any, date: any) => {
     };
   }
 
-  if (isPastDate(date, new Date(employeeAttendance.join_date))) {
+  if (isPastDate(date, new Date(employee.join_date))) {
     return {
       icon: (
         <Box width={4} height={4} m={2} borderRadius="50%" bgcolor={"#ddd"} />
       ),
-      tooltip: `Join Date: ${dayjs(employeeAttendance.join_date).format(
-        "DD MMMM YYYY"
-      )}`,
+      tooltip: `Join Date: ${dayjs(employee.join_date).format("DD MMMM YYYY")}`,
       status: "Not Joined",
       shift: shiftValues,
       attendance: attendanceValues,

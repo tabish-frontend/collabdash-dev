@@ -59,7 +59,7 @@ export const ImageField: FC<ImageFieldProps> = ({ formikImage }) => {
     <>
       <Box sx={{ display: "flex", alignItems: "center" }}>
         <ImgStyled
-          src={formikImage || "/images/avatars/1.png"}
+          src={formikImage || "/assets/avatars/default-profile.png"}
           alt="Profile Pic"
         />
         <Box>
