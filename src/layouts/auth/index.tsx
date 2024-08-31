@@ -4,8 +4,8 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
-import { GuestGuard } from "src/components";
-import { Typography } from "@mui/material";
+import { GuestGuard, Logo } from "src/components";
+import { useTheme } from "@mui/material";
 
 const LayoutRoot = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
@@ -23,6 +23,8 @@ interface LayoutProps {
 
 export const AuthLayout: FC<LayoutProps> = (props) => {
   const { children } = props;
+
+  const theme = useTheme();
 
   return (
     <GuestGuard>
@@ -46,30 +48,21 @@ export const AuthLayout: FC<LayoutProps> = (props) => {
           >
             <Box
               sx={{
-                mb: 4,
                 display: "flex",
-                alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <img
-                src="/assets/logos/work-dock-logo.png"
-                alt="logo"
-                width={50}
-              />
-              <Typography
-                variant="h6"
+              <Box
                 sx={{
-                  ml: 1,
-                  lineHeight: 1,
-                  fontWeight: 600,
-                  textTransform: "uppercase",
-                  fontSize: "1.5rem !important",
-                  fontFamily: "Poppins-SemiBold, Poppins",
+                  display: "inline-flex",
+                  height: 150,
+                  width: 400,
                 }}
               >
-                Work Dock
-              </Typography>
+                <Logo
+                  color={theme.palette.mode === "dark" ? "#f1f2f2" : "#00455e"}
+                />
+              </Box>
             </Box>
             {children}
           </Container>

@@ -37,7 +37,7 @@ const CustomApp = (props: CustomAppProps) => {
   return (
     <CacheProvider value={emotionCache}>
       <Head>
-        <title>Work Dock</title>
+        <title>Collab Desh</title>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
       <LocalizationProvider dateAdapter={AdapterDateFns}>

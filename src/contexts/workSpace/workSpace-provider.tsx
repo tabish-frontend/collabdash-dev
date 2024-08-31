@@ -548,9 +548,13 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     []
   );
 
+  const accessToken = window.localStorage.getItem("accessToken");
+
   useEffect(() => {
-    handleGetWorkSpaces();
-  }, [handleGetWorkSpaces]);
+    if (accessToken) {
+      handleGetWorkSpaces();
+    }
+  }, [accessToken, handleGetWorkSpaces]);
 
   return (
     <WorkSpaceContext.Provider

@@ -145,14 +145,14 @@ export const MobileNav: FC<MobileNavProps> = (props) => {
         }}
       >
         <Stack sx={{ height: "100%" }}>
-          <Stack alignItems="center" direction="row" spacing={2} sx={{ p: 3 }}>
+          <Stack sx={{ p: 2 }} justifyContent={"center"}>
             <Box
               component={RouterLink}
               href={paths.index}
               sx={{
                 display: "flex",
-                height: 70,
-                p: "4px",
+                height: 60,
+                p: "2px",
                 width: 200,
                 textDecoration: "none",
               }}
