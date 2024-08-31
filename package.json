@@ -1,8 +1,7 @@
 {
-  "name": "th_lms",
+  "name": "collab-desh",
   "version": "6.4.0",
-  "author": "Devias",
-  "homepage": "https://devias.io",
+  "author": "Collabez",
   "private": true,
   "scripts": {
     "dev": "next",
