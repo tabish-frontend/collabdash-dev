@@ -11,4 +11,3 @@ export * from "./AttendanceChartCard";
 export * from "./LeavesCard";
 export * from "./TaskCard";
 export * from "./AttendanceCard";
-export * from "./boardCard";

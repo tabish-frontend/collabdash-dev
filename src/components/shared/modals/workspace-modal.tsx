@@ -17,7 +17,6 @@ import { Employee, WorkSpace } from "src/types";
 import { SelectMultipleUsers } from "src/components/shared";
 import { LoadingButton } from "@mui/lab";
 import { useWorkSpace } from "src/hooks/use-workSpace";
-import { workSpaceInitialValues } from "src/formik";
 
 interface WorkspaceModalProps {
   modal: boolean;
@@ -32,14 +31,11 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
   workSpaceValues,
   onCancel,
 }) => {
+  console.log("workSpace Values", workSpaceValues);
   const { handleAddWorkSpace, handleUpdateWorkSpace } = useWorkSpace();
 
   const formik = useFormik({
-    initialValues: {
-      ...workSpaceValues,
-      members: workSpaceValues.members.map((user: any) => user._id),
-    },
-
+    initialValues: workSpaceValues,
     enableReinitialize: true,
     onSubmit: async (values, helpers): Promise<void> => {
       if (madal_type === "Update") {
@@ -117,11 +113,11 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
             <Grid item xs={12}>
               <SelectMultipleUsers
                 employees={employees}
-                formikUsers={formik.values.members}
+                formikUsers={formik.values.members.map((user: any) => user._id)}
+                isRequired={!formik.values.members.length}
                 setFieldValue={(value: any) =>
                   formik.setFieldValue("members", value)
                 }
-                isRequired={!formik.values.members.length}
               />
             </Grid>
           </Grid>

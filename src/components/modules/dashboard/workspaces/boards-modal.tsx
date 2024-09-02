@@ -11,7 +11,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { useFormik } from "formik";
 import { CloseCircleOutline } from "mdi-material-ui";
-import { type FC } from "react";
+import { useEffect, type FC } from "react";
 import { Employee, Board } from "src/types";
 import { SelectMultipleUsers } from "src/components/shared";
 import { LoadingButton } from "@mui/lab";
@@ -36,26 +36,21 @@ export const BoardsModal: FC<BoardsModalProps> = ({
   onConfirm,
 }) => {
   const formik = useFormik({
-    initialValues: modalValues
-      ? {
-          ...modalValues,
-
-          members: modalValues.members.map((user: Employee) => user._id),
-        }
-      : BoardInitialValues,
+    initialValues: modalValues ? modalValues : BoardInitialValues,
     enableReinitialize: true,
     onSubmit: async (values, helpers): Promise<void> => {
-      helpers.setStatus({ success: true });
-      helpers.setSubmitting(false);
-
       const updatingValues = {
         _id: values._id,
         ...getChangedFields<Board>(values, formik.initialValues),
       };
-      onConfirm(updatingValues);
+      await onConfirm(updatingValues);
       onCancel();
     },
   });
+
+  useEffect(() => {
+    console.log("formik members", formik.values.members);
+  }, [formik.values.members]);
 
   return (
     <Dialog
@@ -109,11 +104,11 @@ export const BoardsModal: FC<BoardsModalProps> = ({
             <Grid item xs={12}>
               <SelectMultipleUsers
                 employees={members}
-                formikUsers={formik.values.members}
+                formikUsers={formik.values.members.map((user: any) => user._id)}
+                isRequired={!formik.values.members.length}
                 setFieldValue={(value: any) =>
                   formik.setFieldValue("members", value)
                 }
-                isRequired={!formik.values.members.length}
               />
             </Grid>
           </Grid>

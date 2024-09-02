@@ -153,10 +153,11 @@ export const HolidayModal: FC<HolidayModalProps> = ({
                     : employees
                 }
                 formikUsers={formik.values.users}
-                setFieldValue={(value: any) =>
-                  formik.setFieldValue("users", value)
-                }
                 isRequired={!formik.values.users.length}
+                setFieldValue={(value: any) => {
+                  const selectedIds = value.map((user: any) => user._id);
+                  formik.setFieldValue("users", selectedIds);
+                }}
               />
             </Grid>
           </Grid>

@@ -24,6 +24,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { Description } from "@mui/icons-material";
 import {
   Alert,
+  Dialog,
   FormControl,
   InputLabel,
   MenuItem,
@@ -311,7 +312,8 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                 formikUsers={formik.values.assignedTo}
                 setFieldValue={(value: any) => {
                   setIsFormBeingChanged(true);
-                  formik.setFieldValue("assignedTo", value);
+                  const selectedIds = value.map((user: any) => user._id);
+                  formik.setFieldValue("assignedTo", selectedIds);
                 }}
               />
             </Grid>
@@ -555,5 +557,21 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     >
       {content}
     </Drawer>
+
+    // <Dialog
+    //   fullWidth
+    //   maxWidth="md"
+    //   onClose={handleAttemptClose}
+    //   open={open}
+    //   PaperProps={{
+    //     sx: {
+    //       width: "100%",
+    //       maxWidth: 500,
+    //     },
+    //   }}
+    //   {...other}
+    // >
+    //   {content}
+    // </Dialog>
   );
 };

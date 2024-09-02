@@ -115,7 +115,10 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
         <SelectMultipleUsers
           employees={employees || []}
           formikUsers={selectedUsers}
-          setFieldValue={(value: any) => setSelectedUsers(value)}
+          setFieldValue={(value: any) => {
+            const selectedIds = value.map((user: any) => user._id);
+            setSelectedUsers(selectedIds);
+          }}
         />
       </Stack>
 

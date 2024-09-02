@@ -31,7 +31,7 @@ export const ColumnCard: FC<ColumnCardProps> = (props) => {
     return null;
   }
 
-  const tasksCount = column.tasks.length;
+  const tasksCount = column?.tasks?.length;
 
   return (
     <Box
@@ -84,7 +84,7 @@ export const ColumnCard: FC<ColumnCardProps> = (props) => {
                 p: 1,
               }}
             >
-              {column?.tasks.map((task: Tasks, index) => (
+              {column?.tasks?.map((task: Tasks, index) => (
                 <Draggable key={task._id} draggableId={task._id} index={index}>
                   {(draggableProvided, snapshot): JSX.Element => (
                     <Box

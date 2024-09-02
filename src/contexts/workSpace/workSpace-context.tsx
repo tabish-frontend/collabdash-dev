@@ -1,6 +1,6 @@
 import { createContext } from "react";
 import { workSpaceInitialValues } from "src/formik";
-import { WorkSpace, Board } from "src/types";
+import { WorkSpace, Board, Employee } from "src/types";
 
 export interface State {
   WorkSpaces: WorkSpace[];
@@ -16,7 +16,7 @@ export interface WorkSpaceContextType extends State {
   handleUpdateWorkSpace: (data: {
     _id: string;
     name: string;
-    members: string[];
+    members: Employee[];
   }) => void;
   handleDeleteWorkSpace: (_id: string) => void;
   getCurrentBoard: (

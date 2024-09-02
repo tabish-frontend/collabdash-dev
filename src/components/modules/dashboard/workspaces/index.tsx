@@ -14,12 +14,13 @@ import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts";
 import { useRouter } from "next/router";
 import { Plus } from "mdi-material-ui";
-import { BoardCard, ConfirmationModal } from "src/components/shared";
+import { ConfirmationModal } from "src/components/shared";
 import { useWorkSpace } from "src/hooks/use-workSpace";
 import { WorkSpace } from "src/types";
 import { ROLES } from "src/constants/roles";
 import { AuthContextType } from "src/contexts/auth";
-import { BoardsModal } from "./board/boards-modal";
+import { BoardsModal } from "./boards-modal";
+import { BoardCard } from "./boardCard";
 
 interface BoardDialogData {
   type: string;
@@ -53,9 +54,9 @@ const WorkSpacesComponent = () => {
   const addAndUpdateBoard = async (values: any) => {
     const { _id, ...boardValues } = values;
     if (boardDialog.data?.type === "update") {
-      handleUpdateBoard(_id, boardValues);
+      await handleUpdateBoard(_id, boardValues);
     } else {
-      handleAddBoard({
+      await handleAddBoard({
         ...values,
         workspace: workSpace!._id,
       });
@@ -65,7 +66,7 @@ const WorkSpacesComponent = () => {
 
   const deleteBoard = async (_id: string | undefined) => {
     if (!_id) return null;
-    handleDeletBoard(_id);
+    await handleDeletBoard(_id);
     DeleteBoardDialog.handleClose();
   };
 

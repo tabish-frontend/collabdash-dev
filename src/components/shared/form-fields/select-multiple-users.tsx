@@ -29,19 +29,9 @@ export const SelectMultipleUsers: React.FC<SelectMultipleUsersProps> = ({
 }) => {
   const [selectAll, setSelectAll] = useState(false);
 
-  const handleAutocompleteChange = (event: any, value: any[]) => {
-    setFieldValue(value.map((v) => v._id));
-  };
-
-  const getSelectedUsers = () => {
-    return employees.filter((employee) => formikUsers.includes(employee._id));
-  };
-
   const handleSelectAllChange = (event: any) => {
-    const selectedIds = event.target.checked
-      ? employees.map((user) => user._id)
-      : [];
-    setFieldValue(selectedIds);
+    const selectedUser = event.target.checked ? employees : [];
+    setFieldValue(selectedUser);
     setSelectAll(event.target.checked);
   };
 
@@ -58,10 +48,10 @@ export const SelectMultipleUsers: React.FC<SelectMultipleUsersProps> = ({
       multiple
       options={employees}
       size={inputSize}
-      value={getSelectedUsers()}
+      value={employees.filter((employee) => formikUsers.includes(employee._id))}
       getOptionLabel={(option) => option.full_name}
       disableCloseOnSelect
-      onChange={handleAutocompleteChange}
+      onChange={(event: any, value: any[]) => setFieldValue(value)}
       sx={{
         minWidth: "300px",
       }}
@@ -81,7 +71,9 @@ export const SelectMultipleUsers: React.FC<SelectMultipleUsersProps> = ({
         },
       }}
       renderTags={() => {
-        const selectedUsers = getSelectedUsers();
+        const selectedUsers = employees.filter((employee) =>
+          formikUsers.includes(employee._id)
+        );
         return (
           <div
             style={{

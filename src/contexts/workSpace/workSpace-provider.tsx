@@ -4,10 +4,9 @@ import PropTypes from "prop-types";
 
 import type { State } from "./workSpace-context";
 import { WorkSpaceContext, initialState } from "./workSpace-context";
-import { WorkSpace, Board } from "src/types";
+import { WorkSpace, Board, Employee } from "src/types";
 import { WorkSpaceApi } from "src/api/kanban/workSpace";
 import { BoardsApi } from "src/api/kanban/boards";
-import { workSpaceInitialValues } from "src/formik";
 import { ColumnApi } from "src/api/kanban/column";
 import { TaskApi } from "src/api/kanban/tasks";
 import { useRouter } from "next/router";
@@ -49,26 +48,27 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
   }, []);
 
   const handleUpdateWorkSpace = useCallback(
-    async (data: { _id: string; name: string; members: string[] }) => {
+    async (data: { _id: string; name: string; members: Employee[] }) => {
       const { _id, name, members } = data;
+      console.log("data", data);
 
-      const response = await WorkSpaceApi.updateWorkSpace(_id, {
-        name,
-        members,
-      });
-
-      // Update the state with the response data
+      // Update the state with the new data before making the API call
       setState((prev) => {
         const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
-          return workspace._id === _id
-            ? { ...workspace, ...response }
-            : workspace;
+          return workspace._id === _id ? { ...workspace, ...data } : workspace;
         });
 
         return {
           ...prev,
           WorkSpaces: updatedWorkSpaces,
         };
+      });
+
+      // Make the API call
+      // await BoardsApi.updateBoard(board_id, data);
+      const response = await WorkSpaceApi.updateWorkSpace(_id, {
+        name,
+        members,
       });
 
       const { boards_slug } = router.query;
@@ -85,8 +85,6 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
 
   const handleDeleteWorkSpace = useCallback(
     async (_id: string) => {
-      await WorkSpaceApi.deleteWorkSpace(_id);
-
       setState((prev) => {
         const updatedWorkSpaces = prev.WorkSpaces.filter(
           (workspace) => workspace._id !== _id
@@ -103,6 +101,8 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
       if (workspace_slug) {
         router.push(paths.index);
       }
+
+      await WorkSpaceApi.deleteWorkSpace(_id);
     },
     [router]
   );
@@ -129,12 +129,11 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
 
   const handleUpdateBoard = useCallback(
     async (board_id: string, data: Board) => {
-      const response = await BoardsApi.updateBoard(board_id, data);
-
+      // Update the state with the new data before making the API call
       setState((prev) => {
         const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
           const updatedBoards = workspace.boards.map((board) =>
-            board._id === board_id ? response : board
+            board._id === board_id ? { ...board, ...data } : board
           );
           return {
             ...workspace,
@@ -147,6 +146,9 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
           WorkSpaces: updatedWorkSpaces,
         };
       });
+
+      // Make the API call
+      await BoardsApi.updateBoard(board_id, data);
     },
     []
   );

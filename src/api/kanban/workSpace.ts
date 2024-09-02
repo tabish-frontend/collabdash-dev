@@ -1,5 +1,5 @@
 import Axios from "src/config/axios";
-import { WorkSpace } from "src/types";
+import { Employee, WorkSpace } from "src/types";
 
 class WorkSpaceAPI {
   async addWorkSpace(body: WorkSpace) {
@@ -14,7 +14,7 @@ class WorkSpaceAPI {
 
   async updateWorkSpace(
     workspace_id: string,
-    body: { name: string; members: string[] }
+    body: { name: string; members: Employee[] }
   ) {
     const response = await Axios.patch(`/workspace/${workspace_id}`, body);
     return response.data;
