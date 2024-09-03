@@ -15,3 +15,4 @@ export * from "./image-avatar";
 export * from "./form-fields";
 export * from "./users-avatar-group";
 export * from "./leaves-status";
+export * from "./tip";

@@ -10,9 +10,10 @@ export const paths = {
   index: `/`,
   employees: `/employees`,
   attendance: `/attendance`,
-  workspaces: `/workspaces`,
   leaves: `/leaves`,
   holidays: `/holidays`,
+  chat: "/chat",
+  workspaces: `/workspaces`,
   account: "/account",
   notFound: "/404",
 };
