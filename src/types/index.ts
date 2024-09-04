@@ -6,3 +6,4 @@ export * from "./leaves";
 export * from "./shift";
 export * from "./settings";
 export * from "./kanban";
+export * from "./chat";

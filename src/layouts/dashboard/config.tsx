@@ -10,6 +10,7 @@ import {
   BullhornOutline,
   FileTreeOutline,
   CardAccountDetailsStarOutline,
+  ChatProcessingOutline,
 } from "mdi-material-ui";
 import { useWorkSpace } from "src/hooks/use-workSpace";
 
@@ -47,31 +48,24 @@ const navItems: Item[] = [
     path: paths.attendance,
   },
   {
+    title: "Leaves",
+    icon: <SvgIcon component={CardAccountDetailsStarOutline} />,
+    path: paths.leaves,
+  },
+  {
     title: "Holidays",
     icon: <SvgIcon component={BullhornOutline} />,
     path: paths.holidays,
   },
   {
-    title: "Leaves",
-    icon: <SvgIcon component={CardAccountDetailsStarOutline} />,
-    path: paths.leaves,
+    title: "Chatbox",
+    path: paths.chat,
+    icon: (
+      <SvgIcon fontSize="small">
+        <ChatProcessingOutline />
+      </SvgIcon>
+    ),
   },
-
-  // {
-  //   title: "Tasks",
-  //   icon: <SvgIcon component={FileTreeOutline} />,
-  //   path: paths.tasks,
-  // },
-
-  // {
-  //   title: "Workspaces",
-  //   path: paths.attendance,
-  //   icon: <SvgIcon component={FileTreeOutline} />,
-  //   items: WorkSpaces.map((item) => ({
-  //     title: item.title,
-  //     path: `${paths.workspaces}/${item.slug}`,
-  //   })),
-  // },
 ];
 
 export const useSections = (): Section[] => {

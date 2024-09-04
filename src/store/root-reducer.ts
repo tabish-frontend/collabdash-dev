@@ -1,7 +1,7 @@
 import { combineReducers } from "@reduxjs/toolkit";
 
-import { reducer as kanbanReducer } from "./slices/kanban";
+import { reducer as chatReducer } from "src/store/slices/chat";
 
 export const rootReducer = combineReducers({
-  kanban: kanbanReducer,
+  chat: chatReducer,
 });
