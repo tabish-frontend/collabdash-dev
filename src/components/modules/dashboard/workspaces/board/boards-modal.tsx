@@ -114,6 +114,7 @@ export const BoardsModal: FC<BoardsModalProps> = ({
                   formik.setFieldValue("members", value)
                 }
                 isRequired={!formik.values.members.length}
+                label="Users"
               />
             </Grid>
           </Grid>

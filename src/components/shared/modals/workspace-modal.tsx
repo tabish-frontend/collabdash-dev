@@ -122,6 +122,7 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
                   formik.setFieldValue("members", value)
                 }
                 isRequired={!formik.values.members.length}
+                label="Users"
               />
             </Grid>
           </Grid>

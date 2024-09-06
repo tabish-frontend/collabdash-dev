@@ -116,6 +116,8 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
           employees={employees || []}
           formikUsers={selectedUsers}
           setFieldValue={(value: any) => setSelectedUsers(value)}
+          minWidth="300px"
+          label="Users"
         />
       </Stack>
 

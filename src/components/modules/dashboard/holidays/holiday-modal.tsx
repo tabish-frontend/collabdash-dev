@@ -157,6 +157,7 @@ export const HolidayModal: FC<HolidayModalProps> = ({
                   formik.setFieldValue("users", value)
                 }
                 isRequired={!formik.values.users.length}
+                label="Users"
               />
             </Grid>
           </Grid>
