@@ -16,7 +16,7 @@ import type { Theme } from "@mui/material/styles/createTheme";
 import { chatApi } from "src/api/chat";
 import { useRouter } from "src/hooks/use-router";
 import { useSelector } from "src/store";
-import type { Contact, Thread } from "src/types";
+import type { Contact, Employee, Thread } from "src/types";
 
 import { ChatSidebarSearch } from "./chat-sidebar-search";
 import { ChatThreadItem } from "./chat-thread-item";
@@ -24,26 +24,32 @@ import { useAuth, useMockedUser } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { paths } from "src/constants/paths";
 import { Scrollbar } from "src/utils/scrollbar";
+import { employeesApi } from "src/api";
 
-const getThreadKey = (thread: Thread, userId: string): string | undefined => {
+const getThreadKey = (thread: any): string | undefined => {
   let threadKey: string | undefined;
 
-  if (thread.type === "GROUP") {
-    threadKey = thread.id;
-  } else {
-    // We hardcode the current user ID because the mocked that is not in sync
-    // with the auth provider.
-    // When implementing this app with a real database, replace this
-    // ID with the ID from Auth Context.
-    threadKey = thread.participantIds.find(
-      (participantId) => participantId !== userId
-    );
-  }
+  threadKey = thread.id;
+  // if (thread.type === "GROUP") {
+  //   threadKey = thread.id;
+  // } else {
+  //   // We hardcode the current user ID because the mocked that is not in sync
+  //   // with the auth provider.
+  //   // When implementing this app with a real database, replace this
+  //   // ID with the ID from Auth Context.
+  //   threadKey = thread?.participants?.find(
+  //     (participant) => participant._id !== userId
+  //   )?._id;
+  // }
 
   return threadKey;
 };
 
 const useThreads = (): { byId: Record<string, Thread>; allIds: string[] } => {
+  console.log(
+    "Redux Thread",
+    useSelector((state) => state.chat.threads)
+  );
   return useSelector((state) => state.chat.threads);
 };
 
@@ -64,11 +70,11 @@ export const ChatSidebar: FC<ChatSidebarProps> = (props) => {
   const router = useRouter();
   const threads = useThreads();
 
-  console.log("threads", threads);
+  console.log("threads sidebar", threads);
   const currentThreadId = useCurrentThreadId();
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [searchResults, setSearchResults] = useState<Contact[]>([]);
+  const [searchResults, setSearchResults] = useState<Employee[]>([]);
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("md"));
 
   const handleCompose = useCallback((): void => {
@@ -87,9 +93,15 @@ export const ChatSidebar: FC<ChatSidebarProps> = (props) => {
       }
 
       try {
-        const contacts = await chatApi.getContacts({ query: value });
+        const response = await employeesApi.getAllEmployees({
+          fields: "full_name,avatar,department,username",
+          account_status: "active",
+          search: value,
+          role: "",
+          query: value,
+        });
 
-        setSearchResults(contacts);
+        setSearchResults(response.users);
       } catch (err) {
         console.error(err);
       }
@@ -109,9 +121,9 @@ export const ChatSidebar: FC<ChatSidebarProps> = (props) => {
   }, []);
 
   const handleSearchSelect = useCallback(
-    (contact: Contact): void => {
+    (contact: Employee): void => {
       // We use the contact ID as a thread key
-      const threadKey = contact.id;
+      const threadKey = contact._id;
 
       setSearchFocused(false);
       setSearchQuery("");
@@ -124,24 +136,25 @@ export const ChatSidebar: FC<ChatSidebarProps> = (props) => {
   const handleThreadSelect = useCallback(
     (threadId: string): void => {
       console.log("handleThreadSelect threadId", threadId);
-      const thread = threads.byId[threadId];
+      const thread: any = threads.byId[threadId];
 
       console.log("handleThreadSelect thread", thread);
 
-      const threadKey = getThreadKey(thread, user._id);
+      const threadKey = thread._id;
 
       console.log("handleThreadSelect threadKey", threadKey);
 
       router.push(paths.chat + `?threadKey=${threadKey}`);
-      // if (!threadKey) {
-      //   router.push(paths.chat);
-      // } else {
-      //   router.push(paths.chat + `?threadKey=${threadKey}`);
-      // }
+      if (!threadKey) {
+        router.push(paths.chat);
+      } else {
+        router.push(paths.chat + `?threadKey=${threadKey}`);
+      }
     },
-    [router, threads, user]
+    [router, threads]
   );
 
+  console.log("all threads", threads);
   const content = (
     <div>
       <Stack alignItems="center" direction="row" spacing={2} sx={{ p: 2 }}>
@@ -187,14 +200,17 @@ export const ChatSidebar: FC<ChatSidebarProps> = (props) => {
               p: 2,
             }}
           >
-            {threads.allIds.map((threadId) => (
-              <ChatThreadItem
-                active={currentThreadId === threadId}
-                key={threadId}
-                onSelect={(): void => handleThreadSelect(threadId)}
-                thread={threads.byId[threadId]}
-              />
-            ))}
+            {threads.allIds.map((threadId) => {
+              console.log("threadId", threadId);
+              return (
+                <ChatThreadItem
+                  active={currentThreadId === threadId}
+                  key={threadId}
+                  onSelect={(): void => handleThreadSelect(threadId)}
+                  thread={threads.byId[threadId]}
+                />
+              );
+            })}
           </Stack>
         </Scrollbar>
       </Box>

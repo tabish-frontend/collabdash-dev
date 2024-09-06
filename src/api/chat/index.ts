@@ -118,6 +118,12 @@ class ChatApi {
       };
     });
 
+    console.log("expandedThreads all", expandedThreads);
+    console.log(
+      "expandedThreads all 2",
+      Promise.resolve(deepCopy(expandedThreads))
+    );
+
     return Promise.resolve(deepCopy(expandedThreads));
   }
 
@@ -169,6 +175,8 @@ class ChatApi {
           ...thread,
           participants,
         };
+
+        console.log("expandedThread", expandedThread);
 
         resolve(deepCopy(expandedThread));
       } catch (err) {

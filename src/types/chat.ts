@@ -1,3 +1,5 @@
+import { Employee } from "./employee";
+
 export interface Contact {
   id: string;
   avatar: string;
@@ -31,7 +33,7 @@ export interface Thread {
   id?: string;
   messages: Message[];
   participantIds: string[];
-  participants?: Participant[];
+  participants?: Employee[];
   type: "ONE_TO_ONE" | "GROUP";
   unreadCount?: number;
 }

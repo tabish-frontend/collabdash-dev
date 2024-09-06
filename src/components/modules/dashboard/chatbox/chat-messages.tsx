@@ -8,14 +8,11 @@ import type { User } from "src/types/user";
 import { ChatMessage } from "./chat-message";
 import { useAuth, useMockedUser } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
+import { Employee } from "src/types";
 
-const getAuthor = (
-  message: Message,
-  participants: Participant[],
-  user: User
-) => {
+const getAuthor = (message: Message, participants: Employee[], user: User) => {
   const participant = participants.find(
-    (participant) => participant.id === message.authorId
+    (participant) => participant._id === message.authorId
   );
 
   // This should never happen
@@ -39,14 +36,14 @@ const getAuthor = (
 
   return {
     avatar: participant!.avatar,
-    name: participant!.name,
+    name: participant!.full_name,
     isUser: false,
   };
 };
 
 interface ChatMessagesProps {
   messages?: Message[];
-  participants?: Participant[];
+  participants?: Employee[];
 }
 
 export const ChatMessages: FC<ChatMessagesProps> = (props) => {

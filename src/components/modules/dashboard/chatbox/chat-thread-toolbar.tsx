@@ -21,19 +21,19 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 
 import { usePopover } from "src/hooks/use-popover";
-import type { Participant } from "src/types";
+import type { Employee, Participant } from "src/types";
 import { useAuth, useMockedUser } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 
 const getRecipients = (
-  participants: Participant[],
+  participants: Employee[],
   userId: string
-): Participant[] => {
-  return participants.filter((participant) => participant.id !== userId);
+): Employee[] => {
+  return participants.filter((participant) => participant._id !== userId);
 };
 
-const getDisplayName = (recipients: Participant[]): string => {
-  return recipients.map((participant) => participant.name).join(", ");
+const getDisplayName = (recipients: Employee[]): string => {
+  return recipients.map((participant) => participant.full_name).join(", ");
 };
 
 const getLastActive = (recipients: Participant[]): string | null => {
@@ -49,7 +49,7 @@ const getLastActive = (recipients: Participant[]): string | null => {
 };
 
 interface ChatThreadToolbarProps {
-  participants?: Participant[];
+  participants?: Employee[];
 }
 
 export const ChatThreadToolbar: FC<ChatThreadToolbarProps> = (props) => {
@@ -59,9 +59,10 @@ export const ChatThreadToolbar: FC<ChatThreadToolbarProps> = (props) => {
 
   // Maybe use memo for these values
 
+  console.log("participants", participants);
   const recipients = getRecipients(participants, user._id);
   const displayName = getDisplayName(recipients);
-  const lastActive = getLastActive(recipients);
+  // const lastActive = getLastActive(recipients);
 
   return (
     <>
@@ -94,16 +95,16 @@ export const ChatThreadToolbar: FC<ChatThreadToolbarProps> = (props) => {
             }}
           >
             {recipients.map((recipient) => (
-              <Avatar key={recipient.id} src={recipient.avatar || undefined} />
+              <Avatar key={recipient._id} src={recipient.avatar || undefined} />
             ))}
           </AvatarGroup>
           <div>
             <Typography variant="subtitle2">{displayName}</Typography>
-            {lastActive && (
+            {/* {lastActive && (
               <Typography color="text.secondary" variant="caption">
                 Last active {lastActive}
               </Typography>
-            )}
+            )} */}
           </div>
         </Stack>
         <Stack alignItems="center" direction="row" spacing={1}>

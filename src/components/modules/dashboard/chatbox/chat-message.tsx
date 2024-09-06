@@ -29,7 +29,7 @@ export const ChatMessage: FC<ChatMessageProps> = (props) => {
     ...other
   } = props;
 
-  const ago = formatDistanceToNowStrict(createdAt);
+  const ago = formatDistanceToNowStrict(new Date(createdAt));
 
   return (
     <Box

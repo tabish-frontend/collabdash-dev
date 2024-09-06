@@ -7,7 +7,7 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 
-import type { Message, Participant, Thread } from "src/types";
+import type { Employee, Message, Participant, Thread } from "src/types";
 import { useAuth, useMockedUser } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { customLocale } from "src/utils";
@@ -17,14 +17,16 @@ const getLastMessage = (thread: Thread): Message | undefined => {
 };
 
 const getRecipients = (
-  participants: Participant[],
-  userId: string
-): Participant[] => {
-  return participants.filter((participant) => participant.id !== userId);
+  participants: Employee[] | undefined,
+  userId: string | undefined
+): Employee[] | undefined => {
+  return participants?.filter((participant) => participant._id !== userId);
 };
 
-const getDisplayName = (recipients: Participant[]): string => {
-  return recipients.map((participant) => participant.name).join(", ");
+const getDisplayName = (
+  recipients: Employee[] | undefined
+): string | undefined => {
+  return recipients?.map((participant) => participant.full_name).join(", ");
 };
 
 const getDisplayContent = (userId: string, lastMessage?: Message): string => {
@@ -44,7 +46,7 @@ const getLastActivity = (lastMessage?: Message): string | null => {
     return null;
   }
 
-  return formatDistanceStrict(lastMessage.createdAt, new Date(), {
+  return formatDistanceStrict(new Date(lastMessage.createdAt), new Date(), {
     addSuffix: false,
     locale: customLocale,
   });
@@ -58,16 +60,17 @@ interface ChatThreadItemProps {
 
 export const ChatThreadItem: FC<ChatThreadItemProps> = (props) => {
   const { active = false, thread, onSelect, ...other } = props;
-  const user = useMockedUser();
+
+  const { user } = useAuth<AuthContextType>();
 
   console.log("message box thread", thread);
 
-  const recipients = getRecipients(thread.participants || [], user._id);
+  const recipients = getRecipients(thread.participants, user?._id);
   const lastMessage = getLastMessage(thread);
   const lastActivity = getLastActivity(lastMessage);
   const displayName = getDisplayName(recipients);
-  const displayContent = getDisplayContent(user._id, lastMessage);
-  const groupThread = recipients.length > 1;
+  const displayContent = getDisplayContent(user?._id || "", lastMessage);
+  const groupThread = recipients!.length > 1;
   const isUnread = !!(thread.unreadCount && thread.unreadCount > 0);
 
   return (
@@ -108,8 +111,8 @@ export const ChatThreadItem: FC<ChatThreadItemProps> = (props) => {
                 },
           }}
         >
-          {recipients.map((recipient) => (
-            <Avatar key={recipient.id} src={recipient.avatar || undefined} />
+          {recipients?.map((recipient) => (
+            <Avatar key={recipient._id} src={recipient.avatar || undefined} />
           ))}
         </AvatarGroup>
       </div>

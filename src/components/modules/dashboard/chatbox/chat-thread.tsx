@@ -10,7 +10,7 @@ import { chatApi } from "src/api/chat";
 import { useRouter } from "src/hooks/use-router";
 import { useDispatch, useSelector } from "src/store";
 import { thunks } from "src/thunks/chat";
-import type { Participant, Thread } from "src/types";
+import type { Employee, Participant, Thread } from "src/types";
 
 import { ChatMessageAdd } from "./chat-message-add";
 import { ChatMessages } from "./chat-messages";
@@ -19,15 +19,16 @@ import { paths } from "src/constants/paths";
 import { useAuth, useMockedUser } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { Scrollbar } from "src/utils/scrollbar";
+import { employeesApi } from "src/api";
 
-const useParticipants = (threadKey: string): Participant[] => {
+const useParticipants = (threadKey: string): Employee[] => {
   const router = useRouter();
-  const [participants, setParticipants] = useState<Participant[]>([]);
+  const [participants, setParticipants] = useState<Employee[]>([]);
 
   const handleParticipantsGet = useCallback(async (): Promise<void> => {
     try {
-      const participants = await chatApi.getParticipants({ threadKey });
-      setParticipants(participants);
+      const participants = await employeesApi.getEmployee(threadKey);
+      setParticipants([participants]);
     } catch (err) {
       console.error(err);
       router.push(paths.chat);
@@ -61,12 +62,11 @@ const useThread = (threadKey: string): Thread | undefined => {
 
     let threadId: string | undefined;
 
+    console.log("threadKey", threadKey);
     try {
-      threadId = (await dispatch(
-        thunks.getThread({
-          threadKey,
-        })
-      )) as unknown as string | undefined;
+      threadId = (await dispatch(thunks.getThread(threadKey))) as unknown as
+        | string
+        | undefined;
     } catch (err) {
       console.error(err);
       router.push(paths.chat);
@@ -152,9 +152,16 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
 
   console.log("Chat Thread", threadKey);
   const dispatch = useDispatch();
-  const user = useMockedUser();
+  // const user = useMockedUser();
+  const { user } = useAuth<AuthContextType>();
+
   const thread = useThread(threadKey);
+
+  console.log("final chat thread", thread);
   const participants = useParticipants(threadKey);
+
+  console.log("main participants", participants);
+
   const { messagesRef } = useMessagesScroll(thread);
 
   const handleSend = useCallback(
@@ -167,6 +174,7 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
             thunks.addMessage({
               threadId: thread.id,
               body,
+              contentType: "text",
             })
           );
         } catch (err) {
@@ -176,14 +184,20 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
         return;
       }
 
+      console.log("participants", participants);
+
       // Otherwise we use the recipients IDs. When using participant IDs, it means that we have to
       // get the thread.
 
       // Filter the current user to get only the other participants
 
       const recipientIds = participants
-        .filter((participant) => participant.id !== user._id)
-        .map((participant) => participant.id);
+        .filter((participant) => participant._id !== user?._id)
+        .map((participant) => participant._id as string);
+
+      console.log("recipientIds", recipientIds);
+
+      console.log("body", body);
 
       // Add the new message
 
@@ -194,6 +208,7 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
           thunks.addMessage({
             recipientIds,
             body,
+            contentType: "text",
           })
         )) as unknown as string;
       } catch (err) {
@@ -204,11 +219,7 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
       // Load the thread because we did not have it
 
       try {
-        await dispatch(
-          thunks.getThread({
-            threadKey: threadId,
-          })
-        );
+        await dispatch(thunks.getThread(threadId));
       } catch (err) {
         console.error(err);
         return;

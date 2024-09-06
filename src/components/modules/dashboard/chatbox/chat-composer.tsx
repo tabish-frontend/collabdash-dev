@@ -60,6 +60,7 @@ export const ChatComposer: FC = (props) => {
           thunks.addMessage({
             recipientIds,
             body,
+            contentType: "text",
           })
         )) as unknown as string;
       } catch (err) {
