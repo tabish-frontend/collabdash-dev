@@ -18,6 +18,8 @@ interface SelectMultipleUsersProps {
   setFieldValue: (value: any) => void;
   isRequired?: boolean;
   inputSize?: "small" | "medium";
+  minWidth?: string;
+  label?: string;
 }
 
 export const SelectMultipleUsers: React.FC<SelectMultipleUsersProps> = ({
@@ -26,6 +28,8 @@ export const SelectMultipleUsers: React.FC<SelectMultipleUsersProps> = ({
   setFieldValue,
   isRequired = false,
   inputSize = "medium",
+  minWidth,
+  label,
 }) => {
   const [selectAll, setSelectAll] = useState(false);
 
@@ -53,7 +57,7 @@ export const SelectMultipleUsers: React.FC<SelectMultipleUsersProps> = ({
       disableCloseOnSelect
       onChange={(event: any, value: any[]) => setFieldValue(value)}
       sx={{
-        minWidth: "300px",
+        minWidth: minWidth,
       }}
       componentsProps={{
         popper: {
@@ -145,8 +149,9 @@ export const SelectMultipleUsers: React.FC<SelectMultipleUsersProps> = ({
         <TextField
           {...params}
           required={isRequired}
-          label="Users"
+          label={label}
           name="users"
+          variant="outlined"
         />
       )}
     />

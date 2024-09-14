@@ -57,15 +57,15 @@ const navItems: Item[] = [
     icon: <SvgIcon component={BullhornOutline} />,
     path: paths.holidays,
   },
-  {
-    title: "Chatbox",
-    path: paths.chat,
-    icon: (
-      <SvgIcon fontSize="small">
-        <ChatProcessingOutline />
-      </SvgIcon>
-    ),
-  },
+  // {
+  //   title: "Chat",
+  //   path: paths.chat,
+  //   icon: (
+  //     <SvgIcon fontSize="small">
+  //       <ChatProcessingOutline />
+  //     </SvgIcon>
+  //   ),
+  // },
 ];
 
 export const useSections = (): Section[] => {

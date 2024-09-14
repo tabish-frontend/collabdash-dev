@@ -158,6 +158,7 @@ export const HolidayModal: FC<HolidayModalProps> = ({
                   const selectedIds = value.map((user: any) => user._id);
                   formik.setFieldValue("users", selectedIds);
                 }}
+                label="Users"
               />
             </Grid>
           </Grid>

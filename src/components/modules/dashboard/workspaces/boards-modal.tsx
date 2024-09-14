@@ -48,10 +48,6 @@ export const BoardsModal: FC<BoardsModalProps> = ({
     },
   });
 
-  useEffect(() => {
-    console.log("formik members", formik.values.members);
-  }, [formik.values.members]);
-
   return (
     <Dialog
       fullWidth
@@ -109,6 +105,7 @@ export const BoardsModal: FC<BoardsModalProps> = ({
                 setFieldValue={(value: any) =>
                   formik.setFieldValue("members", value)
                 }
+                label="Users"
               />
             </Grid>
           </Grid>

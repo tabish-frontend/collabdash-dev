@@ -50,7 +50,6 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
   const handleUpdateWorkSpace = useCallback(
     async (data: { _id: string; name: string; members: Employee[] }) => {
       const { _id, name, members } = data;
-      console.log("data", data);
 
       // Update the state with the new data before making the API call
       setState((prev) => {
@@ -417,7 +416,7 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     }) => {
       const { _id: task_id, ...restValues } = data;
 
-      console.log("data", data);
+      console.log("Update Task Data", data);
 
       const response = await TaskApi.updateTask(task_id, restValues);
 

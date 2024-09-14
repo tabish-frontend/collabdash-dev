@@ -31,7 +31,6 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
   workSpaceValues,
   onCancel,
 }) => {
-  console.log("workSpace Values", workSpaceValues);
   const { handleAddWorkSpace, handleUpdateWorkSpace } = useWorkSpace();
 
   const formik = useFormik({
@@ -118,6 +117,7 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
                 setFieldValue={(value: any) =>
                   formik.setFieldValue("members", value)
                 }
+                label="Users"
               />
             </Grid>
           </Grid>

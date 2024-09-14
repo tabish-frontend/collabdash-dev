@@ -1,5 +1,5 @@
 import type { ChangeEvent, FC } from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import ArchiveIcon from "@untitled-ui/icons-react/build/esm/Archive";
 import PlusIcon from "@untitled-ui/icons-react/build/esm/Plus";
@@ -14,28 +14,40 @@ import Stack from "@mui/material/Stack";
 import SvgIcon from "@mui/material/SvgIcon";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
+
 import type { Theme } from "@mui/material/styles/createTheme";
 
 import { Column, Tasks, Attachment } from "src/types";
 import { useWorkSpace } from "src/hooks/use-workSpace";
 import { SelectMultipleUsers, SeverityPill } from "src/components/shared";
 import { useFormik } from "formik";
-import { DatePicker } from "@mui/x-date-pickers";
-import { Description } from "@mui/icons-material";
+import { DatePicker, MobileDateTimePicker } from "@mui/x-date-pickers";
+import {
+  AttachFile,
+  AttachFileTwoTone,
+  Description,
+} from "@mui/icons-material";
 import {
   Alert,
   Dialog,
+  Divider,
   FormControl,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
   TextField,
   Tooltip,
+  useTheme,
 } from "@mui/material";
-import { Close } from "mdi-material-ui";
+import { Calendar, Close } from "mdi-material-ui";
 import { TaskApi } from "src/api/kanban/tasks";
 import ConfirmationAlert from "src/components/shared/ConfirmationAlert";
 import { LoadingButton } from "@mui/lab";
+import "react-quill/dist/quill.snow.css";
+import dynamic from "next/dynamic";
+import { Priorities } from "src/constants/list-items";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 export interface TaskModalValues {
   _id: string;
@@ -82,12 +94,18 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     ...other
   } = props;
 
+  const ReactQuill = useMemo(
+    () => dynamic(() => import("react-quill"), { ssr: false }),
+    []
+  );
+
   const { handleDeleteTask, handleUpdateTask } = useWorkSpace();
 
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("md"));
 
   const [showAlert, setShowAlert] = useState(false);
   const [isFormBeingChanged, setIsFormBeingChanged] = useState(false);
+  const [value, setValue] = useState("");
 
   const formik = useFormik({
     // initialValues: taskModalInitialValues,
@@ -101,12 +119,10 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
       : taskModalInitialValues,
     enableReinitialize: true,
     onSubmit: async (values, helpers): Promise<void> => {
-      console.log("submit formik values", formik.values);
       setIsFormBeingChanged(false);
       setShowAlert(false);
       const response = await handleUpdateTask(values);
       onClose?.();
-      console.log("Modal response", response);
     },
   });
 
@@ -139,7 +155,6 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
-    console.log("selectedFile", selectedFile);
     setIsFormBeingChanged(true);
     if (selectedFile) {
       if (allowedFileTypes.includes(selectedFile.type)) {
@@ -192,6 +207,36 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
       await TaskApi.deleteAttachment(cloudinaryId);
     }
   };
+
+  const theme = useTheme();
+
+  // Memoize the toolbar styles to update based on the theme
+  const customToolbarStyles = useMemo(() => {
+    return {
+      ".ql-toolbar": {
+        borderColor: theme.palette.divider,
+      },
+      ".ql-toolbar .ql-picker": {
+        color: theme.palette.text.primary,
+      },
+      ".ql-toolbar .ql-stroke": {
+        stroke: theme.palette.text.primary,
+      },
+      ".ql-picker-options": {
+        backgroundColor: theme.palette.background.default,
+      },
+      ".ql-snow .ql-tooltip": {
+        backgroundColor: theme.palette.background.default,
+        color: theme.palette.text.primary,
+        left: "0 !important",
+        boxShadow: "none",
+      },
+      ".ql-snow .ql-tooltip.ql-editing input[type=text]": {
+        backgroundColor: theme.palette.background.default,
+        color: theme.palette.text.primary,
+      },
+    };
+  }, [theme]);
 
   const content =
     task && task.column ? (
@@ -256,7 +301,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
             />
           )}
         </Stack>
-        <Box sx={{ px: 3, mt: 2 }}>
+        <Box sx={{ px: 3, my: 2 }}>
           <InputLabel id="label-select" sx={{ mb: 1 }}>
             Task Name
           </InputLabel>
@@ -271,7 +316,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
             sx={(theme) => ({
               ...theme.typography.h6,
               "& .MuiInputBase-input": {
-                borderRadius: 1.5,
+                borderRadius: 1,
                 overflow: "hidden",
                 px: 1,
                 py: 1,
@@ -286,292 +331,316 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
           />
         </Box>
 
-        <Box sx={{ p: 3 }}>
-          <Grid container spacing={3}>
-            <Grid xs={12} sm={4}>
-              <Typography color="text.secondary" variant="caption">
-                Created by
-              </Typography>
-            </Grid>
-            <Grid xs={12} sm={8}>
-              {task.owner && (
-                <Tooltip title={task.owner.full_name} arrow>
-                  <Avatar src={task.owner.avatar || undefined} />
-                </Tooltip>
-              )}
-            </Grid>
-            <Grid xs={12} sm={4}>
-              <Typography color="text.secondary" variant="caption">
-                Assigned to
-              </Typography>
-            </Grid>
-            <Grid xs={12} sm={8}>
-              <SelectMultipleUsers
-                employees={boardMembers}
-                inputSize="small"
-                formikUsers={formik.values.assignedTo}
-                setFieldValue={(value: any) => {
-                  setIsFormBeingChanged(true);
-                  const selectedIds = value.map((user: any) => user._id);
-                  formik.setFieldValue("assignedTo", selectedIds);
-                }}
-              />
-            </Grid>
-            <Grid xs={12} sm={4}>
-              <Typography color="text.secondary" variant="caption">
-                Attachments
-              </Typography>
-            </Grid>
-            <Grid xs={12} sm={8}>
-              <Stack
-                alignItems="start"
-                direction="column"
-                flexWrap="wrap"
-                spacing={1}
-              >
-                <IconButton
-                  component="label"
-                  htmlFor="account-settings-upload-image"
+        <Divider />
+
+        <Grid container sx={{ p: 0 }}>
+          <Grid container md={8} xs={12} sx={{ p: 3 }}>
+            <Stack direction={"column"} spacing={2} width={"100%"}>
+              <Grid xs={12}>
+                <Typography color="text.secondary" variant="caption">
+                  Description
+                </Typography>
+              </Grid>
+              <Grid xs={12} sx={{ height: "250px" }}>
+                <Box
+                  sx={{
+                    ...customToolbarStyles,
+                    ".ql-container": {
+                      borderColor: theme.palette.divider,
+                    },
+                    height: "90%",
+                  }}
                 >
-                  <SvgIcon fontSize="small">
-                    <PlusIcon />
-                  </SvgIcon>
-
-                  <input
-                    hidden
-                    type="file"
-                    accept="*"
-                    id="account-settings-upload-image"
-                    onChange={handleFileChange}
+                  <ReactQuill
+                    value={formik.values.description}
+                    style={{
+                      height: "80%",
+                    }}
+                    onChange={(value) => {
+                      setIsFormBeingChanged(true);
+                      formik.setFieldValue("description", value);
+                    }}
                   />
-                </IconButton>
+                </Box>
+              </Grid>
 
-                <Stack direction="row" width="100%" flexWrap="wrap">
-                  {formik.values.attachments.map((attachment, index) => (
-                    <div
-                      key={attachment.url}
-                      style={{
-                        position: "relative",
-                        marginRight: (index + 1) % 3 !== 0 ? "8px" : "0",
-                        marginBottom: "8px",
-                      }}
+              <Grid xs={12}>
+                <Typography color="text.secondary" variant="caption">
+                  Attachments
+                </Typography>
+              </Grid>
+              <Grid xs={12}>
+                <Stack
+                  alignItems="start"
+                  direction="column"
+                  flexWrap="wrap"
+                  spacing={1}
+                >
+                  <Stack direction={"row"} spacing={1} alignItems={"center"}>
+                    <IconButton
+                      component="label"
+                      htmlFor="account-settings-upload-image"
                     >
-                      {attachment.type.startsWith("image/") ? (
-                        <Tooltip title={attachment.name}>
-                          <div
-                            style={{
-                              position: "relative",
-                              width: "70px",
-                              height: "70px",
-                            }}
-                          >
-                            <Avatar
-                              src={attachment.url}
-                              sx={{
-                                height: "100%",
-                                width: "100%",
-                                cursor: "pointer",
-                                backgroundColor: "transparent", // Avatar background should be transparent
-                              }}
-                              variant="rounded"
-                            />
-                            {/* Black overlay with low opacity */}
+                      <SvgIcon fontSize="medium">
+                        {/* <PlusIcon /> */}
+                        <AttachFile />
+                      </SvgIcon>
+
+                      <input
+                        hidden
+                        type="file"
+                        accept="*"
+                        id="account-settings-upload-image"
+                        onChange={handleFileChange}
+                      />
+                    </IconButton>
+                    <Typography fontSize={14}>Add Attachments</Typography>
+                  </Stack>
+
+                  <Stack direction="row" width="100%" flexWrap="wrap">
+                    {formik.values.attachments.map((attachment, index) => (
+                      <div
+                        key={attachment.url}
+                        style={{
+                          position: "relative",
+                          marginRight: (index + 1) % 8 !== 0 ? "5px" : "0",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        {attachment.type.startsWith("image/") ? (
+                          <Tooltip title={attachment.name}>
                             <div
                               style={{
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                width: "100%",
+                                position: "relative",
+                                width: "70px",
+                                height: "70px",
+                              }}
+                            >
+                              <Avatar
+                                src={attachment.url}
+                                sx={{
+                                  height: "100%",
+                                  width: "100%",
+                                  cursor: "pointer",
+                                  backgroundColor: "transparent",
+                                }}
+                                variant="rounded"
+                              />
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  top: 0,
+                                  left: 0,
+                                  width: "100%",
+                                  cursor: "pointer",
+                                  height: "100%",
+                                  backgroundColor: "rgba(0, 0, 0, 0.4)",
+                                  borderRadius: "10px",
+                                }}
+                                onClick={() =>
+                                  window.open(attachment.url, "_blank")
+                                }
+                              ></div>
+                            </div>
+                          </Tooltip>
+                        ) : (
+                          <Tooltip title={attachment.name}>
+                            <div
+                              style={{
+                                position: "relative",
+                                width: "70px",
+                                height: "70px",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
                                 cursor: "pointer",
-                                height: "100%",
-                                backgroundColor: "rgba(0, 0, 0, 0.4)", // Black with 50% opacity
+                                backgroundColor: "#efefef",
                                 borderRadius: "10px",
                               }}
                               onClick={() =>
                                 window.open(attachment.url, "_blank")
                               }
-                            ></div>
-                          </div>
-                        </Tooltip>
-                      ) : (
-                        <Tooltip title={attachment.name}>
-                          <div
-                            style={{
-                              position: "relative",
-                              width: "70px",
-                              height: "70px",
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              cursor: "pointer",
-                              backgroundColor: "#efefef",
-                              borderRadius: "10px",
-                            }}
-                            onClick={() =>
-                              window.open(attachment.url, "_blank")
-                            }
-                          >
-                            <Description sx={{ fontSize: 50 }} />
-                            {/* Black overlay with low opacity */}
-                            <div
-                              style={{
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                width: "100%",
-                                height: "100%",
-                                backgroundColor: "rgba(0, 0, 0, 0.4)", // Black with 50% opacity
-                                borderRadius: "10px",
-                              }}
-                            ></div>
-                          </div>
-                        </Tooltip>
-                      )}
+                            >
+                              <Description sx={{ fontSize: 50 }} />
 
-                      <IconButton
-                        onClick={() => handleFileRemove(attachment.url)}
-                        sx={{
-                          position: "absolute",
-                          top: 0,
-                          right: 0,
-                          zIndex: 2,
-                          height: 25,
-                          width: 25,
-                        }}
-                      >
-                        <Close sx={{ width: "20px", color: "white" }} />
-                      </IconButton>
-                    </div>
-                  ))}
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  top: 0,
+                                  left: 0,
+                                  width: "100%",
+                                  height: "100%",
+                                  backgroundColor: "rgba(0, 0, 0, 0.4)",
+                                  borderRadius: "10px",
+                                }}
+                              ></div>
+                            </div>
+                          </Tooltip>
+                        )}
+
+                        <IconButton
+                          onClick={() => handleFileRemove(attachment.url)}
+                          sx={{
+                            position: "absolute",
+                            top: 0,
+                            right: 0,
+                            zIndex: 2,
+                            height: 25,
+                            width: 25,
+                          }}
+                        >
+                          <Close sx={{ width: "20px", color: "white" }} />
+                        </IconButton>
+                      </div>
+                    ))}
+                  </Stack>
                 </Stack>
-              </Stack>
-            </Grid>
-            <Grid xs={12} sm={4}>
-              <Typography color="text.secondary" variant="caption">
-                Due date
-              </Typography>
-            </Grid>
-            <Grid xs={12} sm={8}>
-              <DatePicker
-                views={["year", "month", "day"]}
-                sx={{ width: "100%" }}
-                value={formik.values.dueDate}
-                onChange={(date: Date | null) => {
-                  setIsFormBeingChanged(true);
-                  formik.setFieldValue("dueDate", date || new Date()); // Ensure a Date value is set
-                }}
-                label="Select Due Date"
-                slotProps={{
-                  textField: {
-                    size: "small", // Set the input size to small
-                    fullWidth: true, // Make the input take full width
-                  },
-                }}
-              />
-            </Grid>
-            <Grid xs={12} sm={4}>
-              <Typography color="text.secondary" variant="caption">
-                Priority
-              </Typography>
-            </Grid>
-            <Grid xs={12} sm={8}>
-              <FormControl fullWidth size="small">
-                <InputLabel id="label-select">Select Priority</InputLabel>
-                <Select
-                  labelId="label-select"
-                  id="demo-controlled-open-select"
+              </Grid>
+            </Stack>
+          </Grid>
+          <Grid
+            container
+            md={4}
+            xs={12}
+            sx={(theme) => ({
+              backgroundColor: (theme) =>
+                theme.palette.mode === "dark" ? "neutral.800" : "neutral.100",
+              p: 3,
+            })}
+          >
+            <Stack direction={"column"} spacing={2} width={"100%"}>
+              <Grid xs={12}>
+                <Typography color="text.secondary" variant="caption">
+                  Created by
+                </Typography>
+              </Grid>
+              <Grid xs={12}>
+                {task.owner && (
+                  <Tooltip title={task.owner.full_name} arrow>
+                    <Avatar src={task.owner.avatar || undefined} />
+                  </Tooltip>
+                )}
+              </Grid>
+
+              <Grid xs={12}>
+                <Typography color="text.secondary" variant="caption">
+                  Assigned to
+                </Typography>
+                <SelectMultipleUsers
+                  employees={boardMembers}
+                  inputSize="small"
+                  formikUsers={formik.values.assignedTo}
+                  setFieldValue={(value: any) => {
+                    setIsFormBeingChanged(true);
+                    formik.setFieldValue("assignedTo", value);
+                  }}
+                />
+              </Grid>
+
+              <Grid xs={12}>
+                <Typography color="text.secondary" variant="caption">
+                  Due date
+                </Typography>
+                <MobileDateTimePicker
+                  sx={{
+                    width: "100%",
+                  }}
+                  value={formik.values.dueDate}
+                  onChange={(date: Date | null) => {
+                    setIsFormBeingChanged(true);
+                    formik.setFieldValue("dueDate", date || new Date()); // Ensure a Date value is set
+                  }}
+                  slotProps={{
+                    textField: {
+                      size: "small", // Set the input size to small
+                      fullWidth: true, // Make the input take full width
+                      sx: {
+                        height: 50,
+                        ".css-10vtu9u-MuiInputBase-input-MuiFilledInput-input":
+                          {
+                            pt: "12px",
+                            pb: "12px",
+                          },
+                        ".css-dqma4l-MuiInputBase-input-MuiFilledInput-input": {
+                          pt: "12px",
+                          pb: "12px",
+                        },
+                      },
+                      InputProps: {
+                        endAdornment: (
+                          <InputAdornment
+                            position="end"
+                            sx={{ cursor: "pointer" }}
+                          >
+                            <Calendar />
+                          </InputAdornment>
+                        ),
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+
+              <Grid xs={12}>
+                <Typography color="text.secondary" variant="caption">
+                  Priority
+                </Typography>
+
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  fullWidth
+                  select
                   value={formik.values.priority} // Assuming single label selection for simplicity
                   onChange={(event) => {
                     setIsFormBeingChanged(true);
                     formik.setFieldValue("priority", event.target.value); // Replace array with selected value
                   }}
-                  label="Select Priority"
                 >
-                  <MenuItem value="low">Low</MenuItem>
-                  <MenuItem value="moderate">Moderate</MenuItem>
-                  <MenuItem value="high">High</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid xs={12} sm={4}>
-              <Typography color="text.secondary" variant="caption">
-                Description
-              </Typography>
-            </Grid>
-            <Grid xs={12} sm={8}>
-              <Input
-                value={formik.values.description}
-                onChange={(e) => {
-                  setIsFormBeingChanged(true);
-                  formik.setFieldValue("description", e.target.value);
-                }}
-                fullWidth
-                multiline
-                disableUnderline
-                placeholder="Leave a message"
-                rows={6}
-                sx={{
-                  borderColor: "divider",
-                  borderRadius: 1,
-                  borderStyle: "solid",
-                  borderWidth: 1,
-                  p: 1,
-                }}
-              />
-            </Grid>
+                  {Priorities.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
 
-            <Grid xs={12}>
-              <Stack direction={"row"} justifyContent={"flex-end"}>
-                <LoadingButton
-                  loading={formik.isSubmitting}
-                  loadingPosition="start"
-                  startIcon={<></>}
-                  type="submit"
-                  variant="contained"
-                  sx={{
-                    pl: formik.isSubmitting ? "40px" : "16px",
-                  }}
-                >
-                  Save
-                </LoadingButton>
-              </Stack>
-            </Grid>
+              <Grid xs={12}>
+                <Stack direction={"row"} justifyContent={"flex-end"} mt={2}>
+                  <LoadingButton
+                    loading={formik.isSubmitting}
+                    loadingPosition="start"
+                    startIcon={<></>}
+                    type="submit"
+                    variant="contained"
+                    sx={{
+                      pl: formik.isSubmitting ? "40px" : "16px",
+                    }}
+                  >
+                    Save
+                  </LoadingButton>
+                </Stack>
+              </Grid>
+            </Stack>
           </Grid>
-        </Box>
+        </Grid>
       </form>
     ) : null;
 
   return (
-    <Drawer
-      anchor="right"
+    <Dialog
       onClose={handleAttemptClose}
       open={open}
       PaperProps={{
         sx: {
           width: "100%",
-          maxWidth: 500,
+          maxWidth: 900,
         },
       }}
       {...other}
     >
       {content}
-    </Drawer>
-
-    // <Dialog
-    //   fullWidth
-    //   maxWidth="md"
-    //   onClose={handleAttemptClose}
-    //   open={open}
-    //   PaperProps={{
-    //     sx: {
-    //       width: "100%",
-    //       maxWidth: 500,
-    //     },
-    //   }}
-    //   {...other}
-    // >
-    //   {content}
-    // </Dialog>
+    </Dialog>
   );
 };

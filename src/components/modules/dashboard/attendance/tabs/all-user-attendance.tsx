@@ -58,8 +58,6 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
     } else {
       setEmployeesAttendance(employees);
     }
-
-    console.log("selectedUsers", selectedUsers);
   }, [employees, selectedUsers]);
 
   useEffect(() => {
@@ -76,8 +74,6 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
 
   useEffect(() => {
     setEmployeesAttendance(employees);
-
-    console.log("employees", employees);
   }, [employees]);
 
   return (
@@ -115,10 +111,9 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
         <SelectMultipleUsers
           employees={employees || []}
           formikUsers={selectedUsers}
-          setFieldValue={(value: any) => {
-            const selectedIds = value.map((user: any) => user._id);
-            setSelectedUsers(selectedIds);
-          }}
+          setFieldValue={(value: any) => setSelectedUsers(value)}
+          minWidth="300px"
+          label="Users"
         />
       </Stack>
 

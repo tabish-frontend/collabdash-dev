@@ -111,12 +111,6 @@ const BoardComponent = () => {
     setCurrentTask(null);
   }, []);
 
-  useEffect(() => {
-    console.log("selectedAssignee", selectedAssignee);
-  }, [selectedAssignee]);
-
-  console.log("workSpaceBoard?.columns", workSpaceBoard?.columns);
-
   const filterTasksByAssignee = (column: Column, assigneeId: string | null) => {
     // If assigneeId is null, filter tasks that have no assignees
     if (assigneeId === "unassigned") {
