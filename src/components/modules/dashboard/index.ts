@@ -5,3 +5,4 @@ export * from "./holidays";
 export * from "./leaves";
 export * from "./account";
 export * from "./workspaces";
+export * from "./kanban";

@@ -5,6 +5,7 @@ import {
   Grid,
   Stack,
   SvgIcon,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
@@ -20,6 +21,7 @@ import { WorkSpace } from "src/types";
 import { ROLES } from "src/constants/roles";
 import { AuthContextType } from "src/contexts/auth";
 import { BoardsModal } from "./board/boards-modal";
+import ArrowLeftIcon from "@untitled-ui/icons-react/build/esm/ArrowLeft";
 
 interface BoardDialogData {
   type: string;
@@ -84,7 +86,20 @@ const WorkSpacesComponent = () => {
             lg: 4,
           }}
         >
-          <Typography variant="h5">Boards</Typography>
+          <Box display="flex" alignItems={"center"}>
+            <Tooltip title="Back">
+              <Button
+                onClick={() => router.back()}
+                color="inherit"
+                size="small"
+              >
+                <SvgIcon>
+                  <ArrowLeftIcon />
+                </SvgIcon>
+              </Button>
+            </Tooltip>
+            <Typography variant="h5">{"Boards"}</Typography>
+          </Box>
 
           <Stack
             direction={"row"}
