@@ -1,4 +1,7 @@
 /** @type {import('next').NextConfig} */
+
+const withTM = require("next-transpile-modules")(["@jitsi/react-sdk"]);
+
 const config = {
   reactStrictMode: false,
   images: {
@@ -13,4 +16,4 @@ const config = {
   },
 };
 
-module.exports = config;
+module.exports = withTM(config);

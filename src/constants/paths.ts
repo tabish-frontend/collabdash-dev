@@ -8,12 +8,13 @@ const auth = {
 export const paths = {
   auth,
   index: `/`,
+  account: "/account",
   employees: `/employees`,
   attendance: `/attendance`,
   leaves: `/leaves`,
   holidays: `/holidays`,
   chat: "/chat",
+  meetings: "/meetings",
   workspaces: `/workspaces`,
-  account: "/account",
   notFound: "/404",
 };

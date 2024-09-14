@@ -13,6 +13,7 @@ import {
   ChatProcessingOutline,
 } from "mdi-material-ui";
 import { useWorkSpace } from "src/hooks/use-workSpace";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
 export interface Item {
   disabled?: boolean;
@@ -57,15 +58,24 @@ const navItems: Item[] = [
     icon: <SvgIcon component={BullhornOutline} />,
     path: paths.holidays,
   },
-  // {
-  //   title: "Chat",
-  //   path: paths.chat,
-  //   icon: (
-  //     <SvgIcon fontSize="small">
-  //       <ChatProcessingOutline />
-  //     </SvgIcon>
-  //   ),
-  // },
+  {
+    title: "Collab Chat",
+    path: paths.chat,
+    icon: (
+      <SvgIcon fontSize="small">
+        <ChatProcessingOutline />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "Collab Meetings",
+    path: paths.meetings,
+    icon: (
+      <SvgIcon fontSize="small">
+        <CalendarMonthIcon />
+      </SvgIcon>
+    ),
+  },
 ];
 
 export const useSections = (): Section[] => {
@@ -79,7 +89,7 @@ export const useSections = (): Section[] => {
     });
 
     items.push({
-      title: "Workspaces",
+      title: "Collab Spaces",
       path: paths.workspaces,
       icon: <SvgIcon component={FileTreeOutline} />,
       items: WorkSpaces.length
