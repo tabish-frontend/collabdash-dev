@@ -7,3 +7,4 @@ export * from "./workspaces";
 export * from "./chatbox";
 export * from "./account";
 export * from "./meetings";
+export * from "./kanban";

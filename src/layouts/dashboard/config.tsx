@@ -76,11 +76,16 @@ const navItems: Item[] = [
       </SvgIcon>
     ),
   },
+
+  {
+    title: "Collab Spaces",
+    icon: <SvgIcon component={FileTreeOutline} />,
+    path: paths.workspaces,
+  },
 ];
 
 export const useSections = (): Section[] => {
   const { user } = useAuth<AuthContextType>();
-  const { WorkSpaces } = useWorkSpace();
 
   const filteredNavItems = useMemo(() => {
     const items = navItems.filter((item) => {
@@ -88,21 +93,8 @@ export const useSections = (): Section[] => {
       return item.roles.includes(user?.role ?? "");
     });
 
-    items.push({
-      title: "Collab Spaces",
-      path: paths.workspaces,
-      icon: <SvgIcon component={FileTreeOutline} />,
-      items: WorkSpaces.length
-        ? WorkSpaces.map((item) => ({
-            title: item.name!,
-            path: `${paths.workspaces}/${item.slug}`,
-            slug: item.slug,
-          }))
-        : [],
-    });
-
     return items;
-  }, [user?.role, WorkSpaces]);
+  }, [user?.role]);
 
   return useMemo(() => {
     return [{ items: filteredNavItems }];
