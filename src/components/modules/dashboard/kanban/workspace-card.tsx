@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import { paths } from "src/constants/paths";
 import { UserAvatarGroup } from "src/components/shared";
 import { format } from "date-fns";
+import { formatDate } from "src/utils";
 
 export const WorkspaceCard = ({
   workspace,
@@ -27,65 +28,18 @@ export const WorkspaceCard = ({
 }) => {
   const router = useRouter();
 
-  useEffect(() => {
-    console.log("Workspace", workspace);
-  }, [workspace]);
-
-  const formattedDate = format(new Date(workspace.createdAt), "dd MMM yyyy");
-
   return (
     <Card
       sx={{ cursor: "pointer", padding: 3 }}
       onClick={() => router.push(`${paths.workspaces}/${workspace?.slug}`)}
     >
-      {/* <Box padding={3} display={"flex"} flexDirection={"column"} gap={3}>
-        <Stack direction={"column"}>
-          <Typography gutterBottom variant="h5" component="h1">
-            {workspace.name}
-          </Typography>
-        </Stack>
-
-        <Stack
-          direction={"row"}
-          justifyContent={"space-between"}
-          alignItems={"center"}
-        >
-          <UserAvatarGroup users={workspace.members} />
-
-          {isAccess && (
-            <Stack direction={"row"} spacing={2}>
-              <Tooltip title="Edit">
-                <SquareEditOutline
-                  color="success"
-                  sx={{ cursor: "pointer" }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleUpdateWorkspace();
-                  }}
-                />
-              </Tooltip>
-              <Tooltip title="Delete">
-                <TrashCanOutline
-                  color="error"
-                  sx={{ cursor: "pointer" }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteWorkspace();
-                  }}
-                />
-              </Tooltip>
-            </Stack>
-          )}
-        </Stack>
-      </Box> */}
-
       {/* Workspace Name and Metadata */}
       <Box display="flex" flexDirection="column" gap={2}>
         <Typography variant="h6" component="h2" fontWeight="bold">
           {workspace.name}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Created on: {formattedDate}
+          Created on: {formatDate(workspace.createdAt)}
         </Typography>
       </Box>
 

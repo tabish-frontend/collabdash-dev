@@ -35,14 +35,5 @@ export const ImageAvatar: React.FC<ImageAvatarProps> = ({
         </StyledAvatar>
       )}
     </>
-    // <StyledAvatar sx={{ width, height }} alt="image">
-    //   {path ? (
-    //     <Image src={path} alt={alt} width={width} height={height} />
-    //   ) : (
-    //     <SvgIcon>
-    //       <User01Icon />
-    //     </SvgIcon>
-    //   )}
-    // </StyledAvatar>
   );
 };

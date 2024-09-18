@@ -149,7 +149,7 @@ const EmployeeListComponent = () => {
                     <EmployeeCard isLoading={isLoading} />
                   </Grid>
                 ))
-              ) : employeesList.length === 0 ? (
+              ) : !employeesList.length ? (
                 <Grid item xs={12}>
                   <NoRecordFound />
                 </Grid>

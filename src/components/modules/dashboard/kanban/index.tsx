@@ -18,7 +18,6 @@ import { useWorkSpace } from "src/hooks/use-workSpace";
 import { WorkSpace } from "src/types";
 import { ROLES } from "src/constants/roles";
 import { AuthContextType } from "src/contexts/auth";
-import { useEffect } from "react";
 import { workSpaceInitialValues } from "src/formik";
 import { WorkspaceCard } from "./workspace-card";
 
@@ -43,7 +42,6 @@ const KanbanComponent = () => {
 
   const WorkSpaceDialog = useDialog<WorkSpaceDialogData>();
   const DeleteWorkSpaceDialog = useDialog<DeletWorkSpaceDialogData>();
-  //   const { workspace_slug } = router.query;
 
   const { handleDeleteWorkSpace } = useWorkSpace();
 
@@ -53,34 +51,6 @@ const KanbanComponent = () => {
     await handleDeleteWorkSpace(DeleteWorkSpaceDialog.data._id);
     DeleteWorkSpaceDialog.handleClose();
   };
-
-  //   const workSpace: WorkSpace = getCurrentWorkSpace(workspace_slug);
-
-  //   const boardDialog = useDialog<BoardDialogData>();
-  //   const DeleteBoardDialog = useDialog<DeleeBoardDialogData>();
-
-  //   const addAndUpdateBoard = async (values: any) => {
-  //     const { _id, ...boardValues } = values;
-  //     if (boardDialog.data?.type === "update") {
-  //       handleUpdateBoard(_id, boardValues);
-  //     } else {
-  //       handleAddBoard({
-  //         ...values,
-  //         workspace: workSpace!._id,
-  //       });
-  //     }
-  //     boardDialog.handleClose();
-  //   };
-
-  //   const deleteBoard = async (_id: string | undefined) => {
-  //     if (!_id) return null;
-  //     handleDeletBoard(_id);
-  //     DeleteBoardDialog.handleClose();
-  //   };
-
-  useEffect(() => {
-    console.log("All Workspaces", WorkSpaces);
-  }, [WorkSpaces]);
 
   return (
     <Box
@@ -172,8 +142,7 @@ const KanbanComponent = () => {
           onCancel={DeleteWorkSpaceDialog.handleClose}
           content={{
             type: "Delete Workspace",
-            // text: `Are you sure you want to delete ${selectedWorkspace?.title} workspace? `,
-            text: `Are you sure you want to delete ${DeleteWorkSpaceDialog.data?.name} workspace? `,
+            text: `Are you sure you want to delete that workspace? `,
           }}
         />
       )}

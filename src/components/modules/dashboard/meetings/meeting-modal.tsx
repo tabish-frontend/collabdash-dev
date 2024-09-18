@@ -19,7 +19,7 @@ import { Employee, WorkSpace } from "src/types";
 import { SelectMultipleUsers } from "src/components/shared";
 import { LoadingButton } from "@mui/lab";
 import { useWorkSpace } from "src/hooks/use-workSpace";
-import { MobileDateTimePicker } from "@mui/x-date-pickers";
+import { DateTimePicker, MobileDateTimePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 
 export interface Meeting {
@@ -96,7 +96,7 @@ export const MeetingModal: FC<MeetingModalProps> = ({
       <form onSubmit={formik.handleSubmit}>
         <Paper elevation={12}>
           <DialogTitle sx={{ m: 0, p: 3, fontSize: 24, fontWeight: 600 }}>
-            {`${modalType === "create" ? "Create" : "Update"} Meeting`}
+            {`${modalType} Meeting`}
           </DialogTitle>
           <IconButton
             aria-label="close"
@@ -137,28 +137,12 @@ export const MeetingModal: FC<MeetingModalProps> = ({
               />
             </Grid>
             <Grid item xs={12}>
-              <MobileDateTimePicker
+              <DateTimePicker
+                sx={{ width: "100%" }}
+                label="Select Date and Time"
                 value={formik.values.date}
                 onChange={(date: Date | null) => {
                   formik.setFieldValue("date", date || new Date());
-                }}
-                label="Select Date and Time"
-                sx={{
-                  width: "100%",
-                }}
-                slotProps={{
-                  textField: {
-                    InputProps: {
-                      endAdornment: (
-                        <InputAdornment
-                          position="end"
-                          sx={{ cursor: "pointer" }}
-                        >
-                          <Calendar />
-                        </InputAdornment>
-                      ),
-                    },
-                  },
                 }}
               />
             </Grid>

@@ -45,15 +45,12 @@ export const UserAvatarGroup = ({ users }: { users: Employee[] }) => {
   ));
 
   const remainingUsers = users.length > 2 && (
-    <Box
-      onClick={(event) => {
-        event.stopPropagation();
-        handlePopoverToggle(event, true);
-      }}
-      style={{ cursor: "pointer", marginLeft: "8px", fontWeight: 600 }}
+    <Avatar
+      onClick={(event) => handlePopoverToggle(event, true)}
+      style={{ cursor: "pointer" }}
     >
       +{users.length - 2}
-    </Box>
+    </Avatar>
   );
 
   return (

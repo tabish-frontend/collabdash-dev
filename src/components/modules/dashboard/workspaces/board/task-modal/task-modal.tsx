@@ -530,7 +530,9 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                 <SelectMultipleUsers
                   employees={boardMembers}
                   inputSize="small"
-                  formikUsers={formik.values.assignedTo}
+                  formikUsers={formik.values.assignedTo.map(
+                    (user: any) => user._id
+                  )}
                   setFieldValue={(value: any) => {
                     setIsFormBeingChanged(true);
                     formik.setFieldValue("assignedTo", value);

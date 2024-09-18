@@ -20,17 +20,13 @@ import { Plus } from "mdi-material-ui";
 import { SyntheticEvent, useState } from "react";
 import { MeetingStatus } from "src/constants/status";
 import { Scrollbar } from "src/utils/scrollbar";
-import { MeetingCard } from "src/components/shared/cards/meetingCard";
+import { MeetingCard } from "src/components/modules/dashboard/meetings/meetingCard";
 import { ConfirmationModal, NoRecordFound } from "src/components/shared";
 import {
   Meeting,
   meetingInitialValues,
   MeetingModal,
-} from "src/components/shared/modals/meeting-modal";
-
-interface FiltersType {
-  meeting_status: string;
-}
+} from "src/components/modules/dashboard/meetings/meeting-modal";
 
 interface MeetingDialogData {
   type: string;
@@ -139,12 +135,10 @@ const MeetingListComponent = () => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [isLoading, setIsLoading] = useState(false);
 
-  const [filters, setFilters] = useState<FiltersType>({
-    meeting_status: "upcoming",
-  });
+  const [meetingStatus, setMeetingStatus] = useState<string>("upcoming");
 
   const handleStatusChange = (event: SyntheticEvent, newValue: string) => {
-    setFilters((prev) => ({ ...prev, meeting_status: newValue }));
+    setMeetingStatus(newValue);
   };
 
   const deleteMeeting = async () => {
@@ -182,15 +176,10 @@ const MeetingListComponent = () => {
               <Button
                 variant="contained"
                 size={isSmallScreen ? "small" : "medium"}
-                // startIcon={
-                //   <SvgIcon>
-                //     <Plus />
-                //   </SvgIcon>
-                // }
                 onClick={() => {
                   meetingDialog.handleOpen({
-                    type: "create",
-                    values: meetingInitialValues, // This ensures default initial values are passed
+                    type: "Create",
+                    values: meetingInitialValues,
                   });
                 }}
               >
@@ -202,7 +191,7 @@ const MeetingListComponent = () => {
           <Tabs
             indicatorColor="primary"
             onChange={handleStatusChange}
-            value={filters.meeting_status}
+            value={meetingStatus}
             sx={{
               borderBottom: 1,
               borderColor: "#ddd",
@@ -221,12 +210,12 @@ const MeetingListComponent = () => {
           <Scrollbar sx={{ maxHeight: 580, overflowY: "auto", py: 2, px: 2 }}>
             <Grid container spacing={2}>
               {isLoading ? (
-                [...Array(9)].map((_, index) => (
-                  <Grid item xs={12} sm={6} xl={4} key={index}>
+                [...Array(4)].map((_, index) => (
+                  <Grid item xs={12} xl={3} lg={4} md={6} key={index}>
                     <MeetingCard isLoading={isLoading} />
                   </Grid>
                 ))
-              ) : meetingList.length === 0 ? (
+              ) : !meetingList.length ? (
                 <Grid item xs={12}>
                   <NoRecordFound />
                 </Grid>
@@ -239,7 +228,6 @@ const MeetingListComponent = () => {
                       handleUpdateMeeting={() => {
                         meetingDialog.handleOpen({
                           type: "Update",
-                          // values: meeting,
                         });
                       }}
                       handleDeleteMeeting={() =>
@@ -261,7 +249,7 @@ const MeetingListComponent = () => {
         <MeetingModal
           modalType={meetingDialog.data?.type}
           modal={meetingDialog.open}
-          meetingValues={meetingDialog.data?.values || meetingInitialValues} // If no data, pass meetingInitialValues
+          meetingValues={meetingDialog.data?.values || meetingInitialValues}
           onCancel={meetingDialog.handleClose}
         />
       )}
@@ -273,8 +261,7 @@ const MeetingListComponent = () => {
           onCancel={DeleteMeetingDialog.handleClose}
           content={{
             type: "Delete Meeting",
-            // text: `Are you sure you want to delete ${selectedWorkspace?.title} workspace? `,
-            text: `Are you sure you want to delete ${DeleteMeetingDialog.data?.title} meeting? `,
+            text: `Are you sure you want to delete that meeting? `,
           }}
         />
       )}
