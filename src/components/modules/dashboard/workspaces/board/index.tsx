@@ -10,14 +10,16 @@ import { DashboardLayout } from "src/layouts";
 import { TaskModal } from "./task-modal";
 import { ColumnCard } from "./column-card";
 import { ColumnAdd } from "./column-add";
-import { Avatar, Button, SvgIcon, Tooltip } from "@mui/material";
+import { Avatar, Button, Container, SvgIcon, Tooltip } from "@mui/material";
 import { useRouter } from "next/router";
 import ArrowLeftIcon from "@untitled-ui/icons-react/build/esm/ArrowLeft";
 import { useWorkSpace } from "src/hooks/use-workSpace";
 import { Column, Tasks } from "src/types";
+import { useSettings } from "src/hooks";
 
 const BoardComponent = () => {
   const [currentTask, setCurrentTask] = useState<Tasks | null>(null);
+  const settings = useSettings();
 
   const [selectedAssignee, setSelectedAssignee] = useState<string | null>(null);
 
@@ -150,144 +152,159 @@ const BoardComponent = () => {
           pt: 4,
         }}
       >
-        <Box display="flex" alignItems={"center"}>
-          <Tooltip title="Back">
-            <Button onClick={() => router.back()} color="inherit" size="small">
-              <SvgIcon>
-                <ArrowLeftIcon />
-              </SvgIcon>
-            </Button>
-          </Tooltip>
-          <Typography variant="h5">{"Tasks"}</Typography>
-        </Box>
-
-        <Box sx={{ px: 3, py: 3 }}>
-          <Typography variant="h6" textTransform={"capitalize"}>
-            {`${workSpaceBoard?.workspace.name} - ${workSpaceBoard?.name}`}
-          </Typography>
-        </Box>
-
-        <Stack
-          direction={"row"}
-          justifyContent={"flex-start"}
-          sx={{ px: 3 }}
-          spacing={0.5}
-        >
-          {workSpaceBoard?.members.map((user: any, index: number) => (
-            <Tooltip key={index} title={user.full_name} arrow>
-              <Avatar
-                src={user.avatar}
-                alt={user.full_name}
-                onClick={() => handleSelectedAssignee(user._id)}
-                sx={{
-                  width: 50,
-                  height: 50,
-                  cursor: "pointer",
-                  border:
-                    selectedAssignee === user._id
-                      ? "3px solid #06aed4"
-                      : "none",
-                }}
-              />
-            </Tooltip>
-          ))}
-
-          <Tooltip key="unassigned" title="Unassigned" arrow>
-            <Stack
-              style={{ cursor: "pointer" }}
-              onClick={() => handleSelectedAssignee("unassigned")}
-            >
-              <Avatar
-                alt="Unassigned"
-                sx={{
-                  width: 50,
-                  height: 50,
-                  border:
-                    selectedAssignee === "unassigned"
-                      ? "3px solid #06aed4"
-                      : "none",
-                }}
-              >
-                U
-              </Avatar>
-            </Stack>
-          </Tooltip>
-        </Stack>
-
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable
-            droppableId="all-columns"
-            direction="horizontal"
-            type="COLUMN"
+        <Container maxWidth={settings.stretch ? false : "xl"}>
+          <Stack
+            spacing={{
+              xs: 2,
+              lg: 2,
+            }}
           >
-            {(provided) => (
-              <Box
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                sx={{
-                  display: "flex",
-                  flexGrow: 1,
-                  flexShrink: 1,
-                  overflowX: "auto",
-                  overflowY: "hidden",
-                  px: 3,
-                  py: 3,
-                }}
-              >
-                <Stack alignItems="flex-start" direction="row" spacing={1}>
-                  {workSpaceBoard?.columns.map(
-                    (column: Column, index: number) => (
-                      <Draggable
-                        draggableId={column._id}
-                        index={index}
-                        key={column._id}
-                      >
-                        {(provided) => (
-                          <Box
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
-                            <ColumnCard
-                              column={filterTasksByAssignee(
-                                column,
-                                selectedAssignee
-                              )}
-                              onClear={() => handleClearColumn(column._id)}
-                              onDelete={() => handleDeleteColumn(column._id)}
-                              onRename={(name) =>
-                                handleUpdateColumn(column._id, {
-                                  name,
-                                })
-                              }
-                              onTaskAdd={(name) =>
-                                handleAddTask({
-                                  title: name || "Untitled Task",
-                                  column: column._id,
-                                  board: workSpaceBoard._id,
-                                })
-                              }
-                              onTaskOpen={handleTaskOpen}
-                            />
-                          </Box>
-                        )}
-                      </Draggable>
-                    )
-                  )}
-                  {provided.placeholder}
-                  <ColumnAdd
-                    onAdd={(name) =>
-                      handleAddColumn({
-                        name: name || "Untitled Column",
-                        board: workSpaceBoard._id,
-                      })
-                    }
+            <Box display="flex" alignItems={"center"}>
+              <Tooltip title="Back">
+                <Button
+                  onClick={() => router.back()}
+                  color="inherit"
+                  size="small"
+                >
+                  <SvgIcon>
+                    <ArrowLeftIcon />
+                  </SvgIcon>
+                </Button>
+              </Tooltip>
+              <Typography variant="h5">{"Tasks"}</Typography>
+            </Box>
+
+            <Box sx={{ px: 3, py: 3 }}>
+              <Typography variant="h5" textTransform={"capitalize"}>
+                {`${workSpaceBoard?.workspace.name} - ${workSpaceBoard?.name}`}
+              </Typography>
+            </Box>
+
+            <Stack
+              direction={"row"}
+              justifyContent={"flex-start"}
+              sx={{ px: 3 }}
+              spacing={0.5}
+            >
+              {workSpaceBoard?.members.map((user: any, index: number) => (
+                <Tooltip key={index} title={user.full_name} arrow>
+                  <Avatar
+                    src={user.avatar}
+                    alt={user.full_name}
+                    onClick={() => handleSelectedAssignee(user._id)}
+                    sx={{
+                      width: 50,
+                      height: 50,
+                      cursor: "pointer",
+                      border:
+                        selectedAssignee === user._id
+                          ? "3px solid #06aed4"
+                          : "none",
+                    }}
                   />
+                </Tooltip>
+              ))}
+
+              <Tooltip key="unassigned" title="Unassigned" arrow>
+                <Stack
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleSelectedAssignee("unassigned")}
+                >
+                  <Avatar
+                    alt="Unassigned"
+                    sx={{
+                      width: 50,
+                      height: 50,
+                      border:
+                        selectedAssignee === "unassigned"
+                          ? "3px solid #06aed4"
+                          : "none",
+                    }}
+                  >
+                    U
+                  </Avatar>
                 </Stack>
-              </Box>
-            )}
-          </Droppable>
-        </DragDropContext>
+              </Tooltip>
+            </Stack>
+
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <Droppable
+                droppableId="all-columns"
+                direction="horizontal"
+                type="COLUMN"
+              >
+                {(provided) => (
+                  <Box
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    sx={{
+                      display: "flex",
+                      flexGrow: 1,
+                      flexShrink: 1,
+                      overflowX: "auto",
+                      overflowY: "hidden",
+                      px: 3,
+                      py: 3,
+                    }}
+                  >
+                    <Stack alignItems="flex-start" direction="row" spacing={1}>
+                      {workSpaceBoard?.columns.map(
+                        (column: Column, index: number) => (
+                          <Draggable
+                            draggableId={column._id}
+                            index={index}
+                            key={column._id}
+                          >
+                            {(provided) => (
+                              <Box
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <ColumnCard
+                                  column={filterTasksByAssignee(
+                                    column,
+                                    selectedAssignee
+                                  )}
+                                  onClear={() => handleClearColumn(column._id)}
+                                  onDelete={() =>
+                                    handleDeleteColumn(column._id)
+                                  }
+                                  onRename={(name) =>
+                                    handleUpdateColumn(column._id, {
+                                      name,
+                                    })
+                                  }
+                                  onTaskAdd={(name) =>
+                                    handleAddTask({
+                                      title: name || "Untitled Task",
+                                      column: column._id,
+                                      board: workSpaceBoard._id,
+                                    })
+                                  }
+                                  onTaskOpen={handleTaskOpen}
+                                />
+                              </Box>
+                            )}
+                          </Draggable>
+                        )
+                      )}
+                      {provided.placeholder}
+                      <ColumnAdd
+                        onAdd={(name) =>
+                          handleAddColumn({
+                            name: name || "Untitled Column",
+                            board: workSpaceBoard._id,
+                          })
+                        }
+                      />
+                    </Stack>
+                  </Box>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </Stack>
+        </Container>
       </Box>
       <TaskModal
         onClose={handleTaskClose}

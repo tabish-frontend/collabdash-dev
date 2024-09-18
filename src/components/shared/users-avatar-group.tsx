@@ -1,4 +1,12 @@
-import { Avatar, AvatarGroup, Link, Popover, Tooltip } from "@mui/material";
+import {
+  Avatar,
+  AvatarGroup,
+  Link,
+  Popover,
+  Tooltip,
+  Box,
+  Stack,
+} from "@mui/material";
 import { Employee } from "src/types";
 import { ImageAvatar } from "./image-avatar";
 import { RouterLink } from "./router-link";
@@ -21,7 +29,11 @@ export const UserAvatarGroup = ({ users }: { users: Employee[] }) => {
 
   const renderUserAvatars = users.slice(0, 2).map((user, index) => (
     <Tooltip key={index} title={user.full_name}>
-      <Link component={RouterLink} href={`${paths.employees}/${user.username}`}>
+      <Link
+        component={RouterLink}
+        href={`${paths.employees}/${user.username}`}
+        onClick={(e) => e.stopPropagation()}
+      >
         <ImageAvatar
           path={user.avatar || ""}
           alt={user.full_name}
@@ -33,25 +45,33 @@ export const UserAvatarGroup = ({ users }: { users: Employee[] }) => {
   ));
 
   const remainingUsers = users.length > 2 && (
-    <Avatar
-      onClick={(event) => handlePopoverToggle(event, true)}
-      style={{ cursor: "pointer" }}
+    <Box
+      onClick={(event) => {
+        event.stopPropagation();
+        handlePopoverToggle(event, true);
+      }}
+      style={{ cursor: "pointer", marginLeft: "8px", fontWeight: 600 }}
     >
       +{users.length - 2}
-    </Avatar>
+    </Box>
   );
 
   return (
     <>
       <AvatarGroup style={{ justifyContent: "center" }}>
-        {renderUserAvatars}
-        {remainingUsers}
+        <Stack direction={"row"} alignItems={"center"}>
+          {renderUserAvatars}
+          {remainingUsers}
+        </Stack>
       </AvatarGroup>
       <Popover
         id={popoverId}
         open={open}
         anchorEl={anchorEl}
-        onClose={(event: any) => handlePopoverToggle(event, false)}
+        onClose={(event: any) => {
+          event.stopPropagation();
+          handlePopoverToggle(event, false);
+        }}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         transformOrigin={{ vertical: "top", horizontal: "center" }}
       >

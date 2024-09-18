@@ -21,6 +21,7 @@ export const UsersListPopover = ({ users }: { users: Employee[] }) => (
             component={RouterLink}
             href={`${paths.employees}/${user.username}`}
             variant="subtitle1"
+            onClick={(e) => e.stopPropagation()}
           >
             {user.full_name}
           </Link>

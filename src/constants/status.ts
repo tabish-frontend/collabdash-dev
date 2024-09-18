@@ -56,3 +56,13 @@ export const AccountStatus = [
     value: "terminate",
   },
 ];
+export const MeetingStatus = [
+  {
+    label: "Upcoming",
+    value: "upcoming",
+  },
+  {
+    label: "Completed",
+    value: "completed",
+  },
+];

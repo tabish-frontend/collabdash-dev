@@ -105,9 +105,11 @@ const WorkSpacesComponent = () => {
           <Stack
             direction={"row"}
             justifyContent="space-between"
+            alignItems={"center"}
             flexWrap={"wrap"}
+            sx={{ px: 3 }}
           >
-            <Typography variant="h6">{workSpace?.name}</Typography>
+            <Typography variant="h5">{workSpace?.name}</Typography>
 
             {user?.role !== ROLES.Employee && (
               <Button
@@ -129,7 +131,7 @@ const WorkSpacesComponent = () => {
             )}
           </Stack>
 
-          <Grid container spacing={2}>
+          <Grid container spacing={2} sx={{ pr: 3 }}>
             {workSpace?.boards?.map((board: any) => {
               return (
                 <Grid item xs={12} xl={3} lg={4} md={6} key={board.slug}>

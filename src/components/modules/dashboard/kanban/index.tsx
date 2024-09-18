@@ -12,13 +12,8 @@ import {
 import { useAuth, useDialog, useSettings } from "src/hooks";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts";
-import { useRouter } from "next/router";
 import { Plus } from "mdi-material-ui";
-import {
-  BoardCard,
-  ConfirmationModal,
-  WorkspaceModal,
-} from "src/components/shared";
+import { ConfirmationModal, WorkspaceModal } from "src/components/shared";
 import { useWorkSpace } from "src/hooks/use-workSpace";
 import { WorkSpace } from "src/types";
 import { ROLES } from "src/constants/roles";
@@ -26,15 +21,6 @@ import { AuthContextType } from "src/contexts/auth";
 import { useEffect } from "react";
 import { workSpaceInitialValues } from "src/formik";
 import { WorkspaceCard } from "./workspace-card";
-
-// interface BoardDialogData {
-//   type: string;
-//   values?: object;
-// }
-
-// interface DeleeBoardDialogData {
-//   id: string;
-// }
 
 interface WorkSpaceDialogData {
   type: string;
@@ -49,7 +35,6 @@ interface DeletWorkSpaceDialogData {
 const KanbanComponent = () => {
   const { user } = useAuth<AuthContextType>();
   const settings = useSettings();
-  const router = useRouter();
   const theme = useTheme();
 
   const { WorkSpaces } = useWorkSpace();
@@ -116,8 +101,9 @@ const KanbanComponent = () => {
             direction={"row"}
             justifyContent={"space-between"}
             alignItems={"center"}
+            sx={{ px: 2 }}
           >
-            <Typography variant="h5">Workspaces</Typography>
+            <Typography variant="h4">Workspaces</Typography>
 
             {user?.role !== ROLES.Employee && (
               <Button
@@ -139,7 +125,7 @@ const KanbanComponent = () => {
             )}
           </Stack>
 
-          <Grid container spacing={2}>
+          <Grid container spacing={2} sx={{ pr: 3 }}>
             {WorkSpaces.map((workspace: any) => {
               return (
                 <Grid item xs={12} xl={3} lg={4} md={6} key={workspace.slug}>
@@ -166,16 +152,6 @@ const KanbanComponent = () => {
         </Stack>
       </Container>
 
-      {/* {boardDialog.open && (
-        <BoardsModal
-          modalType={boardDialog.data?.type}
-          modal={boardDialog.open}
-          members={workSpace!.members}
-          modalValues={boardDialog.data?.values}
-          onConfirm={addAndUpdateBoard}
-          onCancel={boardDialog.handleClose}
-        />
-      )} */}
       {WorkSpaceDialog.open && (
         <WorkspaceModal
           modal={WorkSpaceDialog.open}
@@ -201,18 +177,6 @@ const KanbanComponent = () => {
           }}
         />
       )}
-
-      {/* {DeleteBoardDialog.open && (
-        <ConfirmationModal
-          modal={DeleteBoardDialog.open}
-          onCancel={DeleteBoardDialog.handleClose}
-          onConfirm={() => deleteBoard(DeleteBoardDialog.data?.id)}
-          content={{
-            type: "Delete",
-            text: "Are you sure you want to delete that Board ?",
-          }}
-        />
-      )} */}
     </Box>
   );
 };
