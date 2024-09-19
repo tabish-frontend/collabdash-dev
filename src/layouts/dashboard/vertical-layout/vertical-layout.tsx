@@ -12,17 +12,21 @@ import { TopNav } from "./top-nav";
 import { useMobileNav } from "./use-mobile-nav";
 import { WorkspaceModal } from "src/components/shared";
 import { useWorkSpace } from "src/hooks/use-workSpace";
+import { useRouter } from "next/router";
+import { paths } from "src/constants/paths";
 
 const SIDE_NAV_WIDTH = 240;
 
-const VerticalLayoutRoot = styled("div")(({ theme }) => ({
-  display: "flex",
-  flex: "1 1 auto",
-  maxWidth: "100%",
-  [theme.breakpoints.up("lg")]: {
-    paddingLeft: SIDE_NAV_WIDTH,
-  },
-}));
+const VerticalLayoutRoot = styled("div")<{ isMeetingRoom: boolean }>(
+  ({ theme, isMeetingRoom }) => ({
+    display: "flex",
+    flex: "1 1 auto",
+    maxWidth: "100%",
+    [theme.breakpoints.up("lg")]: {
+      paddingLeft: isMeetingRoom ? 0 : SIDE_NAV_WIDTH,
+    },
+  })
+);
 
 const VerticalLayoutContainer = styled("div")({
   display: "flex",
@@ -39,14 +43,21 @@ interface VerticalLayoutProps {
 
 export const VerticalLayout: FC<VerticalLayoutProps> = (props) => {
   const { children, sections, navColor } = props;
+  const router = useRouter();
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
   const mobileNav = useMobileNav();
 
+  const isMeetingRoom =
+    router.pathname.startsWith(paths.meetings) &&
+    router.pathname.length > paths.meetings.length;
+
   return (
     <>
-      <TopNav onMobileNavOpen={mobileNav.handleOpen} />
-      {lgUp && <SideNav color={navColor} sections={sections} />}
-      {!lgUp && (
+      {!isMeetingRoom && <TopNav onMobileNavOpen={mobileNav.handleOpen} />}
+      {lgUp && !isMeetingRoom && (
+        <SideNav color={navColor} sections={sections} />
+      )}
+      {(!lgUp || isMeetingRoom) && (
         <MobileNav
           color={navColor}
           onClose={mobileNav.handleClose}
@@ -54,7 +65,7 @@ export const VerticalLayout: FC<VerticalLayoutProps> = (props) => {
           sections={sections}
         />
       )}
-      <VerticalLayoutRoot>
+      <VerticalLayoutRoot isMeetingRoom={isMeetingRoom}>
         <VerticalLayoutContainer>{children}</VerticalLayoutContainer>
       </VerticalLayoutRoot>
     </>

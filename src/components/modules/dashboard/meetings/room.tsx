@@ -2,13 +2,13 @@ import { DashboardLayout } from "src/layouts";
 import type { NextPage } from "next";
 import { JitsiMeeting } from "@jitsi/react-sdk";
 import { useAuth } from "src/hooks";
-import { useRouter } from "next/router";
 // import { paths, roles } from "src/constants";
 import { useEffect, useState } from "react";
 // import { classesApi } from "src/api/class-api";
 import { toast } from "react-toastify";
 import { AuthContextType } from "src/contexts/auth";
 import { JitsiConfigOverwrite } from "src/constants/jitsi-config";
+import { useRouter } from "next/router";
 
 // Function to fetch session data from API
 // const fetchSessionData = async (roomName: string, router: any) => {
@@ -102,13 +102,20 @@ import { JitsiConfigOverwrite } from "src/constants/jitsi-config";
 // };
 
 const MeetingRoomComponent = () => {
-  // const router = useRouter();
-  // const { meeting_url } = router.query;
+  console.log("hitting Room");
+  const router = useRouter();
+  const { user } = useAuth<AuthContextType>();
+  const { meeting_url } = router.query;
+
+  console.log("Router", router.query.meeting_url);
+  const [displayRoomName, setDisplayRoomName] = useState("");
+
+  useEffect(() => {
+    setDisplayRoomName(meeting_url as string);
+  }, [meeting_url]);
 
   // const childId = router.query.childId;
   // const childName = router.query.childName;
-
-  const { user } = useAuth<AuthContextType>();
 
   // const userRole = user.role;
   // const userId = user._id;
@@ -117,7 +124,6 @@ const MeetingRoomComponent = () => {
   //   userRole === roles.ADMIN ? "Admin" : childName || user.full_name || "User";
 
   // const [sessionData, setSessionData] = useState<any>();
-  // const [displayRoomName, setDisplayRoomName] = useState("");
   // const [roomExists, setRoomExists] = useState<boolean | null>(false);
   // const [showFeedback, setShowFeedback] = useState<boolean>(false);
   // const [isMeetingEnded, setIsMeetingEnded] = useState<boolean>(false);
@@ -266,11 +272,11 @@ const MeetingRoomComponent = () => {
     <div style={{ height: "100vh", overflowY: "hidden" }}>
       <JitsiMeeting
         domain="ss.tuitionhighway.com" // You can use your own Jitsi server domain if you have one
-        roomName={"CollabDash"} // Room name, can be dynamic
+        roomName={displayRoomName} // Room name, can be dynamic
         configOverwrite={JitsiConfigOverwrite}
         interfaceConfigOverwrite={{}}
         userInfo={{
-          displayName: user?.full_name || "User",
+          displayName: user?.full_name || "Guest User",
           email: user?.email || "user@gmail.com",
         }}
         getIFrameRef={(iframeRef) => {

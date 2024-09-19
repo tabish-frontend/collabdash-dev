@@ -266,7 +266,7 @@ export const removeFirstCharacter = (word: string): string => {
   return word.slice(1);
 };
 
-export const getDay_Time = (date: string) => {
+export const getDay_Time = (date: string | Date | null) => {
   const initialDate = dayjs(date);
   const dateOfWeek = initialDate.format("MMM DD ddd , HH:mm");
   return dateOfWeek;

@@ -17,9 +17,11 @@ import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
 import { SquareEditOutline, TrashCanOutline } from "mdi-material-ui";
 import { getDay_Time } from "src/utils";
 import { FC } from "react";
+import { Meeting } from "src/types";
+import { useRouter } from "next/router";
 
 interface MeetingCardProps {
-  meeting?: any;
+  meeting?: Meeting;
   isLoading: boolean;
   handleUpdateMeeting?: () => void;
   handleDeleteMeeting?: () => void;
@@ -31,16 +33,21 @@ export const MeetingCard: FC<MeetingCardProps> = ({
   handleUpdateMeeting,
   handleDeleteMeeting,
 }) => {
+  const router = useRouter();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const renameTitle = (title: string) => {
+    return title.replace(" ", "%20");
+  };
 
   return (
     <Card sx={{ position: "relative" }}>
       <CardHeader
         avatar={
           <ImageAvatar
-            path={meeting?.organiser?.avatar || ""}
-            alt={meeting?.organiser?.name || "Organiser"}
+            path={meeting?.owner!.avatar || ""}
+            alt={meeting?.owner!.full_name || ""}
             width={50}
             height={50}
             isLoading={isLoading}
@@ -50,9 +57,7 @@ export const MeetingCard: FC<MeetingCardProps> = ({
           isLoading ? (
             <Skeleton variant="rectangular" width="100%" height={20} />
           ) : (
-            <Typography variant="h6">
-              {meeting?.organiser?.name || "Organizer Name"}
-            </Typography>
+            <Typography variant="h6">{meeting?.owner!.full_name}</Typography>
           )
         }
         subheader={
@@ -115,7 +120,7 @@ export const MeetingCard: FC<MeetingCardProps> = ({
                   />
 
                   <Typography variant="body2">
-                    {getDay_Time(meeting.date)}
+                    {getDay_Time(meeting!.time)}
                   </Typography>
                 </Stack>
                 <Stack direction={"row"} alignItems={"center"} spacing={1}>
@@ -143,14 +148,19 @@ export const MeetingCard: FC<MeetingCardProps> = ({
             <>
               <Button
                 variant="text"
-                color={theme.palette.mode === "dark" ? "info" : "primary"}
                 endIcon={<ChevronRightOutlinedIcon />}
+                color={theme.palette.mode === "dark" ? "info" : "primary"}
                 sx={{ padding: "6px 8px" }}
+                onClick={() =>
+                  router.push(
+                    `${router.pathname}/${renameTitle(meeting!.title)}`
+                  )
+                }
               >
                 Join Meeting
               </Button>
 
-              <UserAvatarGroup users={meeting.participants} />
+              <UserAvatarGroup users={meeting!.participants} />
             </>
           )}
         </Stack>

@@ -9,6 +9,7 @@ import {
   UpdatePassword,
   WorkSpace,
   Board,
+  Meeting,
 } from "src/types";
 
 // ** AUTH Initial Values
@@ -99,4 +100,11 @@ export const BoardInitialValues: Board = {
   members: [],
   columns: [],
   tasks: [],
+};
+
+export const meetingInitialValues: Meeting = {
+  _id: "",
+  title: "",
+  time: null,
+  participants: [],
 };

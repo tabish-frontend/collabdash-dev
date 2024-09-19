@@ -15,9 +15,13 @@ export const AuthGuard: FC<AuthGuardProps> = (props) => {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const [checked, setChecked] = useState<boolean>(false);
+  const isMeetingRoom = router.pathname.includes("meeting_url");
+  console.log("isMeetingRoom", isMeetingRoom);
 
   const check = useCallback(() => {
-    if (!isAuthenticated) {
+    if (isMeetingRoom) {
+      setChecked(true);
+    } else if (!isAuthenticated) {
       const searchParams = new URLSearchParams({
         returnTo: window.location.pathname,
       }).toString();
@@ -26,7 +30,7 @@ export const AuthGuard: FC<AuthGuardProps> = (props) => {
     } else {
       setChecked(true);
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isMeetingRoom, router]);
 
   useEffect(() => {
     check();

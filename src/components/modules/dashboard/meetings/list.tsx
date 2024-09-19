@@ -17,16 +17,15 @@ import { DashboardLayout } from "src/layouts";
 import { ROLES } from "src/constants/roles";
 import { AuthContextType } from "src/contexts/auth";
 import { Plus } from "mdi-material-ui";
-import { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useCallback, useEffect, useState } from "react";
 import { MeetingStatus } from "src/constants/status";
 import { Scrollbar } from "src/utils/scrollbar";
 import { MeetingCard } from "src/components/modules/dashboard/meetings/meetingCard";
 import { ConfirmationModal, NoRecordFound } from "src/components/shared";
-import {
-  Meeting,
-  meetingInitialValues,
-  MeetingModal,
-} from "src/components/modules/dashboard/meetings/meeting-modal";
+import { MeetingModal } from "src/components/modules/dashboard/meetings/meeting-modal";
+import { Meeting } from "src/types";
+import { meetingInitialValues } from "src/formik";
+import { meetingApi } from "src/api";
 
 interface MeetingDialogData {
   type: string;
@@ -37,92 +36,6 @@ interface DeleteMeetingDialogData {
   _id?: string;
   title: string;
 }
-// Dummy data for meetingList
-const meetingList = [
-  {
-    _id: "1",
-    title: "Project Kickoff Meeting With Agile Methodology",
-    organiser: {
-      name: "John Doe",
-      avatar: "/assets/avatars/avatar-alcides-antonio.png",
-    },
-    date: "2024-09-16",
-    participants: [
-      { full_name: "Alice", avatar: "/assets/avatars/avatar-anika-visser.png" },
-      { full_name: "Bob", avatar: "/assets/avatars/avatar-carson-darrin.png" },
-    ],
-  },
-  {
-    _id: "2",
-    title: "Design Review",
-    organiser: {
-      name: "Jane Smith",
-      avatar: "/assets/avatars/avatar-chinasa-neo.png",
-    },
-    date: "2024-09-17",
-    participants: [
-      {
-        full_name: "Charlie",
-        avatar: "/assets/avatars/avatar-anika-visser.png",
-      },
-      { full_name: "Dave", avatar: "/assets/avatars/avatar-iulia-albu.png" },
-      { full_name: "Eve", avatar: "/assets/avatars/avatar-miron-vitold.png" },
-      { full_name: "Eve", avatar: "/assets/avatars/avatar-miron-vitold.png" },
-      { full_name: "Eve", avatar: "/assets/avatars/avatar-miron-vitold.png" },
-    ],
-  },
-  {
-    _id: "3",
-    title: "Sprint Planning",
-    organiser: {
-      name: "Mark Taylor",
-      avatar: "/assets/avatars/avatar-marcus-finn.png",
-    },
-    date: "2024-09-18",
-    participants: [
-      {
-        full_name: "Alice",
-        avatar: "/assets/avatars/avatar-nasimiyu-danai.png",
-      },
-      { full_name: "Bob", avatar: "/assets/avatars/avatar-neha-punita.png" },
-      { full_name: "Eve", avatar: "/assets/avatars/avatar-seo-hyeon-ji.png" },
-    ],
-  },
-  {
-    _id: "4",
-    title: "Sprint Planning",
-    organiser: {
-      name: "Mark Taylor",
-      avatar: "/assets/avatars/avatar-marcus-finn.png",
-    },
-    date: "2024-09-18",
-    participants: [
-      {
-        full_name: "Alice",
-        avatar: "/assets/avatars/avatar-nasimiyu-danai.png",
-      },
-      { full_name: "Bob", avatar: "/assets/avatars/avatar-neha-punita.png" },
-      { full_name: "Eve", avatar: "/assets/avatars/avatar-seo-hyeon-ji.png" },
-    ],
-  },
-  {
-    _id: "5",
-    title: "Sprint Planning",
-    organiser: {
-      name: "Mark Taylor",
-      avatar: "/assets/avatars/avatar-marcus-finn.png",
-    },
-    date: "2024-09-18",
-    participants: [
-      {
-        full_name: "Alice",
-        avatar: "/assets/avatars/avatar-nasimiyu-danai.png",
-      },
-      { full_name: "Bob", avatar: "/assets/avatars/avatar-neha-punita.png" },
-      { full_name: "Eve", avatar: "/assets/avatars/avatar-seo-hyeon-ji.png" },
-    ],
-  },
-];
 
 const MeetingListComponent = () => {
   const settings = useSettings();
@@ -133,12 +46,28 @@ const MeetingListComponent = () => {
   const DeleteMeetingDialog = useDialog<DeleteMeetingDialogData>();
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const [isLoading, setIsLoading] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [meetingList, setMeetingList] = useState<Meeting[]>([]);
   const [meetingStatus, setMeetingStatus] = useState<string>("upcoming");
 
-  const handleStatusChange = (event: SyntheticEvent, newValue: string) => {
-    setMeetingStatus(newValue);
+  const getMeetins = useCallback(async () => {
+    setIsLoading(true);
+    const response = await meetingApi.getAllMeetings(meetingStatus);
+    setMeetingList(response.data);
+    setIsLoading(false);
+  }, [meetingStatus]);
+
+  const createAndUpdateMeeting = async (values: Meeting) => {
+    const { _id, ...meetingValues } = values;
+
+    console.log("meetingValues", meetingValues);
+
+    if (meetingDialog.data?.type === "Update") {
+      // await holidaysApi.updateHoliday(_id, HolidayValues);
+    } else {
+      await meetingApi.createMeeting(meetingValues);
+    }
   };
 
   const deleteMeeting = async () => {
@@ -146,6 +75,14 @@ const MeetingListComponent = () => {
     // await handleDeleteWorkSpace(DeleteWorkSpaceDialog.data._id);
     // DeleteWorkSpaceDialog.handleClose();
   };
+
+  const handleStatusChange = (event: SyntheticEvent, newValue: string) => {
+    setMeetingStatus(newValue);
+  };
+
+  useEffect(() => {
+    getMeetins();
+  }, [getMeetins]);
 
   return (
     <Box
@@ -220,7 +157,7 @@ const MeetingListComponent = () => {
                   <NoRecordFound />
                 </Grid>
               ) : (
-                meetingList.map((meeting: any) => (
+                meetingList.map((meeting: Meeting) => (
                   <Grid item xs={12} xl={3} lg={4} md={6} key={meeting._id}>
                     <MeetingCard
                       meeting={meeting}
@@ -251,6 +188,7 @@ const MeetingListComponent = () => {
           modal={meetingDialog.open}
           meetingValues={meetingDialog.data?.values || meetingInitialValues}
           onCancel={meetingDialog.handleClose}
+          onSubmit={createAndUpdateMeeting}
         />
       )}
 

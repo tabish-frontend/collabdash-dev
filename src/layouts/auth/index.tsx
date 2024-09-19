@@ -24,6 +24,8 @@ interface LayoutProps {
 export const AuthLayout: FC<LayoutProps> = (props) => {
   const { children } = props;
 
+  console.log("children", children);
+
   const theme = useTheme();
 
   return (

@@ -6,41 +6,24 @@ import {
   IconButton,
   TextField,
   Paper,
-  InputAdornment,
-  Typography,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { useFormik } from "formik";
-import { Calendar, CloseCircleOutline } from "mdi-material-ui";
+import { CloseCircleOutline } from "mdi-material-ui";
 import { useEffect, useState, type FC } from "react";
 import { employeesApi } from "src/api";
-import { Employee, WorkSpace } from "src/types";
+import { Employee, Meeting, WorkSpace } from "src/types";
 import { SelectMultipleUsers } from "src/components/shared";
 import { LoadingButton } from "@mui/lab";
-import { useWorkSpace } from "src/hooks/use-workSpace";
-import { DateTimePicker, MobileDateTimePicker } from "@mui/x-date-pickers";
-import dayjs from "dayjs";
-
-export interface Meeting {
-  _id: string;
-  title: string;
-  date: any;
-  members: Employee[];
-}
-
-export const meetingInitialValues: Meeting = {
-  _id: "", // default empty string for new meeting
-  title: "", // default title
-  date: new Date(), // default current date
-  members: [], // default empty array for members
-};
+import { DateTimePicker } from "@mui/x-date-pickers";
 
 interface MeetingModalProps {
   modal: boolean;
   modalType?: string;
   meetingValues: Meeting;
   onCancel: () => void;
+  onSubmit: (values: Meeting) => void;
 }
 
 export const MeetingModal: FC<MeetingModalProps> = ({
@@ -48,11 +31,13 @@ export const MeetingModal: FC<MeetingModalProps> = ({
   modalType,
   meetingValues,
   onCancel,
+  onSubmit,
 }) => {
   const formik = useFormik({
     initialValues: meetingValues,
     enableReinitialize: true,
     onSubmit: async (values, helpers): Promise<void> => {
+      await onSubmit(values);
       // if (madal_type === "Update") {
       //   await handleUpdateWorkSpace({
       //     _id: values._id,
@@ -127,22 +112,24 @@ export const MeetingModal: FC<MeetingModalProps> = ({
 
             <Grid item xs={12}>
               <SelectMultipleUsers
-                employees={employees}
-                formikUsers={formik.values.members.map((user: any) => user._id)}
-                isRequired={!formik.values.members.length}
-                setFieldValue={(value: any) =>
-                  formik.setFieldValue("members", value)
-                }
                 label="Select Participants"
+                employees={employees}
+                isRequired={!formik.values.participants.length}
+                formikUsers={formik.values.participants.map(
+                  (user: any) => user._id
+                )}
+                setFieldValue={(value: any) =>
+                  formik.setFieldValue("participants", value)
+                }
               />
             </Grid>
             <Grid item xs={12}>
               <DateTimePicker
                 sx={{ width: "100%" }}
                 label="Select Date and Time"
-                value={formik.values.date}
+                value={formik.values.time}
                 onChange={(date: Date | null) => {
-                  formik.setFieldValue("date", date || new Date());
+                  formik.setFieldValue("time", date);
                 }}
               />
             </Grid>
