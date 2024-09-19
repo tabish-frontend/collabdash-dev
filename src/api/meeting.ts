@@ -11,12 +11,11 @@ class MeetingAPI {
     const response = await Axios.get(`/meetings?status=${status}`);
     return response;
   }
-  //   async getMyHolidays(Year: any) {
-  //     const response = await Axios.get(
-  //       `/users/getMyAllHolidays?year=${Year}`
-  //     );
-  //     return response.data;
-  //   }
+  async getMeeting(id: string) {
+    const response = await Axios.get(`/meetings/${id}`);
+    return response;
+  }
+
   //   async updateHoliday(holiday_id: string, body: Holiday) {
   //     const response = await Axios.patch(`/holidays/${holiday_id}`, body);
   //     return response.data;

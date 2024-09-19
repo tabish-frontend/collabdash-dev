@@ -19,14 +19,9 @@ import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 interface InviteDialogProps {
   open: boolean;
   onClose: () => void;
-  onSendInvite: (emails: string[]) => void;
 }
 
-export const InviteModal: FC<InviteDialogProps> = ({
-  open,
-  onClose,
-  onSendInvite,
-}) => {
+export const InviteModal: FC<InviteDialogProps> = ({ open, onClose }) => {
   const [emails, setEmails] = useState([""]);
 
   const handleEmailChange = (index: number, value: string) => {
@@ -37,7 +32,7 @@ export const InviteModal: FC<InviteDialogProps> = ({
 
   const handleSendInvite = () => {
     console.log("Emails", emails);
-    onSendInvite(emails); // Pass emails back to parent to handle invite logic
+    // Pass emails back to parent to handle invite logic
     onClose(); // Close the dialog
   };
 
@@ -78,13 +73,8 @@ export const InviteModal: FC<InviteDialogProps> = ({
           <Divider />
           <Grid container spacing={2} p={2}>
             {emails.map((email, index) => (
-              <Grid item xs={12}>
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  spacing={2}
-                  key={index}
-                >
+              <Grid item xs={12} key={index}>
+                <Stack direction="row" alignItems="center" spacing={2}>
                   <TextField
                     label="Email"
                     size="small"
@@ -122,7 +112,7 @@ export const InviteModal: FC<InviteDialogProps> = ({
                 sx={{ width: 200 }}
                 fullWidth
               >
-                Send Invite
+                Send Invitation
               </Button>
             </Stack>
           </DialogActions>

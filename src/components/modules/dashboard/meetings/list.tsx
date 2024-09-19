@@ -20,12 +20,16 @@ import { Plus } from "mdi-material-ui";
 import { SyntheticEvent, useCallback, useEffect, useState } from "react";
 import { MeetingStatus } from "src/constants/status";
 import { Scrollbar } from "src/utils/scrollbar";
-import { MeetingCard } from "src/components/modules/dashboard/meetings/meetingCard";
-import { ConfirmationModal, NoRecordFound } from "src/components/shared";
-import { MeetingModal } from "src/components/modules/dashboard/meetings/meeting-modal";
+import {
+  ConfirmationModal,
+  NoRecordFound,
+  SkeletonMeetingCard,
+} from "src/components/shared";
 import { Meeting } from "src/types";
 import { meetingInitialValues } from "src/formik";
 import { meetingApi } from "src/api";
+import { MeetingCard } from "./meetingCard";
+import { MeetingModal } from "./meeting-modal";
 
 interface MeetingDialogData {
   type: string;
@@ -158,7 +162,7 @@ const MeetingListComponent = () => {
               {isLoading ? (
                 [...Array(4)].map((_, index) => (
                   <Grid item xs={12} xl={4} lg={4} md={6} key={index}>
-                    <MeetingCard isLoading={isLoading} />
+                    <SkeletonMeetingCard />
                   </Grid>
                 ))
               ) : !meetingList.length ? (
@@ -170,7 +174,7 @@ const MeetingListComponent = () => {
                   <Grid item xs={12} xl={4} lg={4} md={6} key={meeting._id}>
                     <MeetingCard
                       meeting={meeting}
-                      isLoading={isLoading}
+                      isUpcomingMeetings={meetingStatus === "upcoming"}
                       handleUpdateMeeting={() => {
                         meetingDialog.handleOpen({
                           type: "Update",
