@@ -16,14 +16,15 @@ class MeetingAPI {
     return response;
   }
 
-  //   async updateHoliday(holiday_id: string, body: Holiday) {
-  //     const response = await Axios.patch(`/holidays/${holiday_id}`, body);
-  //     return response.data;
-  //   }
-  //   async deleteHoliday(holiday_id: string) {
-  //     const response = await Axios.delete(`/holidays/${holiday_id}`);
-  //     return response.data;
-  //   }
+  async updateMeeting(id: string, body: Meeting) {
+    const response = await Axios.patch(`/meetings/${id}`, body);
+    return response;
+  }
+
+  async deleteMeeting(id: string) {
+    const response = await Axios.delete(`/meetings/${id}`);
+    return response;
+  }
 }
 
 export const meetingApi = new MeetingAPI();

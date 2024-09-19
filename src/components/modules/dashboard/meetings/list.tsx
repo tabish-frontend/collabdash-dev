@@ -65,18 +65,20 @@ const MeetingListComponent = () => {
   const createAndUpdateMeeting = async (values: Meeting) => {
     const { _id, ...meetingValues } = values;
 
-    console.log("meetingValues", meetingValues);
-
     if (meetingDialog.data?.type === "Update") {
-      // await holidaysApi.updateHoliday(_id, HolidayValues);
+      const response = await meetingApi.updateMeeting(
+        _id as string,
+        meetingValues
+      );
+
+      // Update the meeting in the state
+      setMeetingList((prevMeetings) =>
+        prevMeetings.map((meeting) =>
+          meeting._id === _id ? response.data : meeting
+        )
+      );
     } else {
       const response = await meetingApi.createMeeting(meetingValues);
-      // setMeetingList((prev) => (
-      //   {...prev,
-      //     response.data
-      //   }
-      // ))
-
       setMeetingList((prev) => [response.data, ...prev]);
     }
 
@@ -84,9 +86,17 @@ const MeetingListComponent = () => {
   };
 
   const deleteMeeting = async () => {
-    // if (!DeleteWorkSpaceDialog.data?._id) return null;
-    // await handleDeleteWorkSpace(DeleteWorkSpaceDialog.data._id);
-    // DeleteWorkSpaceDialog.handleClose();
+    if (!DeleteMeetingDialog.data?._id) return null;
+    await meetingApi.deleteMeeting(DeleteMeetingDialog.data._id);
+
+    // Update the meetingListState by removing the deleted meeting
+    setMeetingList((prevMeetings) =>
+      prevMeetings.filter(
+        (meeting) => meeting._id !== DeleteMeetingDialog.data?._id
+      )
+    );
+
+    DeleteMeetingDialog.handleClose();
   };
 
   const handleStatusChange = (event: SyntheticEvent, newValue: string) => {
@@ -178,6 +188,7 @@ const MeetingListComponent = () => {
                       handleUpdateMeeting={() => {
                         meetingDialog.handleOpen({
                           type: "Update",
+                          values: meeting,
                         });
                       }}
                       handleDeleteMeeting={() =>

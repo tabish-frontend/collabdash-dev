@@ -34,7 +34,10 @@ export const MeetingModal: FC<MeetingModalProps> = ({
   onSubmit,
 }) => {
   const formik = useFormik({
-    initialValues: meetingValues,
+    initialValues: {
+      ...meetingValues,
+      time: meetingValues.time ? new Date(meetingValues.time) : null,
+    },
     enableReinitialize: true,
     onSubmit: async (values, helpers): Promise<void> => {
       await onSubmit(values);
