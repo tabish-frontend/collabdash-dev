@@ -38,19 +38,8 @@ export const MeetingModal: FC<MeetingModalProps> = ({
     enableReinitialize: true,
     onSubmit: async (values, helpers): Promise<void> => {
       await onSubmit(values);
-      // if (madal_type === "Update") {
-      //   await handleUpdateWorkSpace({
-      //     _id: values._id,
-      //     name: values.name,
-      //     members: values.members,
-      //   });
-      // } else {
-      //   await handleAddWorkSpace(values);
-      // }
-
-      // helpers.setStatus({ success: true });
-      // helpers.setSubmitting(false);
-      onCancel();
+      helpers.setStatus({ success: true });
+      helpers.setSubmitting(false);
     },
   });
 

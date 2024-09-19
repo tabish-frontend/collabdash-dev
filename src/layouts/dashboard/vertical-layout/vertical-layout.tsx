@@ -10,8 +10,6 @@ import { MobileNav } from "../mobile-nav";
 import { SideNav } from "./side-nav";
 import { TopNav } from "./top-nav";
 import { useMobileNav } from "./use-mobile-nav";
-import { WorkspaceModal } from "src/components/shared";
-import { useWorkSpace } from "src/hooks/use-workSpace";
 import { useRouter } from "next/router";
 import { paths } from "src/constants/paths";
 

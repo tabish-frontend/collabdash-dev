@@ -66,8 +66,17 @@ const MeetingListComponent = () => {
     if (meetingDialog.data?.type === "Update") {
       // await holidaysApi.updateHoliday(_id, HolidayValues);
     } else {
-      await meetingApi.createMeeting(meetingValues);
+      const response = await meetingApi.createMeeting(meetingValues);
+      // setMeetingList((prev) => (
+      //   {...prev,
+      //     response.data
+      //   }
+      // ))
+
+      setMeetingList((prev) => [response.data, ...prev]);
     }
+
+    meetingDialog.handleClose();
   };
 
   const deleteMeeting = async () => {

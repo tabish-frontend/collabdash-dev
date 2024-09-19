@@ -268,7 +268,8 @@ export const removeFirstCharacter = (word: string): string => {
 
 export const getDay_Time = (date: string | Date | null) => {
   const initialDate = dayjs(date);
-  const dateOfWeek = initialDate.format("MMM DD ddd , HH:mm");
+  const dateOfWeek = initialDate.format("MMM DD ddd , hh:mm A");
+
   return dateOfWeek;
 };
 

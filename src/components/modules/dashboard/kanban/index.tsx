@@ -13,13 +13,14 @@ import { useAuth, useDialog, useSettings } from "src/hooks";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts";
 import { Plus } from "mdi-material-ui";
-import { ConfirmationModal, WorkspaceModal } from "src/components/shared";
+import { ConfirmationModal } from "src/components/shared";
 import { useWorkSpace } from "src/hooks/use-workSpace";
 import { WorkSpace } from "src/types";
 import { ROLES } from "src/constants/roles";
 import { AuthContextType } from "src/contexts/auth";
 import { workSpaceInitialValues } from "src/formik";
 import { WorkspaceCard } from "./workspace-card";
+import { WorkspaceModal } from "./workspace-modal";
 
 interface WorkSpaceDialogData {
   type: string;
