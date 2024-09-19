@@ -16,9 +16,14 @@ import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
 import { SquareEditOutline, TrashCanOutline } from "mdi-material-ui";
 import { getDay_Time } from "src/utils";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Meeting } from "src/types";
 import { useRouter } from "next/router";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
+import ContentCopyOutlinedIcon from "@mui/icons-material/ContentCopyOutlined";
+import { InviteModal } from "./invite-modal";
+import { useAuth } from "src/hooks";
+import { AuthContextType } from "src/contexts/auth";
 
 interface MeetingCardProps {
   meeting?: Meeting;
@@ -40,6 +45,27 @@ export const MeetingCard: FC<MeetingCardProps> = ({
   const renameTitle = (title: string) => {
     return title.replace(" ", "%20");
   };
+
+  const [openDialog, setOpenDialog] = useState(false);
+
+  // Handle opening and closing of the dialog
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  // Handle sending the invite (placeholder function)
+  const handleSendInvite = (emails: string[]) => {
+    console.log("Inviting emails: ", emails);
+    // Add your actual logic to send invites here
+  };
+
+  const { user } = useAuth<AuthContextType>();
+
+  console.log("User: ", user);
 
   return (
     <Card sx={{ position: "relative" }}>
@@ -78,18 +104,14 @@ export const MeetingCard: FC<MeetingCardProps> = ({
           ) : (
             <Stack direction="row" spacing={0.5}>
               <IconButton
-                aria-label="edit"
-                color="success"
-                onClick={handleUpdateMeeting}
+                aria-label="share"
+                color="info"
+                onClick={handleOpenDialog}
               >
-                <SquareEditOutline />
+                <ShareOutlinedIcon />
               </IconButton>
-              <IconButton
-                aria-label="delete"
-                color="error"
-                onClick={handleDeleteMeeting}
-              >
-                <TrashCanOutline />
+              <IconButton aria-label="delete" color="default">
+                <ContentCopyOutlinedIcon />
               </IconButton>
             </Stack>
           )
@@ -105,29 +127,46 @@ export const MeetingCard: FC<MeetingCardProps> = ({
             </Typography>
           )}
           <Stack
-            direction={isSmallScreen ? "column" : "row"}
+            direction={isSmallScreen ? "column" : "column"}
             justifyContent={"space-between"}
             alignItems={isSmallScreen ? "flex-start" : "center"}
+            spacing={2}
             flexWrap={"wrap"}
           >
             {isLoading ? (
               <Skeleton variant="rectangular" width="100%" height={15} />
             ) : (
               <>
-                <Stack direction={"row"} alignItems={"center"} spacing={1}>
-                  <AccessTimeOutlinedIcon
-                    sx={{ fontSize: "18px", color: "text.secondary" }}
-                  />
+                <Stack
+                  direction={"row"}
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
+                  width={"100%"}
+                  flexWrap={"wrap"}
+                >
+                  <Stack direction={"row"} alignItems={"center"} spacing={1}>
+                    <AccessTimeOutlinedIcon
+                      sx={{ fontSize: "18px", color: "text.secondary" }}
+                    />
 
-                  <Typography variant="body2">
-                    {getDay_Time(meeting!.time)}
-                  </Typography>
+                    <Typography variant="body2">
+                      {getDay_Time(meeting!.time)}
+                    </Typography>
+                  </Stack>
+                  <Stack direction={"row"} alignItems={"center"} spacing={1}>
+                    <GroupOutlinedIcon fontSize="small" />
+                    <Typography variant="body2">
+                      {`${meeting?.participants?.length} Members`}
+                    </Typography>
+                  </Stack>
                 </Stack>
-                <Stack direction={"row"} alignItems={"center"} spacing={1}>
-                  <GroupOutlinedIcon fontSize="small" />
-                  <Typography variant="body2">
-                    {`${meeting?.participants?.length} Members`}
-                  </Typography>
+
+                <Stack
+                  direction={"row"}
+                  justifyContent={"flex-start"}
+                  width={"100%"}
+                >
+                  <UserAvatarGroup users={meeting!.participants} />
                 </Stack>
               </>
             )}
@@ -160,11 +199,34 @@ export const MeetingCard: FC<MeetingCardProps> = ({
                 Join Meeting
               </Button>
 
-              <UserAvatarGroup users={meeting!.participants} />
+              {user?._id === meeting?.owner!._id && (
+                <Stack direction="row" spacing={0.5}>
+                  <IconButton
+                    aria-label="edit"
+                    color="success"
+                    onClick={handleUpdateMeeting}
+                  >
+                    <SquareEditOutline />
+                  </IconButton>
+                  <IconButton
+                    aria-label="delete"
+                    color="error"
+                    onClick={handleDeleteMeeting}
+                  >
+                    <TrashCanOutline />
+                  </IconButton>
+                </Stack>
+              )}
             </>
           )}
         </Stack>
       </CardContent>
+
+      <InviteModal
+        open={openDialog}
+        onClose={handleCloseDialog}
+        onSendInvite={handleSendInvite}
+      />
     </Card>
   );
 };

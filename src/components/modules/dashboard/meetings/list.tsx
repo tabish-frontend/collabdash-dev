@@ -157,7 +157,7 @@ const MeetingListComponent = () => {
             <Grid container spacing={2}>
               {isLoading ? (
                 [...Array(4)].map((_, index) => (
-                  <Grid item xs={12} xl={3} lg={4} md={6} key={index}>
+                  <Grid item xs={12} xl={4} lg={4} md={6} key={index}>
                     <MeetingCard isLoading={isLoading} />
                   </Grid>
                 ))
@@ -167,7 +167,7 @@ const MeetingListComponent = () => {
                 </Grid>
               ) : (
                 meetingList.map((meeting: Meeting) => (
-                  <Grid item xs={12} xl={3} lg={4} md={6} key={meeting._id}>
+                  <Grid item xs={12} xl={4} lg={4} md={6} key={meeting._id}>
                     <MeetingCard
                       meeting={meeting}
                       isLoading={isLoading}
