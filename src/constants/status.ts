@@ -58,11 +58,11 @@ export const AccountStatus = [
 ];
 export const MeetingStatus = [
   {
-    label: "Upcoming",
+    label: "Upcoming Meetings",
     value: "upcoming",
   },
   {
-    label: "Completed",
+    label: "Previous Meetings",
     value: "completed",
   },
 ];

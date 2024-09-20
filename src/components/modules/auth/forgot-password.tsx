@@ -72,31 +72,34 @@ const ForgotPasswordComponent = () => {
         <Stack sx={{ mb: 4 }} spacing={1}>
           <Typography variant="h5">Forgot password</Typography>
         </Stack>
+
         <form noValidate onSubmit={formik.handleSubmit}>
-          <TextField
-            autoFocus
-            error={!!(formik.touched.email && formik.errors.email)}
-            fullWidth
-            helperText={formik.touched.email && formik.errors.email}
-            label="Email Address"
-            name="email"
-            onBlur={formik.handleBlur}
-            onChange={formik.handleChange}
-            type="email"
-            value={formik.values.email}
-          />
-          <LoadingButton
-            fullWidth
-            size="large"
-            variant="contained"
-            type="submit"
-            loadingPosition="start"
-            loading={formik.isSubmitting}
-            startIcon={<></>}
-            sx={{ pl: formik.isSubmitting ? "40px" : "16px" }}
-          >
-            Send reset link
-          </LoadingButton>
+          <Stack spacing={3}>
+            <TextField
+              autoFocus
+              error={!!(formik.touched.email && formik.errors.email)}
+              fullWidth
+              helperText={formik.touched.email && formik.errors.email}
+              label="Email Address"
+              name="email"
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              type="email"
+              value={formik.values.email}
+            />
+            <LoadingButton
+              fullWidth
+              size="large"
+              variant="contained"
+              type="submit"
+              loadingPosition="start"
+              loading={formik.isSubmitting}
+              startIcon={<></>}
+              sx={{ pl: formik.isSubmitting ? "40px" : "16px" }}
+            >
+              Send reset link
+            </LoadingButton>
+          </Stack>
         </form>
       </CardContent>
     </Card>

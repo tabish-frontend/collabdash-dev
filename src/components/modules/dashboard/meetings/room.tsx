@@ -9,6 +9,7 @@ import { JitsiConfigOverwrite } from "src/constants/jitsi-config";
 import { useRouter } from "next/router";
 import { meetingApi } from "src/api";
 import { Meeting } from "src/types";
+import { WaitingScreen } from "./waiting-card";
 
 // Function to fetch session data from API
 const fetchMeetingData = async (
@@ -98,18 +99,7 @@ const MeetingRoomComponent = () => {
   // If there's an error, render the error message screen
   if (errorMessage) {
     return (
-      <div
-        style={{
-          height: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          flexDirection: "column",
-        }}
-      >
-        <h1>Error</h1>
-        <p>{errorMessage}</p>
-      </div>
+      <WaitingScreen message={errorMessage} />
     );
   }
 

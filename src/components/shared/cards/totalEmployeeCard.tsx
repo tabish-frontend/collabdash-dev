@@ -27,7 +27,7 @@ export const TotalEmployees = () => {
   }, []);
 
   const chartOptions: ApexOptions = {
-    labels: ["Men", "Women"],
+    labels: ["Male", "Female"],
     colors: ["#06AED4", "#9C27B0"],
     legend: {
       position: "bottom",
