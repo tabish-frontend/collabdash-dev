@@ -26,6 +26,7 @@ import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import { InviteModal } from "./invite-modal";
 import { useAuth } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
+import { ROLES } from "src/constants/roles";
 
 interface MeetingCardProps {
   meeting: Meeting;
@@ -123,7 +124,10 @@ export const MeetingCard: FC<MeetingCardProps> = ({
               justifyContent={"flex-start"}
               width={"100%"}
             >
-              <UserAvatarGroup users={meeting!.participants} />
+              <UserAvatarGroup
+                users={meeting!.participants}
+                isAccess={user?.role !== ROLES.Employee}
+              />
             </Stack>
           </Stack>
         </Stack>

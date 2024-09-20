@@ -45,7 +45,7 @@ export const BoardCard = ({
           justifyContent={"space-between"}
           alignItems={"center"}
         >
-          <UserAvatarGroup users={board.members} />
+          <UserAvatarGroup users={board.members} isAccess={isAccess} />
 
           {isAccess && (
             <Stack direction={"row"} spacing={2}>

@@ -112,8 +112,6 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     initialValues: task
       ? {
           ...task,
-          // assignedTo: task.assignedTo.map((item) => item._id),
-          assignedTo: task.assignedTo.map((user: any) => user._id),
           dueDate: new Date(task.dueDate),
         }
       : taskModalInitialValues,

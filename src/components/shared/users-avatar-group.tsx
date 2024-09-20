@@ -13,8 +13,16 @@ import { RouterLink } from "./router-link";
 import { paths } from "src/constants/paths";
 import { useState } from "react";
 import { UsersListPopover } from "./lists";
+import { useRouter } from "next/router";
 
-export const UserAvatarGroup = ({ users }: { users: Employee[] }) => {
+export const UserAvatarGroup = ({
+  users,
+  isAccess = true,
+}: {
+  users: Employee[];
+  isAccess?: boolean;
+}) => {
+  const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handlePopoverToggle = (
@@ -30,9 +38,10 @@ export const UserAvatarGroup = ({ users }: { users: Employee[] }) => {
   const renderUserAvatars = users.slice(0, 2).map((user, index) => (
     <Tooltip key={index} title={user.full_name}>
       <Link
-        component={RouterLink}
-        href={`${paths.employees}/${user.username}`}
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+          isAccess && router.push(`${paths.employees}/${user.username}`);
+        }}
       >
         <ImageAvatar
           path={user.avatar || ""}
@@ -75,7 +84,7 @@ export const UserAvatarGroup = ({ users }: { users: Employee[] }) => {
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         transformOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <UsersListPopover users={users.slice(2)} />
+        <UsersListPopover users={users.slice(2)} isAccess={isAccess} />
       </Popover>
     </>
   );

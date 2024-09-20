@@ -50,7 +50,7 @@ export const WorkspaceCard = ({
         alignItems="center"
         mt={2}
       >
-        <UserAvatarGroup users={workspace.members} />
+        <UserAvatarGroup users={workspace.members} isAccess={isAccess} />
         {isAccess && (
           <Stack direction="row" spacing={0.5}>
             <Tooltip title="Edit Workspace">
