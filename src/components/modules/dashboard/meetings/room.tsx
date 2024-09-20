@@ -30,10 +30,13 @@ const validateMeetingTiming = (
   meetingData: Meeting,
   setErrorMessage: any
 ): boolean => {
+  if (meetingData.time === null) return false;
+
   const currentTime = new Date().getTime();
-  const meetingStartTime = meetingData.time
-    ? new Date(meetingData.time).getTime()
-    : new Date().getTime();
+
+  const meetingStartTime = new Date(meetingData.time).getTime();
+  const meetingEndTime = new Date(meetingData.time).getTime() + 120 * 60 * 1000; // 2 hour after end time
+
   const fifteenMinutesBeforeStart = meetingStartTime - 15 * 60 * 1000; // 15 minutes before start time
 
   if (currentTime < fifteenMinutesBeforeStart) {
@@ -42,6 +45,12 @@ const validateMeetingTiming = (
     );
     return false;
   }
+
+  if (currentTime > meetingEndTime) {
+    setErrorMessage("Meeting has been ended");
+    return false;
+  }
+
   return true;
 };
 
@@ -98,9 +107,7 @@ const MeetingRoomComponent = () => {
 
   // If there's an error, render the error message screen
   if (errorMessage) {
-    return (
-      <WaitingScreen message={errorMessage} />
-    );
+    return <WaitingScreen message={errorMessage} />;
   }
 
   return (

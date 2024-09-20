@@ -3,13 +3,12 @@ import {
   Button,
   Card,
   CardContent,
-  CardHeader,
   Stack,
   SvgIcon,
   Typography,
   Link,
 } from "@mui/material";
-import { NoRecordFound, RouterLink } from "src/components/shared";
+import { RouterLink } from "src/components/shared";
 import { paths } from "src/constants/paths";
 import ArrowLeftIcon from "@untitled-ui/icons-react/build/esm/ArrowLeft";
 import { useAuth } from "src/hooks";
@@ -19,10 +18,16 @@ export const WaitingScreen = ({ message }: { message: any }) => {
   const { user } = useAuth<AuthContextType>();
 
   const notFound = message.includes("not found");
+  const isEnded = message.includes("ended");
+  const isWaiting = message.includes("before it starts");
 
-  const customImage = notFound
-    ? "/assets/icons/notFound404.png"
-    : "/assets/icons/waiting.png";
+  const getImage = () => {
+    if (notFound) return "notFound404";
+    if (isEnded) return "stopped";
+    return "waiting";
+  };
+
+  const customImage = `/assets/icons/${getImage()}.png`;
 
   return (
     <Box
@@ -57,17 +62,17 @@ export const WaitingScreen = ({ message }: { message: any }) => {
 
             <Stack alignItems={"center"} spacing={3}>
               <img
-                width={300}
+                width={isEnded ? 400 : 300}
                 height={300}
                 alt="error-illustration"
                 src={customImage}
               />
 
-              <Typography variant={notFound ? "h5" : "h6"}>
+              <Typography variant={isWaiting ? "h6" : "h5"}>
                 {message}
               </Typography>
 
-              {!notFound && (
+              {isWaiting && (
                 <Button
                   variant="contained"
                   onClick={() => window.location.reload()}

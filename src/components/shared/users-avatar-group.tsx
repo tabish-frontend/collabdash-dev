@@ -46,7 +46,10 @@ export const UserAvatarGroup = ({ users }: { users: Employee[] }) => {
 
   const remainingUsers = users.length > 2 && (
     <Avatar
-      onClick={(event) => handlePopoverToggle(event, true)}
+      onClick={(event) => {
+        event.stopPropagation();
+        handlePopoverToggle(event, true);
+      }}
       style={{ cursor: "pointer" }}
     >
       +{users.length - 2}

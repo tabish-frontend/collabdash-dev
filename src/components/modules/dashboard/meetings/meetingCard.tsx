@@ -77,15 +77,8 @@ export const MeetingCard: FC<MeetingCardProps> = ({
             >
               <ShareOutlinedIcon />
             </IconButton>
+
             <CoptToClipboard meeting={meeting} />
-            {/* <IconButton
-              aria-label="delete"
-              color="default"
-              disabled={!isUpcomingMeetings}
-              onClick={() => {}}
-            >
-              <ContentCopyOutlinedIcon />
-            </IconButton> */}
           </Stack>
         }
       />
