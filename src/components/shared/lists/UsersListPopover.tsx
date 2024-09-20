@@ -7,10 +7,10 @@ import { useRouter } from "next/router";
 
 export const UsersListPopover = ({
   users,
-  isAccess,
+  isAccess = true,
 }: {
   users: Employee[];
-  isAccess: boolean;
+  isAccess?: boolean;
 }) => {
   const router = useRouter();
 
