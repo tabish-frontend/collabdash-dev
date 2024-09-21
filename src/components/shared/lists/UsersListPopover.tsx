@@ -4,15 +4,16 @@ import { paths } from "src/constants/paths";
 import { Employee } from "src/types";
 import { Scrollbar } from "src/utils/scrollbar";
 import { useRouter } from "next/router";
+import { useAuth } from "src/hooks";
+import { AuthContextType } from "src/contexts/auth";
+import { ROLES } from "src/constants/roles";
 
-export const UsersListPopover = ({
-  users,
-  isAccess = true,
-}: {
-  users: Employee[];
-  isAccess?: boolean;
-}) => {
+export const UsersListPopover = ({ users }: { users: Employee[] }) => {
   const router = useRouter();
+
+  const { user } = useAuth<AuthContextType>();
+
+  const isEmployee = user?.role === ROLES.Employee;
 
   return (
     <Scrollbar sx={{ maxHeight: 150, width: 200, overflowY: "auto" }}>
@@ -31,7 +32,8 @@ export const UsersListPopover = ({
               variant="subtitle1"
               onClick={(e) => {
                 e.stopPropagation();
-                isAccess && router.push(`${paths.employees}/${user.username}`);
+                !isEmployee &&
+                  router.push(`${paths.employees}/${user.username}`);
               }}
             >
               {user.full_name}

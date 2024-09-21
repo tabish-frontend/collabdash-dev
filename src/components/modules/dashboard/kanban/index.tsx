@@ -34,6 +34,8 @@ interface DeletWorkSpaceDialogData {
 
 const KanbanComponent = () => {
   const { user } = useAuth<AuthContextType>();
+
+  const isEmployee = user?.role === ROLES.Employee;
   const settings = useSettings();
   const theme = useTheme();
 
@@ -76,7 +78,7 @@ const KanbanComponent = () => {
           >
             <Typography variant="h4">Workspaces</Typography>
 
-            {user?.role !== ROLES.Employee && (
+            {!isEmployee && (
               <Button
                 variant="contained"
                 size={isSmallScreen ? "small" : "medium"}
@@ -102,7 +104,6 @@ const KanbanComponent = () => {
                 <Grid item xs={12} xl={3} lg={4} md={6} key={workspace.slug}>
                   <WorkspaceCard
                     workspace={workspace}
-                    isAccess={user?.role !== ROLES.Employee}
                     handleUpdateWorkspace={() => {
                       WorkSpaceDialog.handleOpen({
                         type: "Update",

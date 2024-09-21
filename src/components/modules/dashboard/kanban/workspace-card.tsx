@@ -14,19 +14,24 @@ import { paths } from "src/constants/paths";
 import { UserAvatarGroup } from "src/components/shared";
 import { format } from "date-fns";
 import { formatDate } from "src/utils";
+import { ROLES } from "src/constants/roles";
+import { useAuth } from "src/hooks";
+import { AuthContextType } from "src/contexts/auth";
 
 export const WorkspaceCard = ({
   workspace,
   handleUpdateWorkspace,
   handleDeleteWorkspace,
-  isAccess,
 }: {
   workspace: any;
   handleUpdateWorkspace: () => void;
   handleDeleteWorkspace: () => void;
-  isAccess: boolean;
 }) => {
   const router = useRouter();
+
+  const { user } = useAuth<AuthContextType>();
+
+  const isEmployee = user?.role === ROLES.Employee;
 
   return (
     <Card
@@ -50,8 +55,8 @@ export const WorkspaceCard = ({
         alignItems="center"
         mt={2}
       >
-        <UserAvatarGroup users={workspace.members} isAccess={isAccess} />
-        {isAccess && (
+        <UserAvatarGroup users={workspace.members} />
+        {!isEmployee && (
           <Stack direction="row" spacing={0.5}>
             <Tooltip title="Edit Workspace">
               <IconButton

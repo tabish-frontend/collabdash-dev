@@ -14,15 +14,16 @@ import { paths } from "src/constants/paths";
 import { useState } from "react";
 import { UsersListPopover } from "./lists";
 import { useRouter } from "next/router";
+import { useAuth } from "src/hooks";
+import { AuthContextType } from "src/contexts/auth";
+import { ROLES } from "src/constants/roles";
 
-export const UserAvatarGroup = ({
-  users,
-  isAccess = true,
-}: {
-  users: Employee[];
-  isAccess?: boolean;
-}) => {
+export const UserAvatarGroup = ({ users }: { users: Employee[] }) => {
   const router = useRouter();
+  const { user } = useAuth<AuthContextType>();
+
+  const isEmployee = user?.role === ROLES.Employee;
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handlePopoverToggle = (
@@ -40,7 +41,7 @@ export const UserAvatarGroup = ({
       <Link
         onClick={(e) => {
           e.stopPropagation();
-          isAccess && router.push(`${paths.employees}/${user.username}`);
+          !isEmployee && router.push(`${paths.employees}/${user.username}`);
         }}
       >
         <ImageAvatar
@@ -84,7 +85,7 @@ export const UserAvatarGroup = ({
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         transformOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <UsersListPopover users={users.slice(2)} isAccess={isAccess} />
+        <UsersListPopover users={users.slice(2)} />
       </Popover>
     </>
   );

@@ -124,10 +124,7 @@ export const MeetingCard: FC<MeetingCardProps> = ({
               justifyContent={"flex-start"}
               width={"100%"}
             >
-              <UserAvatarGroup
-                users={meeting!.participants}
-                isAccess={user?.role !== ROLES.Employee}
-              />
+              <UserAvatarGroup users={meeting!.participants} />
             </Stack>
           </Stack>
         </Stack>
