@@ -10,6 +10,9 @@ import { useRouter } from "next/router";
 import { meetingApi } from "src/api";
 import { Meeting } from "src/types";
 import { WaitingScreen } from "./waiting-card";
+import { Link } from "@mui/material";
+import { paths } from "src/constants/paths";
+import { Logo, RouterLink } from "src/components/shared";
 
 // Function to fetch session data from API
 const fetchMeetingData = async (
@@ -111,25 +114,45 @@ const MeetingRoomComponent = () => {
   }
 
   return (
-    <div style={{ height: "100vh", overflowY: "hidden" }}>
+    <div>
       {meetingExist && (
-        <JitsiMeeting
-          domain="meet.collabdash.io"
-          roomName={displayRoomName}
-          configOverwrite={JitsiConfigOverwrite}
-          interfaceConfigOverwrite={{}}
-          userInfo={{
-            displayName: user?.full_name || "Guest User",
-            email: user?.email || "user@gmail.com",
-          }}
-          getIFrameRef={(iframeRef) => {
-            iframeRef.style.height = "100%";
-            iframeRef.style.width = "100%";
-          }}
-          onApiReady={(externalApi) => {
-            console.log("Jitsi Meeting API is ready!", externalApi);
-          }}
-        />
+        <div
+          style={{ height: "100vh", overflowY: "hidden", position: "relative" }}
+        >
+          <Link
+            component={RouterLink}
+            href={paths.index}
+            target="_blank"
+            sx={{
+              position: "absolute",
+              top: 20,
+              left: 10,
+              height: 80,
+              width: 150,
+              textDecoration: "none",
+            }}
+          >
+            <Logo />
+          </Link>
+
+          <JitsiMeeting
+            domain="meet.collabdash.io"
+            roomName={displayRoomName}
+            configOverwrite={JitsiConfigOverwrite}
+            interfaceConfigOverwrite={{}}
+            userInfo={{
+              displayName: user?.full_name || "Guest User",
+              email: user?.email || "user@gmail.com",
+            }}
+            getIFrameRef={(iframeRef) => {
+              iframeRef.style.height = "100%";
+              iframeRef.style.width = "100%";
+            }}
+            onApiReady={(externalApi) => {
+              console.log("Jitsi Meeting API is ready!", externalApi);
+            }}
+          />
+        </div>
       )}
     </div>
   );

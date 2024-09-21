@@ -5,7 +5,16 @@ const withTM = require("next-transpile-modules")(["@jitsi/react-sdk"]);
 const config = {
   reactStrictMode: false,
   images: {
-    domains: ["res.cloudinary.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
+      {
+        protocol: "http",
+        hostname: "res.cloudinary.com",
+      },
+    ],
   },
   webpack(config) {
     config.module.rules.push({
