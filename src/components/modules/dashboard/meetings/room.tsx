@@ -114,7 +114,7 @@ const MeetingRoomComponent = () => {
     <div style={{ height: "100vh", overflowY: "hidden" }}>
       {meetingExist && (
         <JitsiMeeting
-          domain="ss.tuitionhighway.com"
+          domain="meet.collabdash.io"
           roomName={displayRoomName}
           configOverwrite={JitsiConfigOverwrite}
           interfaceConfigOverwrite={{}}
