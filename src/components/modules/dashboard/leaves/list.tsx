@@ -9,6 +9,8 @@ import {
   CardContent,
   Tabs,
   Tab,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import React, { SyntheticEvent, useCallback, useEffect, useState } from "react";
 import { NextPage } from "next";
@@ -122,6 +124,9 @@ const LeavesListComponent = () => {
 
   const minDate = new Date(currentYear - 3, 0, 1);
   const maxDate = new Date(currentYear, 11, 31);
+  const theme = useTheme();
+
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <Box
@@ -167,10 +172,17 @@ const LeavesListComponent = () => {
                   ))}
                 </Tabs>
 
-                <Stack direction={"row"} spacing={1} alignItems={"center"}>
+                <Stack
+                  direction={"row"}
+                  spacing={1}
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
+                >
                   {tabValue === "my_leaves" && (
                     <Button
                       variant="contained"
+                      sx={{ minWidth: 140 }}
+                      size={isSmallScreen ? "small" : "medium"}
                       startIcon={<Plus />}
                       onClick={() => {
                         LeaveDialog.handleOpen({
@@ -187,6 +199,8 @@ const LeavesListComponent = () => {
                     <Button
                       variant="contained"
                       color="warning"
+                      sx={{ minWidth: 130 }}
+                      size={isSmallScreen ? "small" : "medium"}
                       startIcon={<Plus />}
                       onClick={() => {
                         LeaveDialog.handleOpen({
@@ -203,7 +217,7 @@ const LeavesListComponent = () => {
                     label={"Month And Year"}
                     views={["year", "month"]}
                     openTo="month"
-                    sx={{ width: 180, height: 45 }}
+                    sx={{ maxWidth: 180, height: 45 }}
                     minDate={minDate}
                     maxDate={maxDate}
                     value={datePickerDate}

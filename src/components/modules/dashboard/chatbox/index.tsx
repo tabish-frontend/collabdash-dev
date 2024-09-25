@@ -17,6 +17,8 @@ import { ChatComposer } from "./chat-composer";
 import { ChatThread } from "./chat-thread";
 import { ChatContainer } from "./chat-container";
 import { ChatSidebar } from "./chat-sidebar";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 /**
  * NOTE:
@@ -136,7 +138,12 @@ const ChatboxComponent = () => {
             <Box sx={{ p: 2 }}>
               <IconButton onClick={sidebar.handleToggle}>
                 <SvgIcon>
-                  <Menu01Icon />
+                  {/* <Menu01Icon /> */}
+                  {sidebar.open ? (
+                    <ArrowBackIosIcon />
+                  ) : (
+                    <ArrowForwardIosIcon />
+                  )}
                 </SvgIcon>
               </IconButton>
             </Box>
