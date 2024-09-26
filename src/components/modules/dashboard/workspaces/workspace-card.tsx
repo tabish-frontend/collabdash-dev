@@ -7,12 +7,11 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { SquareEditOutline, TrashCanOutline } from "mdi-material-ui";
 import { useRouter } from "next/router";
 import { paths } from "src/constants/paths";
 import { UserAvatarGroup } from "src/components/shared";
-import { format } from "date-fns";
 import { formatDate } from "src/utils";
 import { ROLES } from "src/constants/roles";
 import { useAuth } from "src/hooks";

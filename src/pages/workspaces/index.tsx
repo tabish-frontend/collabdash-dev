@@ -1,3 +1,3 @@
-import { KanbanScreen } from "src/components";
+import { WorkSpaces } from "src/components";
 
-export default KanbanScreen;
+export default WorkSpaces;
