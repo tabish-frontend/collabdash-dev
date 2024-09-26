@@ -17,6 +17,7 @@ import { ChatComposer } from "./chat-composer";
 import { ChatThread } from "./chat-thread";
 import { ChatContainer } from "./chat-container";
 import { ChatSidebar } from "./chat-sidebar";
+import useListenMessages from "src/hooks/use-listen-messages";
 
 /**
  * NOTE:
@@ -104,6 +105,8 @@ const ChatboxComponent = () => {
   useThreads();
 
   const view = threadKey ? "thread" : compose ? "compose" : "blank";
+
+  useListenMessages();
 
   return (
     <>

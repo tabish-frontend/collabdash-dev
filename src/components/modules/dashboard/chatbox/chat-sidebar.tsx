@@ -16,28 +16,31 @@ import type { Theme } from "@mui/material/styles/createTheme";
 import { chatApi } from "src/api/chat";
 import { useRouter } from "src/hooks/use-router";
 import { useSelector } from "src/store";
-import type { Contact, Thread } from "src/types";
+import type { Employee, Thread } from "src/types";
 
 import { ChatSidebarSearch } from "./chat-sidebar-search";
 import { ChatThreadItem } from "./chat-thread-item";
-import { useAuth, useMockedUser } from "src/hooks";
+import { useAuth } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { paths } from "src/constants/paths";
 import { Scrollbar } from "src/utils/scrollbar";
+import { employeesApi } from "src/api";
+import { useDebouncedCallback } from "use-debounce";
 
-const getThreadKey = (thread: Thread, userId: string): string | undefined => {
+const getThreadKey = (
+  thread: Thread,
+  userId: string | undefined
+): string | undefined => {
   let threadKey: string | undefined;
 
   if (thread.type === "GROUP") {
-    threadKey = thread.id;
+    threadKey = thread._id;
   } else {
-    // We hardcode the current user ID because the mocked that is not in sync
-    // with the auth provider.
-    // When implementing this app with a real database, replace this
-    // ID with the ID from Auth Context.
-    threadKey = thread.participantIds.find(
-      (participantId) => participantId !== userId
+    const selectedThread = thread.participants?.find(
+      (participant) => participant._id !== userId
     );
+
+    threadKey = selectedThread?._id;
   }
 
   return threadKey;
@@ -59,7 +62,7 @@ interface ChatSidebarProps {
 
 export const ChatSidebar: FC<ChatSidebarProps> = (props) => {
   const { container, onClose, open, ...other } = props;
-  const user = useMockedUser();
+  const { user } = useAuth<AuthContextType>();
 
   const router = useRouter();
   const threads = useThreads();
@@ -68,33 +71,38 @@ export const ChatSidebar: FC<ChatSidebarProps> = (props) => {
   const currentThreadId = useCurrentThreadId();
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [searchResults, setSearchResults] = useState<Contact[]>([]);
+  const [searchResults, setSearchResults] = useState<Employee[]>([]);
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("md"));
 
   const handleCompose = useCallback((): void => {
     router.push(paths.chat + "?compose=true");
   }, [router]);
 
-  const handleSearchChange = useCallback(
-    async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
-      const { value } = event.target;
-
-      setSearchQuery(value);
-
+  // Debounced version of handleSearchChange
+  const debouncedHandleSearchChange = useDebouncedCallback(
+    async (value: string) => {
       if (!value) {
         setSearchResults([]);
         return;
       }
 
       try {
-        const contacts = await chatApi.getContacts({ query: value });
-
-        setSearchResults(contacts);
+        const response = await chatApi.getContacts({ query: value });
+        setSearchResults(response);
       } catch (err) {
         console.error(err);
       }
     },
-    []
+    500 // Delay in ms
+  );
+
+  const handleSearchChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const { value } = event.target;
+      setSearchQuery(value); // Update search input value immediately
+      debouncedHandleSearchChange(value); // Trigger debounced API call
+    },
+    [debouncedHandleSearchChange] // Ensure this stays memoized
   );
 
   const handleSearchClickAway = useCallback((): void => {
@@ -109,9 +117,9 @@ export const ChatSidebar: FC<ChatSidebarProps> = (props) => {
   }, []);
 
   const handleSearchSelect = useCallback(
-    (contact: Contact): void => {
+    (contact: Employee): void => {
       // We use the contact ID as a thread key
-      const threadKey = contact.id;
+      const threadKey = contact._id;
 
       setSearchFocused(false);
       setSearchQuery("");
@@ -128,16 +136,16 @@ export const ChatSidebar: FC<ChatSidebarProps> = (props) => {
 
       console.log("handleThreadSelect thread", thread);
 
-      const threadKey = getThreadKey(thread, user._id);
+      const threadKey = getThreadKey(thread, user?._id);
 
       console.log("handleThreadSelect threadKey", threadKey);
 
-      router.push(paths.chat + `?threadKey=${threadKey}`);
-      // if (!threadKey) {
-      //   router.push(paths.chat);
-      // } else {
-      //   router.push(paths.chat + `?threadKey=${threadKey}`);
-      // }
+      // router.push(paths.chat + `?threadKey=${threadKey}`);
+      if (!threadKey) {
+        router.push(paths.chat);
+      } else {
+        router.push(paths.chat + `?threadKey=${threadKey}`);
+      }
     },
     [router, threads, user]
   );

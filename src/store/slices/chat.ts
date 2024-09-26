@@ -1,12 +1,12 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 
-import type { Contact, Message, Thread } from "src/types";
+import type { Employee, Message, Thread } from "src/types";
 import { objFromArray } from "src/utils/obj-from-array";
 
 interface ChatState {
   contacts: {
-    byId: Record<string, Contact>;
+    byId: Record<string, Employee>;
     allIds: string[];
   };
   currentThreadId?: string;
@@ -16,7 +16,7 @@ interface ChatState {
   };
 }
 
-type GetContactsAction = PayloadAction<Contact[]>;
+type GetContactsAction = PayloadAction<Employee[]>;
 
 type GetThreadsAction = PayloadAction<Thread[]>;
 
@@ -56,11 +56,13 @@ const reducers = {
   getThread(state: ChatState, action: GetThreadAction): void {
     const thread = action.payload;
 
-    if (thread) {
-      state.threads.byId[thread.id!] = thread;
+    console.log("getThread slice", thread);
 
-      if (!state.threads.allIds.includes(thread.id!)) {
-        state.threads.allIds.unshift(thread.id!);
+    if (thread) {
+      state.threads.byId[thread._id!] = thread;
+
+      if (!state.threads.allIds.includes(thread._id!)) {
+        state.threads.allIds.unshift(thread._id!);
       }
     }
   },

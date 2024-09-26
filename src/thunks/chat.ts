@@ -1,13 +1,19 @@
 import { chatApi } from "src/api/chat";
 import { slice } from "src/store/slices/chat";
 import type { AppThunk } from "src/store";
+import { employeesApi } from "src/api";
 
 const getContacts =
   (): AppThunk =>
   async (dispatch): Promise<void> => {
-    const response = await chatApi.getContacts({});
+    const response = await employeesApi.getAllEmployees({
+      fields: "full_name,avatar,department",
+      account_status: "active",
+      search: "",
+      role: "admin",
+    });
 
-    dispatch(slice.actions.getContacts(response));
+    dispatch(slice.actions.getContacts(response.users));
   };
 
 const getThreads =
@@ -27,9 +33,10 @@ const getThread =
   async (dispatch): Promise<string | undefined> => {
     const response = await chatApi.getThread(params);
 
+    console.log("Calling that 0000", response);
     dispatch(slice.actions.getThread(response));
 
-    return response?.id;
+    return response?._id;
   };
 
 type MarkThreadAsSeenParams = {
@@ -58,6 +65,8 @@ type AddMessageParams = {
   threadId?: string;
   recipientIds?: string[];
   body: string;
+  contentType: string;
+  attachments: [];
 };
 
 const addMessage =

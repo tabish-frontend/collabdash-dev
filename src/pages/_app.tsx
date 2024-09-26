@@ -19,6 +19,7 @@ import { Provider } from "react-redux";
 import { AuthConsumer, AuthProvider } from "src/contexts/auth";
 import { store } from "src/store";
 import { WorkSpaceProvider } from "src/contexts/workSpace";
+import { SocketProvider } from "src/contexts/socket";
 
 const clientSideEmotionCache = createEmotionCache();
 
@@ -63,9 +64,11 @@ const CustomApp = (props: CustomAppProps) => {
                           {showSlashScreen ? (
                             <SplashScreen />
                           ) : (
-                            <WorkSpaceProvider>
-                              {getLayout(<Component {...pageProps} />)}
-                            </WorkSpaceProvider>
+                            <SocketProvider>
+                              <WorkSpaceProvider>
+                                {getLayout(<Component {...pageProps} />)}
+                              </WorkSpaceProvider>
+                            </SocketProvider>
                           )}
                           <Toaster />
                         </ThemeProvider>

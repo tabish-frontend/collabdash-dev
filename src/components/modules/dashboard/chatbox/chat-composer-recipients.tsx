@@ -19,13 +19,14 @@ import SvgIcon from "@mui/material/SvgIcon";
 import Typography from "@mui/material/Typography";
 
 import { chatApi } from "src/api/chat";
-import type { Contact } from "src/types";
+import type { Employee } from "src/types";
 import { Scrollbar } from "src/utils/scrollbar";
+import { useDebouncedCallback } from "use-debounce";
 
 interface ChatComposerRecipientsProps {
-  onRecipientAdd?: (contact: Contact) => void;
+  onRecipientAdd?: (contact: Employee) => void;
   onRecipientRemove?: (recipientId: string) => void;
-  recipients?: Contact[];
+  recipients?: Employee[];
 }
 
 export const ChatComposerRecipients: FC<ChatComposerRecipientsProps> = (
@@ -40,30 +41,27 @@ export const ChatComposerRecipients: FC<ChatComposerRecipientsProps> = (
   const searchRef = useRef<HTMLDivElement | null>(null);
   const [searchFocused, setSearchFocused] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [searchResults, setSearchResults] = useState<Contact[]>([]);
+  const [searchResults, setSearchResults] = useState<Employee[]>([]);
 
   const showSearchResults = !!(searchFocused && searchQuery);
   const hasSearchResults = searchResults.length > 0;
 
-  const handleSearchChange = useCallback(
-    async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
-      const query = event.target.value;
-
-      setSearchQuery(query);
-
-      if (!query) {
+  // Debounced version of handleSearchChange
+  const debouncedHandleSearchChange = useDebouncedCallback(
+    async (value: string) => {
+      if (!value) {
         setSearchResults([]);
         return;
       }
 
       try {
-        const contacts = await chatApi.getContacts({ query });
+        const contacts = await chatApi.getContacts({ query: value });
 
         // Filter already picked recipients
+        const recipientIds = recipients.map((recipient) => recipient._id);
 
-        const recipientIds = recipients.map((recipient) => recipient.id);
         const filtered = contacts.filter(
-          (contact) => !recipientIds.includes(contact.id)
+          (contact) => !recipientIds.includes(contact._id)
         );
 
         setSearchResults(filtered);
@@ -71,8 +69,46 @@ export const ChatComposerRecipients: FC<ChatComposerRecipientsProps> = (
         console.error(err);
       }
     },
-    [recipients]
+    300 // Delay in ms
   );
+
+  const handleSearchChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const { value } = event.target;
+      setSearchQuery(value); // Update search input value immediately
+      debouncedHandleSearchChange(value); // Trigger debounced API call
+    },
+    [debouncedHandleSearchChange] // Ensure this stays memoized
+  );
+
+  // const handleSearchChange = useCallback(
+  //   async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
+  //     const query = event.target.value;
+
+  //     setSearchQuery(query);
+
+  //     if (!query) {
+  //       setSearchResults([]);
+  //       return;
+  //     }
+
+  //     try {
+  //       const contacts = await chatApi.getContacts({ query });
+
+  //       // Filter already picked recipients
+
+  //       const recipientIds = recipients.map((recipient) => recipient._id);
+  //       const filtered = contacts.filter(
+  //         (contact) => !recipientIds.includes(contact._id)
+  //       );
+
+  //       setSearchResults(filtered);
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   },
+  //   [recipients]
+  // );
 
   const handleSearchClickAway = useCallback((): void => {
     if (showSearchResults) {
@@ -85,7 +121,7 @@ export const ChatComposerRecipients: FC<ChatComposerRecipientsProps> = (
   }, []);
 
   const handleSearchSelect = useCallback(
-    (contact: Contact): void => {
+    (contact: Employee): void => {
       setSearchQuery("");
       onRecipientAdd?.(contact);
     },
@@ -161,7 +197,7 @@ export const ChatComposerRecipients: FC<ChatComposerRecipientsProps> = (
                           <List>
                             {searchResults.map((contact) => (
                               <ListItemButton
-                                key={contact.id}
+                                key={contact._id}
                                 onClick={(): void =>
                                   handleSearchSelect(contact)
                                 }
@@ -170,7 +206,7 @@ export const ChatComposerRecipients: FC<ChatComposerRecipientsProps> = (
                                   <Avatar src={contact.avatar} />
                                 </ListItemAvatar>
                                 <ListItemText
-                                  primary={contact.name}
+                                  primary={contact.full_name}
                                   primaryTypographyProps={{
                                     noWrap: true,
                                     variant: "subtitle2",
@@ -209,9 +245,11 @@ export const ChatComposerRecipients: FC<ChatComposerRecipientsProps> = (
               {recipients.map((recipient) => (
                 <Chip
                   avatar={<Avatar src={recipient.avatar} />}
-                  key={recipient.id}
-                  label={recipient.name}
-                  onDelete={(): void => onRecipientRemove?.(recipient.id)}
+                  key={recipient._id}
+                  label={recipient.full_name}
+                  onDelete={(): void =>
+                    onRecipientRemove?.(recipient._id as string)
+                  }
                 />
               ))}
             </Stack>
