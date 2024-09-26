@@ -17,4 +17,6 @@ export * from "./users-avatar-group";
 export * from "./leaves-status";
 export * from "./tip";
 export * from "./skeleton";
+
 export * from "./clipboard";
+export * from "./ConfirmationAlert";

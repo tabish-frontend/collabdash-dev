@@ -1,12 +1,10 @@
 import type { ChangeEvent, FC } from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import ArchiveIcon from "@untitled-ui/icons-react/build/esm/Archive";
-import PlusIcon from "@untitled-ui/icons-react/build/esm/Plus";
 import XIcon from "@untitled-ui/icons-react/build/esm/X";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
 import Grid from "@mui/material/Unstable_Grid2";
 import IconButton from "@mui/material/IconButton";
 import Input from "@mui/material/Input";
@@ -14,19 +12,17 @@ import Stack from "@mui/material/Stack";
 import SvgIcon from "@mui/material/SvgIcon";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
-
 import type { Theme } from "@mui/material/styles/createTheme";
-
 import { Column, Tasks, Attachment } from "src/types";
 import { useWorkSpace } from "src/hooks/use-workSpace";
-import { SelectMultipleUsers, SeverityPill } from "src/components/shared";
-import { useFormik } from "formik";
-import { DatePicker, MobileDateTimePicker } from "@mui/x-date-pickers";
 import {
-  AttachFile,
-  AttachFileTwoTone,
-  Description,
-} from "@mui/icons-material";
+  SelectMultipleUsers,
+  SeverityPill,
+  ConfirmationAlert,
+} from "src/components/shared";
+import { useFormik } from "formik";
+import { MobileDateTimePicker } from "@mui/x-date-pickers";
+import { AttachFile, Description } from "@mui/icons-material";
 import VideoFileIcon from "@mui/icons-material/VideoFile";
 import AudioFileIcon from "@mui/icons-material/AudioFile";
 import {
@@ -44,12 +40,10 @@ import {
 } from "@mui/material";
 import { Calendar, Close } from "mdi-material-ui";
 import { TaskApi } from "src/api/kanban/tasks";
-import ConfirmationAlert from "src/components/shared/ConfirmationAlert";
 import { LoadingButton } from "@mui/lab";
 import "react-quill/dist/quill.snow.css";
 import dynamic from "next/dynamic";
 import { Priorities } from "src/constants/list-items";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 export interface TaskModalValues {
   _id: string;
