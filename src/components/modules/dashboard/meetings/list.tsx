@@ -132,7 +132,7 @@ const MeetingListComponent = () => {
               Schedule Meetings
             </Typography>
 
-            {user?.role !== ROLES.Employee && (
+            
               <Button
                 variant="contained"
                 size={isSmallScreen ? "small" : "medium"}
@@ -145,7 +145,7 @@ const MeetingListComponent = () => {
               >
                 Create Meeting
               </Button>
-            )}
+         
           </Stack>
 
           <Tabs

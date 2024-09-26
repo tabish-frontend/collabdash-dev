@@ -161,7 +161,7 @@ export const TodoCard = () => {
       <Card sx={{ minHeight: 490 }}>
         <CardHeader
           //   sx={{ padding: isSmallScreen ? "28px 20px" : "28px 24px" }}
-          title="My Checklist"
+          title="My Todos"
           action={
             <Stack
               direction={"row"}

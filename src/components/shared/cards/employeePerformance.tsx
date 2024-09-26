@@ -20,7 +20,7 @@ import {
   UmbrellaBeachOutline,
 } from "mdi-material-ui";
 import { statisticsApi } from "src/api";
-import { Tooltip } from "@mui/material";
+import { Stack, Tooltip } from "@mui/material";
 import { UsersListPopover } from "../lists";
 
 export const EmployeePerformanceCard = () => {
@@ -55,15 +55,19 @@ export const EmployeePerformanceCard = () => {
     },
   ]);
 
+  const [totalEmployees, setTotalEmployees] = useState<Number | null>(null);
+
   useEffect(() => {
     const handleGetTodayAvailability = async () => {
       const response = await statisticsApi.getAllUserAvailability();
       setEmployeesAvailability((prevAvailability: any) =>
         prevAvailability.map((availability: any) => ({
           ...availability,
-          values: response.data[availability.key] || [],
+          values: response.data.today_availability[availability.key] || [],
         }))
       );
+
+      setTotalEmployees(response.data.total_employees);
     };
 
     handleGetTodayAvailability();
@@ -73,30 +77,26 @@ export const EmployeePerformanceCard = () => {
     <Card>
       <CardHeader
         title="Employees Statistics"
-        // action={
-        //   <IconButton
-        //     size="small"
-        //     aria-label="settings"
-        //     className="card-more-options"
-        //     sx={{ color: "text.secondary" }}
-        //   >
-        //     <DotsVertical />
-        //   </IconButton>
-        // }
-        // subheader={
-        //   <Typography variant="body2">
-        //     <Box
-        //       component="span"
-        //       sx={{ fontWeight: 600, color: "text.primary" }}
-        //     >
-        //       Total 48.5% growth
-        //     </Box>{" "}
-        //     😎 this month
-        //   </Typography>
-        // }
+        action={
+          <IconButton
+            size="small"
+            aria-label="settings"
+            className="card-more-options"
+            sx={{ color: "text.secondary" }}
+          >
+            <DotsVertical />
+          </IconButton>
+        }
+        subheader={
+          <Stack direction={"row"} spacing={2}>
+            <Typography variant="h6">
+              {`Total Employees: ${totalEmployees}`}
+            </Typography>
+          </Stack>
+        }
         titleTypographyProps={{
           sx: {
-            mb: 2.5,
+            mb: 1.5,
             lineHeight: "2rem !important",
             letterSpacing: "0.15px !important",
           },

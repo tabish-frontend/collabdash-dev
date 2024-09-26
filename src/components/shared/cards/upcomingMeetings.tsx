@@ -83,7 +83,7 @@ export const UpcomingMeetingsCard = () => {
                 height="300px"
               >
                 <Typography variant="h6" textAlign="center">
-                  No upcoming Meetings
+                  No Upcoming Meetings
                 </Typography>
               </Box>
             ) : (
