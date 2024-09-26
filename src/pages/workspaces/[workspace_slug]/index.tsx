@@ -1,3 +1,3 @@
-import { WorkSpaces } from "src/components";
+import { WorkSpaceSlug } from "src/components/modules/dashboard/workspaces/workspace-slug";
 
-export default WorkSpaces;
+export default WorkSpaceSlug;

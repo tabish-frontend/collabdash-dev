@@ -5,7 +5,6 @@ import {
   Grid,
   Stack,
   SvgIcon,
-  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
@@ -13,63 +12,47 @@ import {
 import { useAuth, useDialog, useSettings } from "src/hooks";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts";
-import { useRouter } from "next/router";
 import { Plus } from "mdi-material-ui";
 import { ConfirmationModal } from "src/components/shared";
 import { useWorkSpace } from "src/hooks/use-workSpace";
 import { WorkSpace } from "src/types";
 import { ROLES } from "src/constants/roles";
 import { AuthContextType } from "src/contexts/auth";
-import { BoardsModal } from "./boards-modal";
-import { BoardCard } from "./boardCard";
-import ArrowLeftIcon from "@untitled-ui/icons-react/build/esm/ArrowLeft";
+import { workSpaceInitialValues } from "src/formik";
+import { WorkspaceCard } from "./workspace-card";
+import { WorkspaceModal } from "./workspace-modal";
 
-interface BoardDialogData {
+interface WorkSpaceDialogData {
   type: string;
-  values?: object;
+  values?: WorkSpace;
 }
 
-interface DeleeBoardDialogData {
-  id: string;
+interface DeletWorkSpaceDialogData {
+  _id?: string;
+  name: string;
 }
 
 const WorkSpacesComponent = () => {
   const { user } = useAuth<AuthContextType>();
+
+  const isEmployee = user?.role === ROLES.Employee;
   const settings = useSettings();
-  const router = useRouter();
   const theme = useTheme();
+
+  const { WorkSpaces } = useWorkSpace();
+
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const { workspace_slug } = router.query;
 
-  const {
-    getCurrentWorkSpace,
-    handleAddBoard,
-    handleUpdateBoard,
-    handleDeletBoard,
-  } = useWorkSpace();
+  const WorkSpaceDialog = useDialog<WorkSpaceDialogData>();
+  const DeleteWorkSpaceDialog = useDialog<DeletWorkSpaceDialogData>();
 
-  const workSpace: WorkSpace = getCurrentWorkSpace(workspace_slug);
+  const { handleDeleteWorkSpace } = useWorkSpace();
 
-  const boardDialog = useDialog<BoardDialogData>();
-  const DeleteBoardDialog = useDialog<DeleeBoardDialogData>();
+  const deleteWorkSpace = async () => {
+    if (!DeleteWorkSpaceDialog.data?._id) return null;
 
-  const addAndUpdateBoard = async (values: any) => {
-    const { _id, ...boardValues } = values;
-    if (boardDialog.data?.type === "update") {
-      await handleUpdateBoard(_id, boardValues);
-    } else {
-      await handleAddBoard({
-        ...values,
-        workspace: workSpace!._id,
-      });
-    }
-    boardDialog.handleClose();
-  };
-
-  const deleteBoard = async (_id: string | undefined) => {
-    if (!_id) return null;
-    await handleDeletBoard(_id);
-    DeleteBoardDialog.handleClose();
+    await handleDeleteWorkSpace(DeleteWorkSpaceDialog.data._id);
+    DeleteWorkSpaceDialog.handleClose();
   };
 
   return (
@@ -87,31 +70,15 @@ const WorkSpacesComponent = () => {
             lg: 4,
           }}
         >
-          <Box display="flex" alignItems={"center"}>
-            <Tooltip title="Back">
-              <Button
-                onClick={() => router.back()}
-                color="inherit"
-                size="small"
-              >
-                <SvgIcon>
-                  <ArrowLeftIcon />
-                </SvgIcon>
-              </Button>
-            </Tooltip>
-            <Typography variant="h5">{"Boards"}</Typography>
-          </Box>
-
           <Stack
             direction={"row"}
-            justifyContent="space-between"
+            justifyContent={"space-between"}
             alignItems={"center"}
-            flexWrap={"wrap"}
-            sx={{ px: 3 }}
+            sx={{ px: 2 }}
           >
-            <Typography variant="h5">{workSpace?.name}</Typography>
+            <Typography variant="h4">Workspaces</Typography>
 
-            {user?.role !== ROLES.Employee && (
+            {!isEmployee && (
               <Button
                 variant="contained"
                 size={isSmallScreen ? "small" : "medium"}
@@ -121,32 +88,32 @@ const WorkSpacesComponent = () => {
                   </SvgIcon>
                 }
                 onClick={() => {
-                  boardDialog.handleOpen({
-                    type: "create",
+                  WorkSpaceDialog.handleOpen({
+                    type: "Create",
                   });
                 }}
               >
-                Add Board
+                Add Workspace
               </Button>
             )}
           </Stack>
 
           <Grid container spacing={2} sx={{ pr: 3 }}>
-            {workSpace?.boards?.map((board: any) => {
+            {WorkSpaces.map((workspace: any) => {
               return (
-                <Grid item xs={12} xl={3} lg={4} md={6} key={board.slug}>
-                  <BoardCard
-                    board={board}
-                    isAccess={user?.role !== ROLES.Employee}
-                    handleUpdateBoard={() => {
-                      boardDialog.handleOpen({
-                        type: "update",
-                        values: board,
+                <Grid item xs={12} xl={3} lg={4} md={6} key={workspace.slug}>
+                  <WorkspaceCard
+                    workspace={workspace}
+                    handleUpdateWorkspace={() => {
+                      WorkSpaceDialog.handleOpen({
+                        type: "Update",
+                        values: workspace,
                       });
                     }}
-                    handleDeleteBoard={() =>
-                      DeleteBoardDialog.handleOpen({
-                        id: board._id,
+                    handleDeleteWorkspace={() =>
+                      DeleteWorkSpaceDialog.handleOpen({
+                        _id: workspace._id,
+                        name: workspace.name,
                       })
                     }
                   />
@@ -157,25 +124,27 @@ const WorkSpacesComponent = () => {
         </Stack>
       </Container>
 
-      {boardDialog.open && (
-        <BoardsModal
-          modalType={boardDialog.data?.type}
-          modal={boardDialog.open}
-          members={workSpace!.members}
-          modalValues={boardDialog.data?.values}
-          onConfirm={addAndUpdateBoard}
-          onCancel={boardDialog.handleClose}
+      {WorkSpaceDialog.open && (
+        <WorkspaceModal
+          modal={WorkSpaceDialog.open}
+          madal_type={WorkSpaceDialog.data?.type}
+          workSpaceValues={
+            WorkSpaceDialog.data?.values || workSpaceInitialValues
+          }
+          onCancel={() => {
+            WorkSpaceDialog.handleClose();
+          }}
         />
       )}
 
-      {DeleteBoardDialog.open && (
+      {DeleteWorkSpaceDialog.open && (
         <ConfirmationModal
-          modal={DeleteBoardDialog.open}
-          onCancel={DeleteBoardDialog.handleClose}
-          onConfirm={() => deleteBoard(DeleteBoardDialog.data?.id)}
+          modal={DeleteWorkSpaceDialog.open}
+          onConfirm={deleteWorkSpace}
+          onCancel={DeleteWorkSpaceDialog.handleClose}
           content={{
-            type: "Delete",
-            text: "Are you sure you want to delete that Board ?",
+            type: "Delete Workspace",
+            text: `Are you sure you want to delete that workspace? `,
           }}
         />
       )}

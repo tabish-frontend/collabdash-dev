@@ -51,7 +51,6 @@ export const UpcomingMeetingsCard = () => {
 
   useEffect(() => {
     getMeetins();
-    console.log("Upcoming Meetings: ", meetingList);
   }, [getMeetins]);
 
   return (

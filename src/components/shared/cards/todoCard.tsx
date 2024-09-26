@@ -93,6 +93,7 @@ export const TodoCard = () => {
 
   useEffect(() => {
     updateProgress();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [todos]);
 
   const updateProgress = () => {
@@ -227,10 +228,9 @@ export const TodoCard = () => {
                   />
                 </Box>
 
-                {todos.map((todo) => (
-                  <List sx={{ px: 1, pb: 0 }}>
+                {todos.map((todo, index) => (
+                  <List sx={{ px: 1, pb: 0 }} key={todo.id}>
                     <ListItem
-                      key={todo.id}
                       dense
                       sx={{
                         flexDirection: "column",
