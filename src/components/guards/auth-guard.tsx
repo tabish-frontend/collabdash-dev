@@ -16,7 +16,6 @@ export const AuthGuard: FC<AuthGuardProps> = (props) => {
   const { isAuthenticated } = useAuth();
   const [checked, setChecked] = useState<boolean>(false);
   const isMeetingRoom = router.pathname.includes("meeting_url");
-  console.log("isMeetingRoom", isMeetingRoom);
 
   const check = useCallback(() => {
     if (isMeetingRoom) {

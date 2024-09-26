@@ -416,11 +416,8 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     }) => {
       const { _id: task_id, ...restValues } = data;
 
-      console.log("Update Task Data", data);
-
       const response = await TaskApi.updateTask(task_id, restValues);
 
-      console.log("Response", response);
       setState((prev) => {
         const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
           const updatedBoards = workspace.boards.map((board) => {

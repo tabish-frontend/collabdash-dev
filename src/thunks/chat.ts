@@ -33,7 +33,6 @@ const getThread =
   async (dispatch): Promise<string | undefined> => {
     const response = await chatApi.getThread(params);
 
-    console.log("Calling that 0000", response);
     dispatch(slice.actions.getThread(response));
 
     return response?._id;

@@ -61,9 +61,7 @@ export const ChatThreadToolbar: FC<ChatThreadToolbarProps> = (props) => {
 
   const recipients = getRecipients(participants, user?._id);
 
-  console.log("Toolbar recipients", recipients);
   const displayName = getDisplayName(recipients);
-  // const lastActive = getLastActive(recipients);
 
   return (
     <>

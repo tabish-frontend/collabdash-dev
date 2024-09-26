@@ -56,8 +56,6 @@ const reducers = {
   getThread(state: ChatState, action: GetThreadAction): void {
     const thread = action.payload;
 
-    console.log("getThread slice", thread);
-
     if (thread) {
       state.threads.byId[thread._id!] = thread;
 

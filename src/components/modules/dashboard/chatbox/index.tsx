@@ -98,8 +98,6 @@ const ChatboxComponent = () => {
   const compose = searchParams.get("compose") === "true";
   const threadKey = searchParams.get("threadKey") || undefined;
 
-  console.log("searchParams threadKey", threadKey);
-
   const sidebar = useSidebar();
 
   useThreads();

@@ -66,8 +66,6 @@ const useThread = (threadKey: string): Thread | undefined => {
           threadKey,
         })
       )) as unknown as string | undefined;
-
-      console.log("threadId 111", threadId);
     } catch (err) {
       console.error("ERROR", err);
       router.push(paths.chat);
@@ -151,11 +149,9 @@ interface ChatThreadProps {
 export const ChatThread: FC<ChatThreadProps> = (props) => {
   const { threadKey, ...other } = props;
 
-  console.log("Chat Thread", threadKey);
   const dispatch = useDispatch();
   const thread = useThread(threadKey);
 
-  console.log("thread 012", thread);
   const participants = useParticipants(threadKey);
   const { messagesRef } = useMessagesScroll(thread);
 
@@ -167,10 +163,7 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
         (participant) => participant._id as string
       );
 
-      console.log("recipientIds send", recipientIds);
-
       if (thread) {
-        console.log("thread exist");
         try {
           await dispatch(
             thunks.addMessage({
@@ -188,7 +181,6 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
         return;
       }
 
-      console.log("message sending thread", thread);
       // Otherwise we use the recipients IDs. When using participant IDs, it means that we have to
       // get the thread.
 

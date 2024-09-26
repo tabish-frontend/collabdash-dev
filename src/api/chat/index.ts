@@ -48,7 +48,6 @@ class ChatApi {
 
     const response = await Axios.get(`/messages/contacts?search=${query}`);
 
-    console.log("Response", response);
     return response.data;
   }
 
@@ -93,7 +92,6 @@ class ChatApi {
       //   }
       //   resolve(true);
       // } catch (err) {
-      //   console.error("[Chat Api]: ", err);
       //   reject(new Error("Internal server error"));
       // }
     });

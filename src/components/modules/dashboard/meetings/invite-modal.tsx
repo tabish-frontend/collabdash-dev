@@ -31,7 +31,6 @@ export const InviteModal: FC<InviteDialogProps> = ({ open, onClose }) => {
   };
 
   const handleSendInvite = () => {
-    console.log("Emails", emails);
     // Pass emails back to parent to handle invite logic
     onClose(); // Close the dialog
   };

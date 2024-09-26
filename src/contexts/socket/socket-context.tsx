@@ -27,9 +27,11 @@ export const SocketProvider: FC<SocketProviderProps> = (props) => {
 
   const { user } = useAuth<AuthContextType>();
 
+  const BACKEND_URL = process.env.NEXT_PUBLIC_BASE_URL!.replace("/api/v1", "");
+
   useEffect(() => {
     if (user) {
-      const newSocket = io(process.env.NEXT_PUBLIC_BACKEND_DOMAIN, {
+      const newSocket = io(BACKEND_URL, {
         query: {
           userId: user._id,
         },

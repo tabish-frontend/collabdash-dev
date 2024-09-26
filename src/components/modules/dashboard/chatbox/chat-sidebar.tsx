@@ -67,7 +67,6 @@ export const ChatSidebar: FC<ChatSidebarProps> = (props) => {
   const router = useRouter();
   const threads = useThreads();
 
-  console.log("threads", threads);
   const currentThreadId = useCurrentThreadId();
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -131,16 +130,10 @@ export const ChatSidebar: FC<ChatSidebarProps> = (props) => {
 
   const handleThreadSelect = useCallback(
     (threadId: string): void => {
-      console.log("handleThreadSelect threadId", threadId);
       const thread = threads.byId[threadId];
-
-      console.log("handleThreadSelect thread", thread);
 
       const threadKey = getThreadKey(thread, user?._id);
 
-      console.log("handleThreadSelect threadKey", threadKey);
-
-      // router.push(paths.chat + `?threadKey=${threadKey}`);
       if (!threadKey) {
         router.push(paths.chat);
       } else {

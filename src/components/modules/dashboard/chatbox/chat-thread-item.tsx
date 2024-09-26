@@ -48,7 +48,6 @@ const getLastActivity = (lastMessage?: Message): string | null => {
     return null;
   }
 
-  console.log("lastMessage", lastMessage);
   return formatDistanceStrict(new Date(lastMessage.createdAt), new Date(), {
     addSuffix: false,
     locale: customLocale,
@@ -65,21 +64,15 @@ export const ChatThreadItem: FC<ChatThreadItemProps> = (props) => {
   const { active = false, thread, onSelect, ...other } = props;
   const { user } = useAuth<AuthContextType>();
 
-  console.log("message box thread", thread);
-
   const recipients = getRecipients(thread.participants || [], user?._id);
-  console.log("recipients", recipients);
   const lastMessage = getLastMessage(thread);
   const lastActivity = getLastActivity(lastMessage);
   const displayName = getDisplayName(recipients);
-  console.log("displayName", displayName);
   const displayContent = getDisplayContent(user?._id, lastMessage);
   const groupThread = recipients.length > 1;
   const isUnread = !!(thread.unreadCount && thread.unreadCount > 0);
 
   const { onlineUsers } = useSocketContext();
-
-  console.log("onlineUsers", onlineUsers);
 
   const onlineRecipients = recipients.filter((recipient) =>
     onlineUsers.includes(recipient._id as string)

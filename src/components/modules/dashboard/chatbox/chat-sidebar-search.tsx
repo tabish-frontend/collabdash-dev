@@ -49,8 +49,6 @@ export const ChatSidebarSearch = forwardRef<
     [onSelect]
   );
 
-  console.log("results", results);
-
   const showTip = isFocused && !query;
   const showResults = isFocused && query;
   const hasResults = results.length > 0;
