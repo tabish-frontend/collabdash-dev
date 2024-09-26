@@ -27,6 +27,8 @@ import {
   AttachFileTwoTone,
   Description,
 } from "@mui/icons-material";
+import VideoFileIcon from "@mui/icons-material/VideoFile";
+import AudioFileIcon from "@mui/icons-material/AudioFile";
 import {
   Alert,
   Dialog,
@@ -81,7 +83,11 @@ const allowedFileTypes = [
   "image/png",
   "image/jpeg",
   "application/pdf",
-  // "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx files
+  "application/msword",
+  "text/plain",
+  "video/mp4",
+  "audio/mpeg",
 ];
 
 export const TaskModal: FC<TaskModalProps> = (props) => {
@@ -460,7 +466,13 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                                 window.open(attachment.url, "_blank")
                               }
                             >
-                              <Description sx={{ fontSize: 50 }} />
+                              {attachment.type.startsWith("video/") ? (
+                                <VideoFileIcon sx={{ fontSize: 50 }} />
+                              ) : attachment.type.startsWith("audio/") ? (
+                                <AudioFileIcon sx={{ fontSize: 50 }} />
+                              ) : (
+                                <Description sx={{ fontSize: 50 }} />
+                              )}
 
                               <div
                                 style={{
@@ -507,107 +519,122 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
               p: 3,
             })}
           >
-            <Stack direction={"column"} spacing={2} width={"100%"}>
-              <Grid xs={12}>
-                <Typography color="text.secondary" variant="caption">
-                  Created by
-                </Typography>
-              </Grid>
-              <Grid xs={12}>
-                {task.owner && (
-                  <Tooltip title={task.owner.full_name} arrow>
-                    <Avatar src={task.owner.avatar || undefined} />
-                  </Tooltip>
-                )}
-              </Grid>
-
-              <Grid xs={12}>
-                <Typography color="text.secondary" variant="caption">
-                  Assigned to
-                </Typography>
-                <SelectMultipleUsers
-                  employees={boardMembers}
-                  inputSize="small"
-                  formikUsers={formik.values.assignedTo.map(
-                    (user: any) => user._id
+            <Stack
+              direction={"column"}
+              spacing={2}
+              width={"100%"}
+              justifyContent={"space-between"}
+            >
+              <Stack direction={"column"} spacing={2}>
+                <Grid xs={12}>
+                  <Typography color="text.secondary" variant="caption">
+                    Created by
+                  </Typography>
+                </Grid>
+                <Grid xs={12}>
+                  {task.owner && (
+                    <Tooltip title={task.owner.full_name} arrow>
+                      <Avatar src={task.owner.avatar || undefined} />
+                    </Tooltip>
                   )}
-                  setFieldValue={(value: any) => {
-                    setIsFormBeingChanged(true);
-                    formik.setFieldValue("assignedTo", value);
-                  }}
-                />
-              </Grid>
+                </Grid>
+                {/* </Stack> */}
 
-              <Grid xs={12}>
-                <Typography color="text.secondary" variant="caption">
-                  Due date
-                </Typography>
-                <MobileDateTimePicker
-                  sx={{
-                    width: "100%",
-                  }}
-                  value={formik.values.dueDate}
-                  onChange={(date: Date | null) => {
-                    setIsFormBeingChanged(true);
-                    formik.setFieldValue("dueDate", date || new Date()); // Ensure a Date value is set
-                  }}
-                  slotProps={{
-                    textField: {
-                      size: "small", // Set the input size to small
-                      fullWidth: true, // Make the input take full width
-                      sx: {
-                        height: 50,
-                        ".css-10vtu9u-MuiInputBase-input-MuiFilledInput-input":
-                          {
-                            pt: "12px",
-                            pb: "12px",
-                          },
-                        ".css-dqma4l-MuiInputBase-input-MuiFilledInput-input": {
-                          pt: "12px",
-                          pb: "12px",
+                {/* <Stack direction={"column"} spacing={1}> */}
+                <Grid xs={12}>
+                  <Typography color="text.secondary" variant="caption">
+                    Assigned to
+                  </Typography>
+                  <SelectMultipleUsers
+                    employees={boardMembers}
+                    inputSize="small"
+                    formikUsers={formik.values.assignedTo.map(
+                      (user: any) => user._id
+                    )}
+                    setFieldValue={(value: any) => {
+                      setIsFormBeingChanged(true);
+                      formik.setFieldValue("assignedTo", value);
+                    }}
+                  />
+                </Grid>
+
+                <Grid xs={12}>
+                  <Typography color="text.secondary" variant="caption">
+                    Due date
+                  </Typography>
+                  <MobileDateTimePicker
+                    sx={{
+                      width: "100%",
+                    }}
+                    value={formik.values.dueDate}
+                    onChange={(date: Date | null) => {
+                      setIsFormBeingChanged(true);
+                      formik.setFieldValue("dueDate", date || new Date()); // Ensure a Date value is set
+                    }}
+                    slotProps={{
+                      textField: {
+                        size: "small", // Set the input size to small
+                        fullWidth: true, // Make the input take full width
+                        sx: {
+                          height: 50,
+                          ".css-10vtu9u-MuiInputBase-input-MuiFilledInput-input":
+                            {
+                              pt: "12px",
+                              pb: "12px",
+                            },
+                          ".css-dqma4l-MuiInputBase-input-MuiFilledInput-input":
+                            {
+                              pt: "12px",
+                              pb: "12px",
+                            },
+                        },
+                        InputProps: {
+                          endAdornment: (
+                            <InputAdornment
+                              position="end"
+                              sx={{ cursor: "pointer" }}
+                            >
+                              <Calendar />
+                            </InputAdornment>
+                          ),
                         },
                       },
-                      InputProps: {
-                        endAdornment: (
-                          <InputAdornment
-                            position="end"
-                            sx={{ cursor: "pointer" }}
-                          >
-                            <Calendar />
-                          </InputAdornment>
-                        ),
-                      },
-                    },
-                  }}
-                />
-              </Grid>
+                    }}
+                  />
+                </Grid>
+
+                <Grid xs={12}>
+                  <Typography color="text.secondary" variant="caption">
+                    Priority
+                  </Typography>
+
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    fullWidth
+                    select
+                    value={formik.values.priority} // Assuming single label selection for simplicity
+                    onChange={(event) => {
+                      setIsFormBeingChanged(true);
+                      formik.setFieldValue("priority", event.target.value); // Replace array with selected value
+                    }}
+                  >
+                    {Priorities.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+              </Stack>
 
               <Grid xs={12}>
-                <Typography color="text.secondary" variant="caption">
-                  Priority
-                </Typography>
-
-                <TextField
-                  variant="outlined"
-                  size="small"
-                  fullWidth
-                  select
-                  value={formik.values.priority} // Assuming single label selection for simplicity
-                  onChange={(event) => {
-                    setIsFormBeingChanged(true);
-                    formik.setFieldValue("priority", event.target.value); // Replace array with selected value
-                  }}
+                <Stack
+                  direction={"row"}
+                  justifyContent={"flex-end"}
+                  alignItems={"flex-end"}
+                  height={"100%"}
                 >
-                  {Priorities.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-
-              <Grid xs={12}>
-                <Stack direction={"row"} justifyContent={"flex-end"} mt={2}>
                   <LoadingButton
                     loading={formik.isSubmitting}
                     loadingPosition="start"
