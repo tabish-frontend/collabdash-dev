@@ -33,8 +33,10 @@ export const SocketProvider: FC<SocketProviderProps> = (props) => {
     if (user) {
       const newSocket = io(BACKEND_URL, {
         query: {
-          userId: user._id,
+          userId: encodeURIComponent(user._id),
         },
+        transports: ["websocket"], // Force WebSocket transport
+        withCredentials: true, // Ensure credentials are sent
       });
 
       setSocket(newSocket);
