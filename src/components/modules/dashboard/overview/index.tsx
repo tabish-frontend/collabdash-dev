@@ -12,11 +12,13 @@ import {
   TotalEmployees,
   AttendanceCard,
   EmployeePerformanceCard,
+  LeavesCard,
 } from "src/components/shared";
 import { UpcomingMeetingsCard } from "src/components/shared/cards/upcomingMeetings";
 import { MyTasksCard } from "src/components/shared/cards/myTasks";
 import { TodoCard } from "src/components/shared/cards/todoCard";
 import { WeatherCard } from "src/components/shared/cards/WeatherCard";
+import MyLeavesCard from "src/components/shared/cards/myLeaves";
 
 const OverviewComponent = () => {
   const { user } = useAuth<AuthContextType>();
@@ -67,12 +69,11 @@ const OverviewComponent = () => {
           <Grid xs={12} md={6} xl={4}>
             <TodoCard />
           </Grid>
+          <Grid xs={12} md={6} xl={4} lg={user?.role === "admin" ? 6 : 6}>
+            <MyLeavesCard />
+          </Grid>
           <Grid xs={12} md={6} xl={4}>
             <WeatherCard name={"Weather"} />
-          </Grid>
-
-          <Grid xs={12} md={6} xl={4} lg={user?.role === "admin" ? 6 : 6}>
-            <WeatherCard name={"Upcoming"} />
           </Grid>
 
           {(user?.role === "admin" || user?.role === "hr") && (

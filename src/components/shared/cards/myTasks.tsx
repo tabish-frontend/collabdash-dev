@@ -30,7 +30,6 @@ interface Task {
   attachments: number;
 }
 
-// Mock API call
 const fetchTasks = (): Promise<Task[]> => {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -90,7 +89,6 @@ export const MyTasksCard = () => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [filter, setFilter] = useState("recent-tasks");
 
-  // Handle change for the TextField
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilter(event.target.value);
   };
@@ -135,9 +133,13 @@ export const MyTasksCard = () => {
                 padding: 2,
               }}
             >
-              {/* Task Title */}
-              <ListItemText
-                primary={
+              <Stack
+                direction={isSmallScreen ? "column" : "row"}
+                justifyContent={"space-between"}
+                alignItems={isSmallScreen ? "flex-start" : "center"}
+                width={"100%"}
+              >
+                <Box sx={{ mr: 2, minWidth: "50%" }}>
                   <Typography
                     variant="body1"
                     fontWeight="bold"
@@ -145,8 +147,6 @@ export const MyTasksCard = () => {
                   >
                     {task.name}
                   </Typography>
-                }
-                secondary={
                   <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
                     <AccessTime
                       fontSize="small"
@@ -157,64 +157,62 @@ export const MyTasksCard = () => {
                       Due {formatDate(task.dueDate)}
                     </Typography>
                   </Box>
-                }
-                sx={{ mr: 2, minWidth: "50%" }}
-              />
+                </Box>
 
-              {/* Priority and Attachments */}
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: isSmallScreen ? "space-between" : "flex-end",
-                  width: isSmallScreen ? "100%" : "auto",
-                  mt: isSmallScreen ? 2 : 0,
-                }}
-              >
-                {/* Priority Chip */}
-                <Chip
-                  icon={
-                    <SvgIcon>
-                      <FlagIcon sx={{ color: "white" }} />
-                    </SvgIcon>
-                  }
-                  label={
-                    task.priority.charAt(0).toUpperCase() +
-                    task.priority.slice(1)
-                  }
-                  size="small"
+                <Box
                   sx={{
-                    backgroundColor: getPriorityColor(task.priority, theme),
-                    color: "white",
-                    fontWeight: "medium",
-                    borderRadius: "4px",
-                    padding: "4px 8px",
-                    mr: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: isSmallScreen
+                      ? "space-between"
+                      : "flex-end",
+                    width: isSmallScreen ? "100%" : "auto",
+                    mt: isSmallScreen ? 2 : 0,
                   }}
-                />
-
-                {/* Attachments Button */}
-                {task.attachments > 0 && (
-                  <IconButton
+                >
+                  <Chip
+                    icon={
+                      <SvgIcon>
+                        <FlagIcon sx={{ color: "white" }} />
+                      </SvgIcon>
+                    }
+                    label={
+                      task.priority.charAt(0).toUpperCase() +
+                      task.priority.slice(1)
+                    }
                     size="small"
-                    aria-label={`View ${task.attachments} attachments`}
                     sx={{
-                      backgroundColor: theme.palette.background.paper,
-                      padding: "6px 12px",
-                      borderRadius: 2,
-                      color: theme.palette.text.primary,
+                      backgroundColor: getPriorityColor(task.priority, theme),
+                      color: "white",
+                      fontWeight: "medium",
+                      borderRadius: "4px",
+                      padding: "4px 8px",
+                      mr: 1,
                     }}
-                  >
-                    <Attachment fontSize="small" />
-                    <Typography
-                      variant="caption"
-                      sx={{ ml: 0.5, fontWeight: "bold" }}
+                  />
+
+                  {task.attachments > 0 && (
+                    <IconButton
+                      size="small"
+                      aria-label={`View ${task.attachments} attachments`}
+                      sx={{
+                        backgroundColor: theme.palette.background.paper,
+                        padding: "6px 12px",
+                        borderRadius: 2,
+                        color: theme.palette.text.primary,
+                      }}
                     >
-                      {task.attachments}
-                    </Typography>
-                  </IconButton>
-                )}
-              </Box>
+                      <Attachment fontSize="small" />
+                      <Typography
+                        variant="caption"
+                        sx={{ ml: 0.5, fontWeight: "bold" }}
+                      >
+                        {task.attachments}
+                      </Typography>
+                    </IconButton>
+                  )}
+                </Box>
+              </Stack>
             </Card>
           ))}
         </Stack>
