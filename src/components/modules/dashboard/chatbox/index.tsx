@@ -1,14 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { NextPage } from "next";
-import Menu01Icon from "@untitled-ui/icons-react/build/esm/Menu01";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import SvgIcon from "@mui/material/SvgIcon";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import type { Theme } from "@mui/material/styles/createTheme";
-
-import { useSearchParams } from "src/hooks/use-search-params";
+import { useListenMessages, useSearchParams } from "src/hooks";
 import { DashboardLayout } from "src/layouts/dashboard";
 import { useDispatch } from "src/store";
 import { thunks } from "src/thunks/chat";
@@ -99,13 +97,13 @@ const ChatboxComponent = () => {
   const compose = searchParams.get("compose") === "true";
   const threadKey = searchParams.get("threadKey") || undefined;
 
-  console.log("searchParams threadKey", threadKey);
-
   const sidebar = useSidebar();
 
   useThreads();
 
   const view = threadKey ? "thread" : compose ? "compose" : "blank";
+
+  useListenMessages();
 
   return (
     <>

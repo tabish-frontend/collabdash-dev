@@ -16,8 +16,7 @@ import { ChatMessageAdd } from "./chat-message-add";
 import { ChatMessages } from "./chat-messages";
 import { ChatThreadToolbar } from "./chat-thread-toolbar";
 import { paths } from "src/constants/paths";
-import { useAuth, useMockedUser } from "src/hooks";
-import { AuthContextType } from "src/contexts/auth";
+
 import { Scrollbar } from "src/utils/scrollbar";
 
 const useParticipants = (threadKey: string): Participant[] => {
@@ -68,7 +67,7 @@ const useThread = (threadKey: string): Thread | undefined => {
         })
       )) as unknown as string | undefined;
     } catch (err) {
-      console.error(err);
+      console.error("ERROR", err);
       router.push(paths.chat);
       return;
     }
@@ -91,7 +90,7 @@ const useThread = (threadKey: string): Thread | undefined => {
         })
       );
     }
-  }, [router, dispatch, threadKey]);
+  }, [dispatch, threadKey, router]);
 
   useEffect(
     () => {
@@ -150,10 +149,9 @@ interface ChatThreadProps {
 export const ChatThread: FC<ChatThreadProps> = (props) => {
   const { threadKey, ...other } = props;
 
-  console.log("Chat Thread", threadKey);
   const dispatch = useDispatch();
-  const user = useMockedUser();
   const thread = useThread(threadKey);
+
   const participants = useParticipants(threadKey);
   const { messagesRef } = useMessagesScroll(thread);
 
@@ -161,12 +159,19 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
     async (body: string): Promise<void> => {
       // If we have the thread, we use its ID to add a new message
 
+      const recipientIds = participants.map(
+        (participant) => participant._id as string
+      );
+
       if (thread) {
         try {
           await dispatch(
             thunks.addMessage({
-              threadId: thread.id,
+              threadId: thread._id,
               body,
+              recipientIds,
+              contentType: "text",
+              attachments: [],
             })
           );
         } catch (err) {
@@ -181,10 +186,6 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
 
       // Filter the current user to get only the other participants
 
-      const recipientIds = participants
-        .filter((participant) => participant.id !== user._id)
-        .map((participant) => participant.id);
-
       // Add the new message
 
       let threadId: string;
@@ -194,6 +195,8 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
           thunks.addMessage({
             recipientIds,
             body,
+            contentType: "text",
+            attachments: [],
           })
         )) as unknown as string;
       } catch (err) {
@@ -218,10 +221,8 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
 
       dispatch(thunks.setCurrentThread({ threadId }));
     },
-    [dispatch, participants, thread, user]
+    [dispatch, participants, thread]
   );
-
-  // Maybe implement a loading state
 
   return (
     <Stack

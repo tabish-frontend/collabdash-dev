@@ -6,22 +6,22 @@ import type { Message, Participant } from "src/types/chat";
 import type { User } from "src/types/user";
 
 import { ChatMessage } from "./chat-message";
-import { useAuth, useMockedUser } from "src/hooks";
+import { useAuth } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 
 const getAuthor = (
   message: Message,
   participants: Participant[],
-  user: User
+  user: User | null
 ) => {
   const participant = participants.find(
-    (participant) => participant.id === message.authorId
+    (participant) => participant._id === message.author
   );
 
   // This should never happen
   if (!participant) {
     return {
-      name: "Unknown",
+      full_name: "Unknown",
       avatar: "",
       isUser: false,
     };
@@ -29,29 +29,29 @@ const getAuthor = (
 
   // Since chat mock db is not synced with external auth providers
   // we set the user details from user auth state instead of thread participants
-  if (message.authorId === user._id) {
+  if (message?.author === user?._id) {
     return {
-      name: "Me",
-      avatar: user.avatar,
+      full_name: "Me",
+      avatar: user?.avatar,
       isUser: true,
     };
   }
 
   return {
     avatar: participant!.avatar,
-    name: participant!.name,
+    full_name: participant.full_name,
     isUser: false,
   };
 };
 
 interface ChatMessagesProps {
-  messages?: Message[];
+  messages?: any[];
   participants?: Participant[];
 }
 
 export const ChatMessages: FC<ChatMessagesProps> = (props) => {
   const { messages = [], participants = [], ...other } = props;
-  const user = useMockedUser();
+  const { user } = useAuth<AuthContextType>();
 
   return (
     <Stack spacing={2} sx={{ p: 3 }} {...other}>
@@ -61,12 +61,13 @@ export const ChatMessages: FC<ChatMessagesProps> = (props) => {
         return (
           <ChatMessage
             authorAvatar={author.avatar}
-            authorName={author.name}
+            authorName={author.full_name || ""}
             body={message.body}
             contentType={message.contentType}
             createdAt={message.createdAt}
-            key={message.id}
+            key={message._id}
             position={author.isUser ? "right" : "left"}
+            isGroup={participants.length > 2}
           />
         );
       })}

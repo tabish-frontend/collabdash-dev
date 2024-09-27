@@ -14,8 +14,9 @@ interface ChatMessageProps {
   authorName: string;
   body: string;
   contentType: string;
-  createdAt: number;
+  createdAt: string;
   position?: "left" | "right";
+  isGroup: boolean;
 }
 
 export const ChatMessage: FC<ChatMessageProps> = (props) => {
@@ -26,10 +27,11 @@ export const ChatMessage: FC<ChatMessageProps> = (props) => {
     contentType,
     createdAt,
     position,
+    isGroup,
     ...other
   } = props;
 
-  const ago = formatDistanceToNowStrict(createdAt);
+  const ago = formatDistanceToNowStrict(new Date(createdAt));
 
   return (
     <Box
@@ -42,7 +44,7 @@ export const ChatMessage: FC<ChatMessageProps> = (props) => {
       <Stack
         alignItems="flex-start"
         direction={position === "right" ? "row-reverse" : "row"}
-        spacing={2}
+        spacing={1}
         sx={{
           maxWidth: 500,
           ml: position === "right" ? "auto" : 0,
@@ -60,17 +62,24 @@ export const ChatMessage: FC<ChatMessageProps> = (props) => {
           <Card
             sx={{
               backgroundColor:
-                position === "right" ? "primary.light" : "background.paper",
-              color: position === "right" ? "text.primary" : "text.primary",
-              px: 2,
+                position === "right" ? "primary.main" : "background.paper",
+              color: position === "right" ? "white" : "text.primary",
+              borderRadius: 1,
+              px: 1,
               py: 1,
             }}
           >
-            <Box sx={{ mb: 1 }}>
-              <Link color="inherit" sx={{ cursor: "pointer" }} variant="body2">
-                {authorName}
-              </Link>
-            </Box>
+            {position === "left" && isGroup && (
+              <Box sx={{ mb: 1 }}>
+                <Link
+                  color="inherit"
+                  sx={{ cursor: "pointer" }}
+                  variant="subtitle2"
+                >
+                  {authorName}
+                </Link>
+              </Box>
+            )}
             {contentType === "image" && (
               <CardMedia
                 onClick={(): void => {}}
@@ -82,7 +91,7 @@ export const ChatMessage: FC<ChatMessageProps> = (props) => {
               />
             )}
             {contentType === "text" && (
-              <Typography color="inherit" variant="caption">
+              <Typography color="inherit" variant="body2">
                 {body}
               </Typography>
             )}
@@ -110,6 +119,6 @@ ChatMessage.propTypes = {
   authorName: PropTypes.string.isRequired,
   body: PropTypes.string.isRequired,
   contentType: PropTypes.string.isRequired,
-  createdAt: PropTypes.number.isRequired,
+  createdAt: PropTypes.string.isRequired,
   position: PropTypes.oneOf(["left", "right"]),
 };

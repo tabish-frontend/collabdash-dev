@@ -6,19 +6,19 @@ import Divider from "@mui/material/Divider";
 import { useRouter } from "src/hooks/use-router";
 import { useDispatch } from "src/store";
 import { thunks } from "src/thunks/chat";
-import type { Contact } from "src/types";
+import type { Employee } from "src/types";
 
 import { ChatComposerRecipients } from "./chat-composer-recipients";
 import { ChatMessageAdd } from "./chat-message-add";
 import { paths } from "src/constants/paths";
 
 const useRecipients = () => {
-  const [recipients, setRecipients] = useState<Contact[]>([]);
+  const [recipients, setRecipients] = useState<Employee[]>([]);
 
-  const handleRecipientAdd = useCallback((recipient: Contact): void => {
+  const handleRecipientAdd = useCallback((recipient: Employee): void => {
     setRecipients((prevState) => {
       const found = prevState.find(
-        (_recipient) => _recipient.id === recipient.id
+        (_recipient) => _recipient._id === recipient._id
       );
 
       if (found) {
@@ -31,7 +31,7 @@ const useRecipients = () => {
 
   const handleRecipientRemove = useCallback((recipientId: string): void => {
     setRecipients((prevState) => {
-      return prevState.filter((recipient) => recipient.id !== recipientId);
+      return prevState.filter((recipient) => recipient._id !== recipientId);
     });
   }, []);
 
@@ -50,7 +50,9 @@ export const ChatComposer: FC = (props) => {
 
   const handleSend = useCallback(
     async (body: string): Promise<void> => {
-      const recipientIds = recipients.map((recipient) => recipient.id);
+      const recipientIds = recipients.map(
+        (recipient) => recipient._id as string
+      );
 
       let threadId: string;
 
@@ -60,6 +62,8 @@ export const ChatComposer: FC = (props) => {
           thunks.addMessage({
             recipientIds,
             body,
+            contentType: "text",
+            attachments: [],
           })
         )) as unknown as string;
       } catch (err) {
