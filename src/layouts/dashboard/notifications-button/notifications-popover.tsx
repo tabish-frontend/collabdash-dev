@@ -22,136 +22,104 @@ import Typography from "@mui/material/Typography";
 import { Scrollbar } from "src/utils/scrollbar";
 
 import type { Notification } from "./notifications";
+import { getDay_Time } from "src/utils";
 
 const renderContent = (notification: Notification): JSX.Element | null => {
-  switch (notification.type) {
-    case "job_add": {
-      const createdAt = format(notification.createdAt, "MMM dd, h:mm a");
+  const createdAt = format(notification.createdAt, "MMM dd, h:mm a");
 
+  const formatMessageWithLink = (
+    message: string,
+    linkText: string,
+    time: Date | null | undefined
+  ): React.ReactNode => {
+    const parts = message.split(linkText);
+
+    if (!time || !(time instanceof Date) || isNaN(time.getTime())) {
+      if (parts.length === 2) {
+        return (
+          <>
+            {parts[0]}
+            <Link
+              href={`/tasks/${linkText}`}
+              style={{ textDecoration: "underline", fontWeight: "bold" }}
+            >
+              {linkText}
+            </Link>
+            {parts[1]}
+          </>
+        );
+      }
+
+      // If the linkText is not found, return the message as is
+      return message;
+    }
+
+    // If time is valid, format it and proceed with the existing logic
+    const formattedTime = getDay_Time(time); // Get formatted time from getDay_Time
+    const isoTime = time.toISOString();
+    const regex = new RegExp(
+      isoTime.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+      "g"
+    ); // Escape special characters
+
+    if (parts.length === 2) {
       return (
         <>
-          <ListItemAvatar sx={{ mt: 0.5 }}>
-            <Avatar src={notification.avatar}>
-              <SvgIcon>
-                <User01Icon />
-              </SvgIcon>
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={
-              <Box
-                sx={{
-                  alignItems: "center",
-                  display: "flex",
-                  flexWrap: "wrap",
-                }}
-              >
-                <Typography sx={{ mr: 0.5 }} variant="subtitle2">
-                  {notification.author}
-                </Typography>
-                <Typography sx={{ mr: 0.5 }} variant="body2">
-                  added a new job
-                </Typography>
-                <Link href="#" underline="always" variant="body2">
-                  {notification.job}
-                </Link>
-              </Box>
-            }
-            secondary={
-              <Typography color="text.secondary" variant="caption">
-                {createdAt}
-              </Typography>
-            }
-            sx={{ my: 0 }}
-          />
+          {parts[0]}
+          <Link
+            href={`/tasks/${linkText}`}
+            style={{ textDecoration: "underline", fontWeight: "bold" }}
+          >
+            {linkText}
+          </Link>
+          {parts[1].replace(regex, formattedTime)}
         </>
       );
     }
-    case "new_feature": {
-      const createdAt = format(notification.createdAt, "MMM dd, h:mm a");
 
-      return (
-        <>
-          <ListItemAvatar sx={{ mt: 0.5 }}>
-            <Avatar>
-              <SvgIcon>
-                <MessageChatSquareIcon />
-              </SvgIcon>
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={
-              <Box
-                sx={{
-                  alignItems: "center",
-                  display: "flex",
-                  flexWrap: "wrap",
-                }}
-              >
-                <Typography variant="subtitle2" sx={{ mr: 0.5 }}>
-                  New feature!
-                </Typography>
-                <Typography variant="body2">
-                  {notification.description}
-                </Typography>
-              </Box>
-            }
-            secondary={
-              <Typography color="text.secondary" variant="caption">
-                {createdAt}
-              </Typography>
-            }
-            sx={{ my: 0 }}
-          />
-        </>
-      );
-    }
-    case "company_created": {
-      const createdAt = format(notification.createdAt, "MMM dd, h:mm a");
+    // If the linkText is not found, just replace the time in the whole message
+    return message.replace(regex, formattedTime);
+  };
 
-      return (
-        <>
-          <ListItemAvatar sx={{ mt: 0.5 }}>
-            <Avatar src={notification.avatar}>
-              <SvgIcon>
-                <User01Icon />
-              </SvgIcon>
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={
-              <Box
-                sx={{
-                  alignItems: "center",
-                  display: "flex",
-                  flexWrap: "wrap",
-                  m: 0,
-                }}
-              >
-                <Typography sx={{ mr: 0.5 }} variant="subtitle2">
-                  {notification.author}
-                </Typography>
-                <Typography sx={{ mr: 0.5 }} variant="body2">
-                  created
-                </Typography>
-                <Link href="#" underline="always" variant="body2">
-                  {notification.company}
-                </Link>
+  return (
+    <>
+      <ListItemAvatar sx={{ mt: 0.5 }}>
+        <Avatar src={notification.sender.avatar}>
+          <SvgIcon>
+            <User01Icon />
+          </SvgIcon>
+        </Avatar>
+      </ListItemAvatar>
+      <ListItemText
+        primary={
+          <Box
+            sx={{
+              alignItems: "center",
+              display: "flex",
+              flexWrap: "wrap",
+            }}
+          >
+            <Typography sx={{ mr: 0.5 }} variant="subtitle2">
+              {notification.sender.fullName}{" "}
+              <Box component="span" sx={{ fontSize: "inherit" }}>
+                {formatMessageWithLink(
+                  notification.message,
+                  notification.link,
+                  notification.time
+                )}
               </Box>
-            }
-            secondary={
-              <Typography color="text.secondary" variant="caption">
-                {createdAt}
-              </Typography>
-            }
-            sx={{ my: 0 }}
-          />
-        </>
-      );
-    }
-    default:
-      return null;
-  }
+            </Typography>
+          </Box>
+        }
+        secondary={
+          <Typography color="text.secondary" variant="caption">
+            {createdAt}
+          </Typography>
+        }
+        sx={{ my: 0 }}
+      />
+    </>
+  );
 };
 
 interface NotificationsPopoverProps {
