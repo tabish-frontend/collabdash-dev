@@ -8,9 +8,11 @@ export const WeatherCard = ({ name }: { name: string }) => {
   const [weather, setWeather] = useState<any>();
 
   const getWeatherReport = useCallback(async (city: any) => {
-    const response = await axios.get(
-      `http://api.weatherapi.com/v1/forecast.json?key=e302e3b7b2234b12a4961554242709&q=${city}&days=5&aqi=no&alerts=no`
-    );
+    const KEY = process.env.NEXT_PUBLIC_WEATHER_API_KEY;
+
+    const baseURL = `https://api.weatherapi.com/v1/forecast.json?key=${KEY}&q=${city}&days=5&aqi=no&alerts=no`;
+
+    const response = await axios.get(baseURL);
     setWeather(response.data);
   }, []);
 
