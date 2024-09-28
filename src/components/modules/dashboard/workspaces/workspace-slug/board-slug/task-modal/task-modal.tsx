@@ -534,9 +534,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                     </Tooltip>
                   )}
                 </Grid>
-                {/* </Stack> */}
 
-                {/* <Stack direction={"column"} spacing={1}> */}
                 <Grid xs={12}>
                   <Typography color="text.secondary" variant="caption">
                     Assigned to
@@ -544,7 +542,9 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                   <SelectMultipleUsers
                     employees={boardMembers}
                     inputSize="small"
-                    formikUsers={formik.values.assignedTo}
+                    formikUsers={formik.values.assignedTo.map(
+                      (item) => item._id
+                    )}
                     setFieldValue={(value: any) => {
                       setIsFormBeingChanged(true);
                       formik.setFieldValue("assignedTo", value);

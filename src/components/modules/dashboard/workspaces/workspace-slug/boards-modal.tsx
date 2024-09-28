@@ -39,12 +39,7 @@ export const BoardsModal: FC<BoardsModalProps> = ({
     initialValues: modalValues ? modalValues : BoardInitialValues,
     enableReinitialize: true,
     onSubmit: async (values, helpers): Promise<void> => {
-      const updatingValues = {
-        _id: values._id,
-        ...getChangedFields<Board>(values, formik.initialValues),
-      };
-      await onConfirm(updatingValues);
-      onCancel();
+      await onConfirm(values);
     },
   });
 
