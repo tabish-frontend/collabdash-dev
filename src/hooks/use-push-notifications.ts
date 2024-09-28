@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { notificationsApi } from "src/api";
+import { useAuth } from "./use-auth";
 
 export const usePushNotifications = () => {
+  const { isAuthenticated } = useAuth();
+
   const subscribeUser = async () => {
     const permission = await Notification.requestPermission();
 
@@ -32,7 +35,9 @@ export const usePushNotifications = () => {
   };
 
   useEffect(() => {
-    registerServiceWorker();
+    if (isAuthenticated) {
+      registerServiceWorker();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isAuthenticated]);
 };
