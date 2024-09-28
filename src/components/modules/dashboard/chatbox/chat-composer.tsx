@@ -6,16 +6,16 @@ import Divider from "@mui/material/Divider";
 import { useRouter } from "src/hooks/use-router";
 import { useDispatch } from "src/store";
 import { thunks } from "src/thunks/chat";
-import type { Employee } from "src/types";
+import type { Contact } from "src/types";
 
 import { ChatComposerRecipients } from "./chat-composer-recipients";
 import { ChatMessageAdd } from "./chat-message-add";
 import { paths } from "src/constants/paths";
 
 const useRecipients = () => {
-  const [recipients, setRecipients] = useState<Employee[]>([]);
+  const [recipients, setRecipients] = useState<Contact[]>([]);
 
-  const handleRecipientAdd = useCallback((recipient: Employee): void => {
+  const handleRecipientAdd = useCallback((recipient: Contact): void => {
     setRecipients((prevState) => {
       const found = prevState.find(
         (_recipient) => _recipient._id === recipient._id

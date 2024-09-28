@@ -1,12 +1,12 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 
-import type { Employee, Message, Thread } from "src/types";
+import type { Contact, Message, Thread } from "src/types";
 import { objFromArray } from "src/utils/obj-from-array";
 
 interface ChatState {
   contacts: {
-    byId: Record<string, Employee>;
+    byId: Record<string, Contact[]>;
     allIds: string[];
   };
   currentThreadId?: string;
@@ -16,7 +16,7 @@ interface ChatState {
   };
 }
 
-type GetContactsAction = PayloadAction<Employee[]>;
+type GetContactsAction = PayloadAction<Contact[]>;
 
 type GetThreadsAction = PayloadAction<Thread[]>;
 

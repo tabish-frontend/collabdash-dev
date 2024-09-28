@@ -51,8 +51,9 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
 
   const handleFilterEmployees = useCallback(async () => {
     if (selectedUsers.length > 0) {
+      const selectedEmployeeIds = selectedUsers.map((item) => item._id);
       const filteredEmployees = employees?.filter((employee: any) =>
-        selectedUsers.includes(employee._id)
+        selectedEmployeeIds.includes(employee._id)
       );
       setEmployeesAttendance(filteredEmployees);
     } else {
@@ -66,10 +67,21 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
 
   const handleEditAttendance = async (editedValues: any) => {
     const { id, clockInTime, clockOutTime } = editedValues;
-    await attendanceApi.updateAttendance(id, {
+
+    const response = await attendanceApi.updateAttendance(id, {
       timeIn: clockInTime,
       timeOut: clockOutTime,
     });
+
+    // Update the local state after the successful API call
+    setEmployeesAttendance((prevState: any) =>
+      prevState.map((employee: any) => ({
+        ...employee,
+        attendance: employee.attendance.map((att: any) =>
+          att._id === id ? response.data : att
+        ),
+      }))
+    );
   };
 
   useEffect(() => {
@@ -110,7 +122,8 @@ export const AllUserAttendance: React.FC<AllUserAttendanceProps> = ({
 
         <SelectMultipleUsers
           employees={employees || []}
-          formikUsers={selectedUsers}
+          // formikUsers={selectedUsers}
+          formikUsers={selectedUsers.map((user: any) => user._id)}
           setFieldValue={(value: any) => setSelectedUsers(value)}
           minWidth="300px"
           label="Users"

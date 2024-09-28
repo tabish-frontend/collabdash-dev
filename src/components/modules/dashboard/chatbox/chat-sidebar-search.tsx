@@ -14,7 +14,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import SvgIcon from "@mui/material/SvgIcon";
 import Typography from "@mui/material/Typography";
 
-import type { Employee } from "src/types";
+import type { Contact } from "src/types";
 import { OnlineBadge, Tip } from "src/components/shared";
 
 interface ChatSidebarSearchProps {
@@ -22,9 +22,9 @@ interface ChatSidebarSearchProps {
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   onClickAway?: () => void;
   onFocus?: (event: FocusEvent<HTMLInputElement>) => void;
-  onSelect?: (result: Employee) => void;
+  onSelect?: (result: Contact) => void;
   query?: string;
-  results?: Employee[];
+  results?: Contact[];
 }
 
 export const ChatSidebarSearch = forwardRef<
@@ -43,7 +43,7 @@ export const ChatSidebarSearch = forwardRef<
   } = props;
 
   const handleSelect = useCallback(
-    (result: Employee): void => {
+    (result: Contact): void => {
       onSelect?.(result);
     },
     [onSelect]
@@ -83,7 +83,7 @@ export const ChatSidebarSearch = forwardRef<
                   Contacts
                 </Typography>
                 <List>
-                  {results.map((contact) => (
+                  {results.map((contact: Contact) => (
                     <ListItemButton
                       key={contact._id}
                       onClick={(): void => handleSelect(contact)}
@@ -91,6 +91,7 @@ export const ChatSidebarSearch = forwardRef<
                       <ListItemAvatar>
                         <Avatar
                           src={contact.avatar}
+                          alt="kcjkcb"
                           sx={{
                             height: 32,
                             width: 32,

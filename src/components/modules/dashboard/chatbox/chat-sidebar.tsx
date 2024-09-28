@@ -13,10 +13,9 @@ import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import type { Theme } from "@mui/material/styles/createTheme";
 
-import { chatApi } from "src/api/chat";
 import { useRouter } from "src/hooks/use-router";
 import { useSelector } from "src/store";
-import type { Employee, Thread } from "src/types";
+import type { Contact, Thread } from "src/types";
 
 import { ChatSidebarSearch } from "./chat-sidebar-search";
 import { ChatThreadItem } from "./chat-thread-item";
@@ -24,8 +23,8 @@ import { useAuth } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { paths } from "src/constants/paths";
 import { Scrollbar } from "src/utils/scrollbar";
-import { employeesApi } from "src/api";
 import { useDebouncedCallback } from "use-debounce";
+import { contactsApi } from "src/api";
 
 const getThreadKey = (
   thread: Thread,
@@ -70,7 +69,7 @@ export const ChatSidebar: FC<ChatSidebarProps> = (props) => {
   const currentThreadId = useCurrentThreadId();
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [searchResults, setSearchResults] = useState<Employee[]>([]);
+  const [searchResults, setSearchResults] = useState<Contact[]>([]);
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("md"));
 
   const handleCompose = useCallback((): void => {
@@ -86,7 +85,7 @@ export const ChatSidebar: FC<ChatSidebarProps> = (props) => {
       }
 
       try {
-        const response = await chatApi.getContacts({ query: value });
+        const response = await contactsApi.getContacts({ query: value });
         setSearchResults(response);
       } catch (err) {
         console.error(err);
@@ -116,7 +115,7 @@ export const ChatSidebar: FC<ChatSidebarProps> = (props) => {
   }, []);
 
   const handleSearchSelect = useCallback(
-    (contact: Employee): void => {
+    (contact: Contact): void => {
       // We use the contact ID as a thread key
       const threadKey = contact._id;
 

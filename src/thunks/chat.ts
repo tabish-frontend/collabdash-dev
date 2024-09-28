@@ -1,19 +1,14 @@
 import { chatApi } from "src/api/chat";
 import { slice } from "src/store/slices/chat";
 import type { AppThunk } from "src/store";
-import { employeesApi } from "src/api";
+import { contactsApi, employeesApi } from "src/api";
 
 const getContacts =
   (): AppThunk =>
   async (dispatch): Promise<void> => {
-    const response = await employeesApi.getAllEmployees({
-      fields: "full_name,avatar,department",
-      account_status: "active",
-      search: "",
-      role: "admin",
-    });
+    const response = await contactsApi.getContacts({});
 
-    dispatch(slice.actions.getContacts(response.users));
+    dispatch(slice.actions.getContacts(response));
   };
 
 const getThreads =

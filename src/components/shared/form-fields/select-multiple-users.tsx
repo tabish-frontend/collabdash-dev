@@ -123,7 +123,7 @@ export const SelectMultipleUsers: React.FC<SelectMultipleUsersProps> = ({
                     onChange={handleSelectAllChange}
                   />
                 }
-                label="Select All"
+                label={label}
               />
             </MenuItem>
           )}

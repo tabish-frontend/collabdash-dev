@@ -43,12 +43,13 @@ export const UserAvatarGroup = ({ users }: { users: Employee[] }) => {
           e.stopPropagation();
           !isEmployee && router.push(`${paths.employees}/${user.username}`);
         }}
+        sx={{ cursor: "pointer" }}
       >
         <ImageAvatar
           path={user.avatar || ""}
           alt={user.full_name}
-          width={40}
-          height={40}
+          width={30}
+          height={30}
         />
       </Link>
     </Tooltip>
@@ -56,11 +57,12 @@ export const UserAvatarGroup = ({ users }: { users: Employee[] }) => {
 
   const remainingUsers = users.length > 2 && (
     <Avatar
+      style={{ cursor: "pointer" }}
+      sx={{ width: 30, height: 30 }}
       onClick={(event) => {
         event.stopPropagation();
         handlePopoverToggle(event, true);
       }}
-      style={{ cursor: "pointer" }}
     >
       +{users.length - 2}
     </Avatar>

@@ -18,15 +18,15 @@ import Stack from "@mui/material/Stack";
 import SvgIcon from "@mui/material/SvgIcon";
 import Typography from "@mui/material/Typography";
 
-import { chatApi } from "src/api/chat";
-import type { Employee } from "src/types";
+import type { Contact } from "src/types";
 import { Scrollbar } from "src/utils/scrollbar";
 import { useDebouncedCallback } from "use-debounce";
+import { contactsApi } from "src/api";
 
 interface ChatComposerRecipientsProps {
-  onRecipientAdd?: (contact: Employee) => void;
+  onRecipientAdd?: (contact: Contact) => void;
   onRecipientRemove?: (recipientId: string) => void;
-  recipients?: Employee[];
+  recipients?: Contact[];
 }
 
 export const ChatComposerRecipients: FC<ChatComposerRecipientsProps> = (
@@ -41,7 +41,7 @@ export const ChatComposerRecipients: FC<ChatComposerRecipientsProps> = (
   const searchRef = useRef<HTMLDivElement | null>(null);
   const [searchFocused, setSearchFocused] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [searchResults, setSearchResults] = useState<Employee[]>([]);
+  const [searchResults, setSearchResults] = useState<Contact[]>([]);
 
   const showSearchResults = !!(searchFocused && searchQuery);
   const hasSearchResults = searchResults.length > 0;
@@ -55,7 +55,7 @@ export const ChatComposerRecipients: FC<ChatComposerRecipientsProps> = (
       }
 
       try {
-        const contacts = await chatApi.getContacts({ query: value });
+        const contacts = await contactsApi.getContacts({ query: value });
 
         // Filter already picked recipients
         const recipientIds = recipients.map((recipient) => recipient._id);
@@ -81,35 +81,6 @@ export const ChatComposerRecipients: FC<ChatComposerRecipientsProps> = (
     [debouncedHandleSearchChange] // Ensure this stays memoized
   );
 
-  // const handleSearchChange = useCallback(
-  //   async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
-  //     const query = event.target.value;
-
-  //     setSearchQuery(query);
-
-  //     if (!query) {
-  //       setSearchResults([]);
-  //       return;
-  //     }
-
-  //     try {
-  //       const contacts = await chatApi.getContacts({ query });
-
-  //       // Filter already picked recipients
-
-  //       const recipientIds = recipients.map((recipient) => recipient._id);
-  //       const filtered = contacts.filter(
-  //         (contact) => !recipientIds.includes(contact._id)
-  //       );
-
-  //       setSearchResults(filtered);
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   },
-  //   [recipients]
-  // );
-
   const handleSearchClickAway = useCallback((): void => {
     if (showSearchResults) {
       setSearchFocused(false);
@@ -121,7 +92,7 @@ export const ChatComposerRecipients: FC<ChatComposerRecipientsProps> = (
   }, []);
 
   const handleSearchSelect = useCallback(
-    (contact: Employee): void => {
+    (contact: Contact): void => {
       setSearchQuery("");
       onRecipientAdd?.(contact);
     },

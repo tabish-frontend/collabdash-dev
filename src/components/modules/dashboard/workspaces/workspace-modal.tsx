@@ -12,8 +12,8 @@ import Button from "@mui/material/Button";
 import { useFormik } from "formik";
 import { CloseCircleOutline } from "mdi-material-ui";
 import { useEffect, useState, type FC } from "react";
-import { employeesApi } from "src/api";
-import { Employee, WorkSpace } from "src/types";
+import { contactsApi, employeesApi } from "src/api";
+import { Contact, Employee, WorkSpace } from "src/types";
 import { SelectMultipleUsers } from "src/components/shared";
 import { LoadingButton } from "@mui/lab";
 import { useWorkSpace } from "src/hooks/use-workSpace";
@@ -53,16 +53,13 @@ export const WorkspaceModal: FC<WorkspaceModalProps> = ({
     },
   });
 
-  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [employees, setEmployees] = useState<Contact[]>([]);
 
   const handleGetEmployees = async () => {
-    const response = await employeesApi.getAllEmployees({
-      fields: "full_name,avatar,department",
-      account_status: "active",
-      search: "",
-      role: "",
+    const response = await contactsApi.getContacts({
+      query: "",
     });
-    setEmployees(response.users);
+    setEmployees(response);
   };
 
   useEffect(() => {

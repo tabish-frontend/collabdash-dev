@@ -1,13 +1,6 @@
 import type { Message, Participant, Thread } from "src/types/chat";
 
 import Axios from "src/config/axios";
-import { Employee } from "src/types";
-
-type GetContactsRequest = {
-  query?: string;
-};
-
-type GetContactsResponse = Promise<Employee[]>;
 
 type GetThreadsRequest = object;
 
@@ -43,14 +36,6 @@ type AddMessageResponse = Promise<{
 }>;
 
 class ChatApi {
-  async getContacts(request: GetContactsRequest = {}): GetContactsResponse {
-    const { query } = request;
-
-    const response = await Axios.get(`/messages/contacts?search=${query}`);
-
-    return response.data;
-  }
-
   async getThreads(request: GetThreadsRequest = {}): GetThreadsResponse {
     const response = await Axios.get(`/messages`);
 

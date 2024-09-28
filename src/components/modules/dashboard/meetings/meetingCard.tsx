@@ -50,7 +50,7 @@ export const MeetingCard: FC<MeetingCardProps> = ({
   const { user } = useAuth<AuthContextType>();
 
   return (
-    <Card sx={{ position: "relative" }}>
+    <Card sx={{ position: "relative", minHeight: 310 }}>
       <CardHeader
         avatar={
           <ImageAvatar
