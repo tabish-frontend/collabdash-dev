@@ -5,7 +5,6 @@ import { useSettings } from "src/hooks/use-settings";
 import { useSections } from "./config";
 import { VerticalLayout } from "./vertical-layout";
 import { AuthGuard } from "src/components";
-import { usePushNotifications } from "src/hooks";
 
 interface LayoutProps {
   children?: ReactNode;

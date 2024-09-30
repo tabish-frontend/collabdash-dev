@@ -107,11 +107,11 @@ export const ChatThreadToolbar: FC<ChatThreadToolbarProps> = (props) => {
           </div>
         </Stack>
         <Stack alignItems="center" direction="row" spacing={1}>
-          {/* <IconButton>
+          <IconButton>
             <SvgIcon>
               <PhoneIcon />
             </SvgIcon>
-          </IconButton> */}
+          </IconButton>
           {/* <IconButton>
             <SvgIcon>
               <Camera01Icon />

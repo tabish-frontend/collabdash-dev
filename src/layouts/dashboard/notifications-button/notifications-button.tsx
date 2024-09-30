@@ -9,63 +9,21 @@ import Tooltip from "@mui/material/Tooltip";
 import { usePopover } from "src/hooks/use-popover";
 
 import { NotificationsPopover } from "./notifications-popover";
-import { Notification } from "src/types";
-import { notificationsApi } from "src/api";
-
-const useNotifications = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-
-  const fetchNotifications = async () => {
-    const response = await notificationsApi.getNotifications();
-    setNotifications(response);
-  };
-
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
-  const unread = useMemo((): number => {
-    return notifications.reduce(
-      (acc, notification) => acc + (notification.read ? 0 : 1),
-      0
-    );
-  }, [notifications]);
-
-  const handleRemoveOne = useCallback((notificationId: string): void => {
-    setNotifications((prevState) => {
-      return prevState.filter(
-        (notification) => notification._id !== notificationId
-      );
-    });
-  }, []);
-
-  const handleMarkAllAsRead = useCallback((): void => {
-    setNotifications((prevState) => {
-      return prevState.map((notification) => ({
-        ...notification,
-        read: true,
-      }));
-    });
-  }, []);
-
-  return {
-    handleMarkAllAsRead,
-    handleRemoveOne,
-    notifications,
-    unread,
-  };
-};
+import { useNotifications } from "src/hooks/use-notifications";
 
 export const NotificationsButton: FC = () => {
   const popover = usePopover<HTMLButtonElement>();
-  const { handleRemoveOne, handleMarkAllAsRead, notifications, unread } =
+
+  const { notifications, unreadCount, markAllAsRead, removeNotification } =
     useNotifications();
+
+  console.log("notifications", notifications);
 
   return (
     <>
       <Tooltip title="Notifications">
         <IconButton ref={popover.anchorRef} onClick={popover.handleOpen}>
-          <Badge color="error" badgeContent={unread}>
+          <Badge color="error" badgeContent={unreadCount}>
             <SvgIcon>
               <Bell01Icon />
             </SvgIcon>
@@ -76,8 +34,8 @@ export const NotificationsButton: FC = () => {
         anchorEl={popover.anchorRef.current}
         notifications={notifications}
         onClose={popover.handleClose}
-        onMarkAllAsRead={handleMarkAllAsRead}
-        onRemoveOne={handleRemoveOne}
+        onMarkAllAsRead={markAllAsRead}
+        onRemoveOne={() => {}}
         open={popover.open}
       />
     </>
