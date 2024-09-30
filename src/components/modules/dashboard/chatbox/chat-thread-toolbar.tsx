@@ -24,6 +24,8 @@ import { usePopover } from "src/hooks/use-popover";
 import type { Participant } from "src/types";
 import { useAuth } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
+import { useRouter } from "next/router";
+import { paths } from "src/constants/paths";
 
 const getRecipients = (
   participants: Participant[],
@@ -50,12 +52,15 @@ const getDisplayName = (recipients: Participant[]): string => {
 
 interface ChatThreadToolbarProps {
   participants?: Participant[];
+  threadKey?: string;
 }
 
 export const ChatThreadToolbar: FC<ChatThreadToolbarProps> = (props) => {
-  const { participants = [], ...other } = props;
+  const { participants = [], threadKey, ...other } = props;
   const popover = usePopover<HTMLButtonElement>();
   const { user } = useAuth<AuthContextType>();
+
+  const router = useRouter();
 
   // Maybe use memo for these values
 
@@ -107,7 +112,11 @@ export const ChatThreadToolbar: FC<ChatThreadToolbarProps> = (props) => {
           </div>
         </Stack>
         <Stack alignItems="center" direction="row" spacing={1}>
-          <IconButton>
+          <IconButton
+            onClick={() =>
+              router.push(`${paths.chat_room}?threadKey=${threadKey}`)
+            }
+          >
             <SvgIcon>
               <PhoneIcon />
             </SvgIcon>

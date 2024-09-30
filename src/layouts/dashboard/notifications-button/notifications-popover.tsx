@@ -22,27 +22,24 @@ import Typography from "@mui/material/Typography";
 import { Scrollbar } from "src/utils/scrollbar";
 import { Notification } from "src/types";
 import { getDay_Time } from "src/utils";
+import { RouterLink } from "src/components";
 
 const formatMessageWithLink = (
   message: string,
   linkText: string,
-  time: Date | null | undefined
+  time: Date | null | undefined,
+  targetLink: string
 ): React.ReactNode => {
   const parts = message.split(linkText);
 
-  console.log("parts", parts);
-
-  console.log("time", time);
-
-  console.log("time", typeof time);
   if (!time || !(time instanceof Date) || isNaN(time.getTime())) {
-    console.log("running that");
     if (parts.length === 2) {
       return (
         <>
           {parts[0]}
           <Link
-            href={`/tasks/${linkText}`}
+            component={RouterLink}
+            href={targetLink}
             style={{ textDecoration: "underline", fontWeight: "bold" }}
           >
             {linkText}
@@ -64,7 +61,8 @@ const formatMessageWithLink = (
       <>
         {parts[0]}
         <Link
-          href={`/tasks/${linkText}`}
+          component={RouterLink}
+          href={targetLink}
           style={{ textDecoration: "underline", fontWeight: "bold" }}
         >
           {linkText}
@@ -104,7 +102,8 @@ const renderContent = (notification: Notification): JSX.Element | null => {
                 {formatMessageWithLink(
                   notification.message,
                   notification.link,
-                  new Date(notification.time)
+                  new Date(notification.time),
+                  notification.target_link
                 )}
               </Box>
             </Typography>

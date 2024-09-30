@@ -49,8 +49,9 @@ export const VerticalLayout: FC<VerticalLayoutProps> = (props) => {
   usePushNotifications();
 
   const isMeetingRoom =
-    router.pathname.startsWith(paths.meetings) &&
-    router.pathname.length > paths.meetings.length;
+    (router.pathname.startsWith(paths.meetings) &&
+      router.pathname.length > paths.meetings.length) ||
+    router.pathname.startsWith(paths.chat_room);
 
   return (
     <>

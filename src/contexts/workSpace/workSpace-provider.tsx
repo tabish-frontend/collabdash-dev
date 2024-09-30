@@ -440,8 +440,12 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
       [key: string]: any;
     }) => {
       const { _id: task_id, ...restValues } = data;
-
-      const response = await TaskApi.updateTask(task_id, restValues);
+      const { workspace_slug, boards_slug } = router.query;
+      const target_link = `/workspaces/${workspace_slug}/boards/${boards_slug}`;
+      const response = await TaskApi.updateTask(task_id, {
+        ...restValues,
+        target_link,
+      });
 
       setState((prev) => {
         const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
@@ -475,7 +479,7 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
         };
       });
     },
-    []
+    [router.query]
   );
 
   const handleDeleteTask = useCallback(async (_id: string) => {
@@ -566,9 +570,13 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
         };
       });
 
-      await TaskApi.moveTask(data);
+      const { workspace_slug, boards_slug } = router.query;
+
+      const target_link = `/workspaces/${workspace_slug}/boards/${boards_slug}`;
+
+      await TaskApi.moveTask({ ...data, target_link });
     },
-    []
+    [router.query]
   );
 
   const accessToken = window.localStorage.getItem("accessToken");

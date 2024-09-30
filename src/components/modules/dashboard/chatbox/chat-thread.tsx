@@ -232,7 +232,7 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
       }}
       {...other}
     >
-      <ChatThreadToolbar participants={participants} />
+      <ChatThreadToolbar participants={participants} threadKey={threadKey} />
       <Divider />
       <Box
         sx={{
