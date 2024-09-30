@@ -1,8 +1,8 @@
 import { MenuItem, TextField } from "@mui/material";
 import { handleKeyPress } from "src/utils";
-import { DepartmentNames } from "src/constants/departments";
+import { Country } from "country-state-city";
 
-interface DepartmentFieldProps {
+interface CountryFieldProps {
   value: string;
   handleChange: <T = string>(e: T) => void;
   handleBlur: <T = string>(e: T) => void;
@@ -10,20 +10,22 @@ interface DepartmentFieldProps {
   formikError: string | undefined;
 }
 
-export const DepartmentField: React.FC<DepartmentFieldProps> = ({
+export const CountryField: React.FC<CountryFieldProps> = ({
   value,
   handleChange,
   handleBlur,
   formikError,
   formikTouched,
 }) => {
+  const Countries = Country.getAllCountries();
+
   return (
     <TextField
       fullWidth
       required
       select
-      label="Department"
-      name="department"
+      label="Country"
+      name="country"
       value={value}
       onChange={handleChange}
       onKeyDown={handleKeyPress}
@@ -31,9 +33,9 @@ export const DepartmentField: React.FC<DepartmentFieldProps> = ({
       error={!!(formikTouched && formikError)}
       helperText={formikTouched && formikError}
     >
-      {DepartmentNames.map((option) => (
-        <MenuItem key={option} value={option}>
-          {option}
+      {Countries.map((country) => (
+        <MenuItem key={country.name} value={country.isoCode}>
+          {country.name}
         </MenuItem>
       ))}
     </TextField>

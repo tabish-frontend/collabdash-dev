@@ -44,9 +44,14 @@ export const employeeInitialValues: Employee = {
   gender: "",
   department: "",
   designation: "",
+  country: "",
   company: "",
   account_status: "active",
   national_identity_number: undefined,
+  time_zone: {
+    name: "",
+    value: "",
+  },
 };
 
 export const holidayInitialValues: Holiday = {

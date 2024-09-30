@@ -1,12 +1,16 @@
-import {
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  Typography,
-} from "@mui/material";
+import { MenuItem, TextField } from "@mui/material";
+import { handleKeyPress } from "src/utils";
 
+const Genders = [
+  {
+    label: "Male",
+    value: "male",
+  },
+  {
+    label: "Female",
+    value: "female",
+  },
+];
 interface GenderFieldProps {
   value: string;
   handleChange: <T = string>(e: T) => void;
@@ -23,26 +27,24 @@ export const GenderField: React.FC<GenderFieldProps> = ({
   formikTouched,
 }) => {
   return (
-    <FormControl error={formikTouched && Boolean(formikError)}>
-      <FormLabel sx={{ fontSize: "0.875rem" }} required>
-        Gender
-      </FormLabel>
-      <RadioGroup
-        row
-        aria-label="gender"
-        value={value}
-        name="gender"
-        onChange={handleChange}
-        onBlur={handleBlur}
-      >
-        <FormControlLabel value="male" label="Male" control={<Radio />} />
-        <FormControlLabel value="female" label="Female" control={<Radio />} />
-      </RadioGroup>
-      {formikTouched && formikError && (
-        <Typography variant="caption" color="error">
-          {formikError}
-        </Typography>
-      )}
-    </FormControl>
+    <TextField
+      fullWidth
+      required
+      select
+      label="Gender"
+      name="gender"
+      value={value}
+      onChange={handleChange}
+      onKeyDown={handleKeyPress}
+      onBlur={handleBlur}
+      error={!!(formikTouched && formikError)}
+      helperText={formikTouched && formikError}
+    >
+      {Genders.map((option) => (
+        <MenuItem key={option.value} value={option.value}>
+          {option.label}
+        </MenuItem>
+      ))}
+    </TextField>
   );
 };

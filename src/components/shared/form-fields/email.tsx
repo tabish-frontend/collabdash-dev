@@ -1,5 +1,5 @@
 import { TextField } from "@mui/material";
-import { handleKeyPress } from "./key-press-function";
+import { handleKeyPress } from "src/utils";
 
 interface EmailFieldProps {
   value: string;

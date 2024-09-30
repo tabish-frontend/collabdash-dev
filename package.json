@@ -30,6 +30,7 @@
     "@untitled-ui/icons-react": "0.1.1",
     "apexcharts": "3.40.0",
     "axios": "^1.4.0",
+    "country-state-city": "^3.2.1",
     "date-fns": "2.30.0",
     "dayjs": "^1.11.9",
     "exceljs": "^4.4.0",

@@ -10,7 +10,7 @@ import { useAuth } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { LoadingButton } from "@mui/lab";
 import { UserBankValidation } from "src/formik";
-import { handleKeyPress } from "src/components/shared/form-fields";
+import { handleKeyPress } from "src/utils";
 
 export const TabBank = () => {
   const { user, updateCurrentUser } = useAuth<AuthContextType>();

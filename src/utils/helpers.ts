@@ -3,18 +3,10 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-
-import { Box, Tooltip } from "@mui/material";
-import {
-  CheckCircleOutline,
-  ClockTimeThreeOutline,
-  CloseCircleOutline,
-  TimerSandEmpty,
-} from "mdi-material-ui";
-import { AttendanceStatus, LeavesStatus } from "src/constants/status";
-
-import { attendanceApi } from "src/api";
-import { Holiday, Leaves, Shift } from "src/types";
+import { LeavesStatus } from "src/constants/status";
+import { Shift } from "src/types";
+import { format } from "date-fns";
+import { Country } from "country-state-city";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -31,6 +23,19 @@ const dayAbbreviations: { [key: string]: string } = {
   Friday: "Fri",
   Saturday: "Sat",
   Sunday: "Sun",
+};
+
+export const getTimeZones = (currentCountry: any, userTimeZones: any) => {
+  const country = Country.getCountryByCode(currentCountry);
+  const timeZone = country?.timezones;
+  const filterTimeZones = Array.from(
+    new Set(timeZone?.map((item) => item.tzName))
+  )
+    .map((tzName) => {
+      return timeZone?.find((item) => item.tzName === tzName);
+    })
+    .filter((item) => item !== undefined);
+  userTimeZones(filterTimeZones);
 };
 
 export const getChangedFields = <T extends FormikValues>(
@@ -255,8 +260,6 @@ export const getClassDuration = ({ startTime, endTime }: any) => {
 
   return durationString;
 };
-
-import { format } from "date-fns";
 
 export const capitalizeWord = (word: string): string => {
   return word.charAt(0).toUpperCase() + word.slice(1);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import {
   Box,
@@ -30,12 +30,17 @@ import {
   NationalIdentityField,
   UsernameField,
   DepartmentField,
+  CountryField,
+  TimeZoneField,
 } from "src/components/shared/form-fields";
+import { getTimeZones } from "src/utils";
 
 const CreateEmployeeComponent = () => {
   const settings = useSettings();
 
   const router = useRouter();
+
+  const [userTimeZones, setUserTimeZones] = useState<any[] | undefined>([]);
 
   const formik = useFormik({
     initialValues: employeeInitialValues,
@@ -178,6 +183,38 @@ const CreateEmployeeComponent = () => {
                           handleBlur={formik.handleBlur}
                           formikError={formik.errors.designation}
                           formikTouched={formik.touched.designation}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} sm={4}>
+                        <CountryField
+                          value={formik.values.country}
+                          handleChange={(e: any) => {
+                            formik.handleChange(e);
+                            getTimeZones(e.target.value, setUserTimeZones);
+                            formik.setFieldValue("time_zone", {
+                              name: "",
+                              value: "",
+                            });
+                          }}
+                          handleBlur={formik.handleBlur}
+                          formikError={formik.errors.country}
+                          formikTouched={formik.touched.country}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} sm={4}>
+                        <TimeZoneField
+                          name={"time_zone.value"}
+                          is_disable={!formik.values.country}
+                          handleBlur={formik.handleBlur}
+                          formikError={formik.errors.time_zone?.value}
+                          formikTouched={formik.touched.time_zone?.value}
+                          value={formik.values.time_zone.value}
+                          TimeZones={userTimeZones}
+                          setFieldValue={(value: any) => {
+                            return formik.setFieldValue("time_zone", value);
+                          }}
                         />
                       </Grid>
 
