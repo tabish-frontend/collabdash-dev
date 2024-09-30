@@ -11,7 +11,12 @@ class TaskAPI {
     return response.data;
   }
 
-  async moveTask(body: { task_id: string; index: number; column_id?: string }) {
+  async moveTask(body: {
+    task_id: string;
+    index: number;
+    column_id?: string;
+    target_link: string;
+  }) {
     const response = await Axios.post(`/task/move`, body);
     return response.data;
   }

@@ -1,18 +1,13 @@
 import { DashboardLayout } from "src/layouts";
 import type { NextPage } from "next";
-import { JitsiMeeting } from "@jitsi/react-sdk";
 import { useAuth } from "src/hooks";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { AuthContextType } from "src/contexts/auth";
-import { JitsiConfigOverwrite } from "src/constants/jitsi-config";
 import { useRouter } from "next/router";
 import { meetingApi } from "src/api";
 import { Meeting } from "src/types";
 import { WaitingScreen } from "./waiting-card";
-import { Link } from "@mui/material";
-import { paths } from "src/constants/paths";
-import { Logo, RouterLink } from "src/components/shared";
+import { ConferenceRoom } from "src/components/shared";
 
 // Function to fetch session data from API
 const fetchMeetingData = async (
@@ -77,7 +72,6 @@ const MeetingRoomComponent = () => {
   const { user } = useAuth<AuthContextType>();
   const { meeting_url } = router.query;
 
-  const [meetingData, setMeetingData] = useState<Meeting | null>(null);
   const [meetingExist, setMeetingExist] = useState<boolean>(false);
   const [displayRoomName, setDisplayRoomName] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // Error state
@@ -100,7 +94,6 @@ const MeetingRoomComponent = () => {
         return;
       }
 
-      setMeetingData(data);
       setDisplayRoomName(data.title);
       validateRoomAndSession(data, setMeetingExist, setErrorMessage);
     };
@@ -116,43 +109,10 @@ const MeetingRoomComponent = () => {
   return (
     <div>
       {meetingExist && (
-        <div
-          style={{ height: "100vh", overflowY: "hidden", position: "relative" }}
-        >
-          <Link
-            component={RouterLink}
-            href={paths.index}
-            target="_blank"
-            sx={{
-              position: "absolute",
-              top: 20,
-              left: 10,
-              height: 80,
-              width: 150,
-              textDecoration: "none",
-            }}
-          >
-            <Logo />
-          </Link>
-
-          <JitsiMeeting
-            domain="meet.collabdash.io"
-            roomName={displayRoomName}
-            configOverwrite={{ ...JitsiConfigOverwrite, readOnlyName: user }}
-            interfaceConfigOverwrite={{}}
-            userInfo={{
-              displayName: user?.full_name || "Guest User",
-              email: user?.email || "user@gmail.com",
-            }}
-            getIFrameRef={(iframeRef) => {
-              iframeRef.style.height = "100%";
-              iframeRef.style.width = "100%";
-            }}
-            onApiReady={(externalApi) => {
-              console.log("Jitsi Meeting API is ready!", externalApi);
-            }}
-          />
-        </div>
+        <ConferenceRoom
+          Allowed={user ? true : false}
+          RoomName={displayRoomName}
+        />
       )}
     </div>
   );

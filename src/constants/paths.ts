@@ -14,6 +14,7 @@ export const paths = {
   leaves: `/leaves`,
   holidays: `/holidays`,
   chat: "/chat",
+  chat_room: "/chat/room",
   meetings: "/meetings",
   workspaces: `/workspaces`,
   notFound: "/404",

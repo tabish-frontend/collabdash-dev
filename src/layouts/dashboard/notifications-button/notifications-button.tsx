@@ -17,8 +17,6 @@ export const NotificationsButton: FC = () => {
   const { notifications, unreadCount, markAllAsRead, removeNotification } =
     useNotifications();
 
-  console.log("notifications", notifications);
-
   return (
     <>
       <Tooltip title="Notifications">

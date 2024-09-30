@@ -8,6 +8,7 @@ type GetThreadsResponse = Promise<Thread[]>;
 
 type GetThreadRequest = {
   threadKey: string;
+  populateFields?: string[];
 };
 
 type GetThreadResponse = Promise<Thread | null>;
@@ -43,9 +44,13 @@ class ChatApi {
   }
 
   async getThread(request: GetThreadRequest): GetThreadResponse {
-    const { threadKey } = request;
+    const { threadKey, populateFields = ["participants", "messages"] } =
+      request; // Add populateFields to the request object
 
-    const response = await Axios.get(`/messages/thread/${threadKey}`);
+    // Send the fields to be populated as query parameters
+    const response = await Axios.get(
+      `/messages/thread/${threadKey}?populate=${populateFields.join(",")}`
+    );
 
     return response.data;
   }

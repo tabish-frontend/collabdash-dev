@@ -105,15 +105,12 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
 
   const [showAlert, setShowAlert] = useState(false);
   const [isFormBeingChanged, setIsFormBeingChanged] = useState(false);
-  const [value, setValue] = useState("");
 
   const formik = useFormik({
     // initialValues: taskModalInitialValues,
     initialValues: task
       ? {
           ...task,
-          // assignedTo: task.assignedTo.map((item) => item._id),
-          assignedTo: task.assignedTo.map((user: any) => user._id),
           dueDate: new Date(task.dueDate),
         }
       : taskModalInitialValues,
@@ -543,7 +540,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                     employees={boardMembers}
                     inputSize="small"
                     formikUsers={formik.values.assignedTo.map(
-                      (item) => item._id
+                      (item: any) => item._id
                     )}
                     setFieldValue={(value: any) => {
                       setIsFormBeingChanged(true);

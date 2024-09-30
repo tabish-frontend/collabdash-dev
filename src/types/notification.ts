@@ -8,6 +8,7 @@ export interface Notification {
   receiver: string[];
   message: string;
   link: string;
+  target_link: string;
   time: Date;
   read: boolean;
   createdAt: Date;
