@@ -1,6 +1,6 @@
 import { Box, Card, Stack, Tooltip, Typography } from "@mui/material";
-import React, { useState } from "react";
-import { UserAvatarGroup } from "../../../shared/users-avatar-group";
+import React from "react";
+import { UserAvatarGroup } from "src/components/shared";
 import { SquareEditOutline, TrashCanOutline } from "mdi-material-ui";
 import { useRouter } from "next/router";
 import { paths } from "src/constants/paths";

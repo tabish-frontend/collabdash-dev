@@ -148,6 +148,7 @@ export const ShiftModal: FC<ShiftModalProps> = ({
           <Grid container spacing={2} p={2}>
             <Grid item xs={12} sm={6}>
               <TextField
+                variant="outlined"
                 label="Shift Type"
                 value={formik.values.shift_type}
                 name="shift_type"
@@ -166,7 +167,7 @@ export const ShiftModal: FC<ShiftModalProps> = ({
 
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth required>
-                <InputLabel>weekends</InputLabel>
+                <InputLabel>Off Days</InputLabel>
                 <Select
                   multiple
                   value={formik.values.weekends}
@@ -222,7 +223,7 @@ export const ShiftModal: FC<ShiftModalProps> = ({
                     </Grid>
                     <Grid item xs={12} sm={5}>
                       <FormControl fullWidth required>
-                        <InputLabel>Days</InputLabel>
+                        <InputLabel>Work Days</InputLabel>
                         <Select
                           multiple
                           value={input.days}
@@ -234,7 +235,7 @@ export const ShiftModal: FC<ShiftModalProps> = ({
                           }}
                           input={
                             <OutlinedInput
-                              label="Days"
+                              label="Work Days"
                               id="select-multiple-language"
                             />
                           }

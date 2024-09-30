@@ -19,7 +19,8 @@ import { Provider } from "react-redux";
 import { AuthConsumer, AuthProvider } from "src/contexts/auth";
 import { store } from "src/store";
 import { WorkSpaceProvider } from "src/contexts/workSpace";
-import { usePushNotifications } from "src/hooks";
+import { SocketProvider } from "src/contexts/socket";
+
 const clientSideEmotionCache = createEmotionCache();
 
 export interface CustomAppProps extends AppProps {
@@ -31,7 +32,6 @@ const CustomApp = (props: CustomAppProps) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
   useNprogress();
-  usePushNotifications();
   const getLayout = Component.getLayout ?? ((page) => page);
 
   return (
@@ -63,9 +63,11 @@ const CustomApp = (props: CustomAppProps) => {
                           {showSlashScreen ? (
                             <SplashScreen />
                           ) : (
-                            <WorkSpaceProvider>
-                              {getLayout(<Component {...pageProps} />)}
-                            </WorkSpaceProvider>
+                            <SocketProvider>
+                              <WorkSpaceProvider>
+                                {getLayout(<Component {...pageProps} />)}
+                              </WorkSpaceProvider>
+                            </SocketProvider>
                           )}
                           <Toaster />
                         </ThemeProvider>

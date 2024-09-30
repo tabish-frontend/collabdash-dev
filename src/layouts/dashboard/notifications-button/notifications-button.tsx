@@ -8,47 +8,22 @@ import Tooltip from "@mui/material/Tooltip";
 
 import { usePopover } from "src/hooks/use-popover";
 
-import type { Notification } from "./notifications";
-// import { notifications as initialNotifications } from './notifications';
 import { NotificationsPopover } from "./notifications-popover";
+import { Notification } from "src/types";
 import { notificationsApi } from "src/api";
 
 const useNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  const fetchNotifications = async () => {
+    const response = await notificationsApi.getNotifications();
+    setNotifications(response);
+  };
+
   useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const response = await notificationsApi.getNotifications();
-        console.log("response", response);
-
-        // Assuming the API response data structure is similar to the Notification interface
-        const fetchedNotifications: Notification[] = response.map(
-          (notification: any) => ({
-            id: notification._id,
-            sender: {
-              id: notification.sender._id,
-              fullName: notification.sender.full_name,
-              avatar: notification.sender.avatar,
-            },
-            receiver: notification.receiver,
-            message: notification.message,
-            link: notification.link,
-            time: new Date(notification.time),
-            read: notification.read,
-            createdAt: new Date(notification.createdAt),
-            updatedAt: new Date(notification.updatedAt),
-          })
-        );
-
-        setNotifications(fetchedNotifications);
-      } catch (error) {
-        console.error("Failed to fetch notifications", error);
-        // You can set error state here or handle it appropriately
-      }
-    };
-
     fetchNotifications();
   }, []);
+
   const unread = useMemo((): number => {
     return notifications.reduce(
       (acc, notification) => acc + (notification.read ? 0 : 1),
@@ -59,7 +34,7 @@ const useNotifications = () => {
   const handleRemoveOne = useCallback((notificationId: string): void => {
     setNotifications((prevState) => {
       return prevState.filter(
-        (notification) => notification.id !== notificationId
+        (notification) => notification._id !== notificationId
       );
     });
   }, []);

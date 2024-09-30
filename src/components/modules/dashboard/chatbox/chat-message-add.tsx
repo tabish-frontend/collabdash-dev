@@ -11,7 +11,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import Stack from "@mui/material/Stack";
 import SvgIcon from "@mui/material/SvgIcon";
 import Tooltip from "@mui/material/Tooltip";
-import { useAuth, useMockedUser } from "src/hooks";
+import { useAuth } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 
 interface ChatMessageAddProps {
@@ -21,7 +21,8 @@ interface ChatMessageAddProps {
 
 export const ChatMessageAdd: FC<ChatMessageAddProps> = (props) => {
   const { disabled = false, onSend, ...other } = props;
-  const user = useMockedUser();
+
+  const { user } = useAuth<AuthContextType>();
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [body, setBody] = useState<string>("");
@@ -73,7 +74,7 @@ export const ChatMessageAdd: FC<ChatMessageAddProps> = (props) => {
             sm: "inline",
           },
         }}
-        src={user.avatar}
+        src={user?.avatar}
       />
       <OutlinedInput
         disabled={disabled}

@@ -18,9 +18,10 @@ import Stack from "@mui/material/Stack";
 import SvgIcon from "@mui/material/SvgIcon";
 import Typography from "@mui/material/Typography";
 
-import { chatApi } from "src/api/chat";
 import type { Contact } from "src/types";
 import { Scrollbar } from "src/utils/scrollbar";
+import { useDebouncedCallback } from "use-debounce";
+import { contactsApi } from "src/api";
 
 interface ChatComposerRecipientsProps {
   onRecipientAdd?: (contact: Contact) => void;
@@ -45,25 +46,22 @@ export const ChatComposerRecipients: FC<ChatComposerRecipientsProps> = (
   const showSearchResults = !!(searchFocused && searchQuery);
   const hasSearchResults = searchResults.length > 0;
 
-  const handleSearchChange = useCallback(
-    async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
-      const query = event.target.value;
-
-      setSearchQuery(query);
-
-      if (!query) {
+  // Debounced version of handleSearchChange
+  const debouncedHandleSearchChange = useDebouncedCallback(
+    async (value: string) => {
+      if (!value) {
         setSearchResults([]);
         return;
       }
 
       try {
-        const contacts = await chatApi.getContacts({ query });
+        const contacts = await contactsApi.getContacts({ query: value });
 
         // Filter already picked recipients
+        const recipientIds = recipients.map((recipient) => recipient._id);
 
-        const recipientIds = recipients.map((recipient) => recipient.id);
         const filtered = contacts.filter(
-          (contact) => !recipientIds.includes(contact.id)
+          (contact) => !recipientIds.includes(contact._id)
         );
 
         setSearchResults(filtered);
@@ -71,7 +69,16 @@ export const ChatComposerRecipients: FC<ChatComposerRecipientsProps> = (
         console.error(err);
       }
     },
-    [recipients]
+    300 // Delay in ms
+  );
+
+  const handleSearchChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const { value } = event.target;
+      setSearchQuery(value); // Update search input value immediately
+      debouncedHandleSearchChange(value); // Trigger debounced API call
+    },
+    [debouncedHandleSearchChange] // Ensure this stays memoized
   );
 
   const handleSearchClickAway = useCallback((): void => {
@@ -161,7 +168,7 @@ export const ChatComposerRecipients: FC<ChatComposerRecipientsProps> = (
                           <List>
                             {searchResults.map((contact) => (
                               <ListItemButton
-                                key={contact.id}
+                                key={contact._id}
                                 onClick={(): void =>
                                   handleSearchSelect(contact)
                                 }
@@ -170,7 +177,7 @@ export const ChatComposerRecipients: FC<ChatComposerRecipientsProps> = (
                                   <Avatar src={contact.avatar} />
                                 </ListItemAvatar>
                                 <ListItemText
-                                  primary={contact.name}
+                                  primary={contact.full_name}
                                   primaryTypographyProps={{
                                     noWrap: true,
                                     variant: "subtitle2",
@@ -209,9 +216,11 @@ export const ChatComposerRecipients: FC<ChatComposerRecipientsProps> = (
               {recipients.map((recipient) => (
                 <Chip
                   avatar={<Avatar src={recipient.avatar} />}
-                  key={recipient.id}
-                  label={recipient.name}
-                  onDelete={(): void => onRecipientRemove?.(recipient.id)}
+                  key={recipient._id}
+                  label={recipient.full_name}
+                  onDelete={(): void =>
+                    onRecipientRemove?.(recipient._id as string)
+                  }
                 />
               ))}
             </Stack>

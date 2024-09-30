@@ -138,7 +138,7 @@ const MeetingRoomComponent = () => {
           <JitsiMeeting
             domain="meet.collabdash.io"
             roomName={displayRoomName}
-            configOverwrite={JitsiConfigOverwrite}
+            configOverwrite={{ ...JitsiConfigOverwrite, readOnlyName: user }}
             interfaceConfigOverwrite={{}}
             userInfo={{
               displayName: user?.full_name || "Guest User",

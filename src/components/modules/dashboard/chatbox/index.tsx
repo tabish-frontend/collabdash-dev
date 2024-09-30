@@ -1,14 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { NextPage } from "next";
-import Menu01Icon from "@untitled-ui/icons-react/build/esm/Menu01";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import SvgIcon from "@mui/material/SvgIcon";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import type { Theme } from "@mui/material/styles/createTheme";
-
-import { useSearchParams } from "src/hooks/use-search-params";
+import { useListenMessages, useSearchParams } from "src/hooks";
 import { DashboardLayout } from "src/layouts/dashboard";
 import { useDispatch } from "src/store";
 import { thunks } from "src/thunks/chat";
@@ -17,6 +15,8 @@ import { ChatComposer } from "./chat-composer";
 import { ChatThread } from "./chat-thread";
 import { ChatContainer } from "./chat-container";
 import { ChatSidebar } from "./chat-sidebar";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 /**
  * NOTE:
@@ -97,13 +97,13 @@ const ChatboxComponent = () => {
   const compose = searchParams.get("compose") === "true";
   const threadKey = searchParams.get("threadKey") || undefined;
 
-  console.log("searchParams threadKey", threadKey);
-
   const sidebar = useSidebar();
 
   useThreads();
 
   const view = threadKey ? "thread" : compose ? "compose" : "blank";
+
+  useListenMessages();
 
   return (
     <>
@@ -136,7 +136,12 @@ const ChatboxComponent = () => {
             <Box sx={{ p: 2 }}>
               <IconButton onClick={sidebar.handleToggle}>
                 <SvgIcon>
-                  <Menu01Icon />
+                  {/* <Menu01Icon /> */}
+                  {sidebar.open ? (
+                    <ArrowBackIosIcon />
+                  ) : (
+                    <ArrowForwardIosIcon />
+                  )}
                 </SvgIcon>
               </IconButton>
             </Box>

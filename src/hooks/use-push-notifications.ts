@@ -1,12 +1,12 @@
-// src/hooks/usePushNotifications.ts
 import { useEffect } from "react";
 import { notificationsApi } from "src/api";
+import { useAuth } from "./use-auth";
 
 export const usePushNotifications = () => {
+  const { isAuthenticated } = useAuth();
+
   const subscribeUser = async () => {
-    console.log("Requesting notification permission...");
     const permission = await Notification.requestPermission();
-    console.log("permission", permission);
 
     if (permission === "granted") {
       const registration = await navigator.serviceWorker.ready;
@@ -16,10 +16,8 @@ export const usePushNotifications = () => {
         applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
       });
 
-      console.log("Subscription:", subscription); // Log the subscription
       await notificationsApi.subscribeUser(subscription);
     } else {
-      console.warn("Notifications permission denied:", permission);
       await notificationsApi.removeSubscribedUser();
     }
   };
@@ -27,14 +25,8 @@ export const usePushNotifications = () => {
   const registerServiceWorker = async () => {
     if ("serviceWorker" in navigator && "PushManager" in window) {
       try {
-        const registration = await navigator.serviceWorker.register(
-          "/service_worker.js"
-        );
-        console.log(
-          "Service Worker registered with scope:",
-          registration.scope
-        );
-        // Call subscribeUser after successful registration
+        await navigator.serviceWorker.register("/service_worker.js");
+
         await subscribeUser();
       } catch (error) {
         console.error("Service Worker registration failed:", error);
@@ -43,6 +35,9 @@ export const usePushNotifications = () => {
   };
 
   useEffect(() => {
-    registerServiceWorker();
-  }, []);
+    if (isAuthenticated) {
+      registerServiceWorker();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
 };

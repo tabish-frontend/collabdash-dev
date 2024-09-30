@@ -1,4 +1,4 @@
-import { Box, Container, Typography } from "@mui/material";
+import { Box, Card, Container, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { useAuth, useSettings } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
@@ -11,7 +11,14 @@ import {
   EmployeesAvailability,
   TotalEmployees,
   AttendanceCard,
+  EmployeePerformanceCard,
+  LeavesCard,
 } from "src/components/shared";
+import { UpcomingMeetingsCard } from "src/components/shared/cards/upcomingMeetings";
+import { MyTasksCard } from "src/components/shared/cards/myTasks";
+import { TodoCard } from "src/components/shared/cards/todoCard";
+import { WeatherCard } from "src/components/shared/cards/WeatherCard";
+import MyLeavesCard from "src/components/shared/cards/myLeaves";
 
 const OverviewComponent = () => {
   const { user } = useAuth<AuthContextType>();
@@ -39,29 +46,40 @@ const OverviewComponent = () => {
             <WelcomeCard />
           </Grid>
           <Grid xs={12} md={8}>
-            <PerformanceCard />
+            {user?.role === "admin" || user?.role === "hr" ? (
+              <EmployeePerformanceCard />
+            ) : (
+              <PerformanceCard />
+            )}
           </Grid>
 
           {user?.role !== "admin" && (
-            <Grid xs={12} md={4} lg={4}>
+            <Grid xs={12} md={6} xl={4}>
               <TimeLogCard />
             </Grid>
           )}
 
+          <Grid xs={12} md={6} xl={4}>
+            <UpcomingMeetingsCard />
+          </Grid>
+
+          <Grid xs={12} md={6} xl={4}>
+            <MyTasksCard />
+          </Grid>
+          <Grid xs={12} md={6} xl={4}>
+            <TodoCard />
+          </Grid>
+          <Grid xs={12} md={6} xl={4} lg={user?.role === "admin" ? 6 : 6}>
+            <MyLeavesCard />
+          </Grid>
+          <Grid xs={12} md={6} xl={4}>
+            <WeatherCard name={"Weather"} />
+          </Grid>
+
           {(user?.role === "admin" || user?.role === "hr") && (
-            <>
-              <Grid xs={12} md={4} lg={user?.role === "admin" ? 6 : 4}>
-                <EmployeesAvailability />
-              </Grid>
-
-              <Grid xs={12} md={4} lg={user?.role === "admin" ? 6 : 4}>
-                <TotalEmployees />
-              </Grid>
-
-              <Grid xs={12}>
-                <AttendanceCard />
-              </Grid>
-            </>
+            <Grid xs={12}>
+              <AttendanceCard />
+            </Grid>
           )}
         </Grid>
       </Container>

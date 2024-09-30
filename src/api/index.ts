@@ -6,4 +6,5 @@ export * from "./leaves";
 export * from "./shift";
 export * from "./statistics";
 export * from "./meeting";
+export * from "./contacts";
 export * from "./notification";

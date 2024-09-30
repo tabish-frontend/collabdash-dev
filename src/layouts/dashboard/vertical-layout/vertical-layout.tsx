@@ -12,6 +12,7 @@ import { TopNav } from "./top-nav";
 import { useMobileNav } from "./use-mobile-nav";
 import { useRouter } from "next/router";
 import { paths } from "src/constants/paths";
+import { usePushNotifications } from "src/hooks";
 
 const SIDE_NAV_WIDTH = 240;
 
@@ -44,6 +45,8 @@ export const VerticalLayout: FC<VerticalLayoutProps> = (props) => {
   const router = useRouter();
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
   const mobileNav = useMobileNav();
+
+  usePushNotifications();
 
   const isMeetingRoom =
     router.pathname.startsWith(paths.meetings) &&

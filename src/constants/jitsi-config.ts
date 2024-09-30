@@ -32,7 +32,6 @@ export const JitsiConfigOverwrite = {
   startWithAudioMuted: true,
   defaultRemoteDisplayName: "User",
   disableModeratorIndicator: true,
-  readOnlyName: true,
   hiddenPremeetingButtons: ["invite", "select-background", "settings"],
   toolbarButtons,
   lobby: {

@@ -38,7 +38,15 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
   );
 
   const handleAddWorkSpace = useCallback(async (data: WorkSpace) => {
-    const response = await WorkSpaceApi.addWorkSpace(data);
+    const slug = data.name
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "_") // Replace spaces with underscores
+      .replace(/\//g, "-"); // Replace "/" with "-"
+
+    const datawithslug = { ...data, slug };
+
+    const response = await WorkSpaceApi.addWorkSpace(datawithslug);
 
     setState((prev) => ({
       ...prev,
@@ -51,10 +59,20 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     async (data: { _id: string; name: string; members: Employee[] }) => {
       const { _id, name, members } = data;
 
+      const slug = name
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "_") // Replace spaces with underscores
+        .replace(/\//g, "-"); // Replace "/" with "-"
+
+      const datawithslug = { ...data, slug };
+
       // Update the state with the new data before making the API call
       setState((prev) => {
         const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
-          return workspace._id === _id ? { ...workspace, ...data } : workspace;
+          return workspace._id === _id
+            ? { ...workspace, ...datawithslug }
+            : workspace;
         });
 
         return {
@@ -64,22 +82,13 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
       });
 
       // Make the API call
-      // await BoardsApi.updateBoard(board_id, data);
-      const response = await WorkSpaceApi.updateWorkSpace(_id, {
+      await WorkSpaceApi.updateWorkSpace(_id, {
         name,
+        slug,
         members,
       });
-
-      const { boards_slug } = router.query;
-      const updatedSlug = response.slug;
-
-      if (boards_slug) {
-        router.push(`${paths.workspaces}/${updatedSlug}/boards/${boards_slug}`);
-      } else {
-        router.push(`${paths.workspaces}/${updatedSlug}`);
-      }
     },
-    [router]
+    []
   );
 
   const handleDeleteWorkSpace = useCallback(
@@ -107,7 +116,15 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
   );
 
   const handleAddBoard = useCallback(async (data: any) => {
-    const response = await BoardsApi.addBoard(data);
+    const slug = data.name
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "_") // Replace spaces with underscores
+      .replace(/\//g, "-"); // Replace "/" with "-"
+
+    const datawithslug = { ...data, slug };
+
+    const response = await BoardsApi.addBoard(datawithslug);
 
     setState((prev) => {
       const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
@@ -128,11 +145,19 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
 
   const handleUpdateBoard = useCallback(
     async (board_id: string, data: Board) => {
+      const slug = data.name
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "_") // Replace spaces with underscores
+        .replace(/\//g, "-"); // Replace "/" with "-"
+
+      const datawithslug = { ...data, slug };
+
       // Update the state with the new data before making the API call
       setState((prev) => {
         const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
           const updatedBoards = workspace.boards.map((board) =>
-            board._id === board_id ? { ...board, ...data } : board
+            board._id === board_id ? { ...board, ...datawithslug } : board
           );
           return {
             ...workspace,
@@ -147,7 +172,7 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
       });
 
       // Make the API call
-      await BoardsApi.updateBoard(board_id, data);
+      await BoardsApi.updateBoard(board_id, datawithslug);
     },
     []
   );
@@ -416,11 +441,8 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     }) => {
       const { _id: task_id, ...restValues } = data;
 
-      console.log("Update Task Data", data);
-
       const response = await TaskApi.updateTask(task_id, restValues);
 
-      console.log("Response", response);
       setState((prev) => {
         const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
           const updatedBoards = workspace.boards.map((board) => {

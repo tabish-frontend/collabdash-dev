@@ -7,7 +7,7 @@ interface ConfirmationAlertProps {
   message: string;
 }
 
-const ConfirmationAlert: React.FC<ConfirmationAlertProps> = ({
+export const ConfirmationAlert: React.FC<ConfirmationAlertProps> = ({
   onConfirm,
   onCancel,
   message,
@@ -55,5 +55,3 @@ const ConfirmationAlert: React.FC<ConfirmationAlertProps> = ({
     </Alert>
   );
 };
-
-export default ConfirmationAlert;

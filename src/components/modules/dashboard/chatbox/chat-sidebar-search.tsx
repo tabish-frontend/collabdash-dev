@@ -15,7 +15,7 @@ import SvgIcon from "@mui/material/SvgIcon";
 import Typography from "@mui/material/Typography";
 
 import type { Contact } from "src/types";
-import { Tip } from "src/components/shared";
+import { OnlineBadge, Tip } from "src/components/shared";
 
 interface ChatSidebarSearchProps {
   isFocused?: boolean;
@@ -83,14 +83,15 @@ export const ChatSidebarSearch = forwardRef<
                   Contacts
                 </Typography>
                 <List>
-                  {results.map((contact) => (
+                  {results.map((contact: Contact) => (
                     <ListItemButton
-                      key={contact.id}
+                      key={contact._id}
                       onClick={(): void => handleSelect(contact)}
                     >
                       <ListItemAvatar>
                         <Avatar
                           src={contact.avatar}
+                          alt="kcjkcb"
                           sx={{
                             height: 32,
                             width: 32,
@@ -98,7 +99,7 @@ export const ChatSidebarSearch = forwardRef<
                         />
                       </ListItemAvatar>
                       <ListItemText
-                        primary={contact.name}
+                        primary={contact.full_name}
                         primaryTypographyProps={{
                           noWrap: true,
                           variant: "subtitle2",

@@ -7,12 +7,10 @@ class NotificationsApi {
     return response.data;
   }
   async subscribeUser(subscription: PushSubscription) {
-    const response = await Axios.post(`/subscriptions/subscribe`, subscription);
-    // return response.data;
+    await Axios.post(`/subscriptions/subscribe`, subscription);
   }
   async removeSubscribedUser() {
-    const response = await Axios.post(`/subscriptions/remove`);
-    return response.data;
+    await Axios.post(`/subscriptions/remove`);
   }
 }
 

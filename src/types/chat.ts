@@ -1,37 +1,27 @@
-export interface Contact {
-  id: string;
-  avatar: string;
-  isActive: boolean;
-  lastActivity?: number;
-  name: string;
-}
-
 interface Attachment {
-  id: string;
+  _id: string;
   url: string;
 }
 
 export interface Message {
-  id: string;
+  _id: string;
   attachments: Attachment[];
   body: string;
   contentType: string;
-  createdAt: number;
-  authorId: string;
+  createdAt: string;
+  author: string;
 }
 
 export interface Participant {
-  id: string;
+  _id?: string;
+  full_name?: string;
   avatar: string | null;
-  lastActivity?: number;
-  name: string;
 }
 
 export interface Thread {
-  id?: string;
+  _id: string;
   messages: Message[];
-  participantIds: string[];
-  participants?: Participant[];
+  participants: Participant[];
   type: "ONE_TO_ONE" | "GROUP";
   unreadCount?: number;
 }

@@ -97,7 +97,7 @@ export const formatDate = (dateString: number, withDay: boolean = false) => {
 };
 
 export const getDayFromDate = (dateString: number) => {
-  const options: Intl.DateTimeFormatOptions = { weekday: "long" };
+  const options: Intl.DateTimeFormatOptions = { weekday: "short" };
   const date = new Date(dateString);
 
   return new Intl.DateTimeFormat("en-US", options).format(date);

@@ -8,3 +8,5 @@ export * from "./settings";
 export * from "./kanban";
 export * from "./chat";
 export * from "./meeting";
+export * from "./contact";
+export * from "./notification";

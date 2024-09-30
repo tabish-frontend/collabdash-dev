@@ -53,6 +53,7 @@ export const EditAttendanceModal: FC<EditAttendanceModalProps> = ({
       await onConfirm(values);
       helpers.setStatus({ success: true });
       helpers.setSubmitting(false);
+      onCancel();
     },
   });
 

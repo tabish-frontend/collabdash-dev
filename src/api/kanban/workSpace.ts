@@ -14,7 +14,7 @@ class WorkSpaceAPI {
 
   async updateWorkSpace(
     workspace_id: string,
-    body: { name: string; members: Employee[] }
+    body: { name: string; slug: string; members: Employee[] }
   ) {
     const response = await Axios.patch(`/workspace/${workspace_id}`, body);
     return response.data;

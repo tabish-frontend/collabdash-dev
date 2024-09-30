@@ -20,48 +20,23 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 
 import { Scrollbar } from "src/utils/scrollbar";
-
-import type { Notification } from "./notifications";
+import { Notification } from "src/types";
 import { getDay_Time } from "src/utils";
 
-const renderContent = (notification: Notification): JSX.Element | null => {
-  const createdAt = format(notification.createdAt, "MMM dd, h:mm a");
+const formatMessageWithLink = (
+  message: string,
+  linkText: string,
+  time: Date | null | undefined
+): React.ReactNode => {
+  const parts = message.split(linkText);
 
-  const formatMessageWithLink = (
-    message: string,
-    linkText: string,
-    time: Date | null | undefined
-  ): React.ReactNode => {
-    const parts = message.split(linkText);
+  console.log("parts", parts);
 
-    if (!time || !(time instanceof Date) || isNaN(time.getTime())) {
-      if (parts.length === 2) {
-        return (
-          <>
-            {parts[0]}
-            <Link
-              href={`/tasks/${linkText}`}
-              style={{ textDecoration: "underline", fontWeight: "bold" }}
-            >
-              {linkText}
-            </Link>
-            {parts[1]}
-          </>
-        );
-      }
+  console.log("time", time);
 
-      // If the linkText is not found, return the message as is
-      return message;
-    }
-
-    // If time is valid, format it and proceed with the existing logic
-    const formattedTime = getDay_Time(time); // Get formatted time from getDay_Time
-    const isoTime = time.toISOString();
-    const regex = new RegExp(
-      isoTime.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-      "g"
-    ); // Escape special characters
-
+  console.log("time", typeof time);
+  if (!time || !(time instanceof Date) || isNaN(time.getTime())) {
+    console.log("running that");
     if (parts.length === 2) {
       return (
         <>
@@ -72,14 +47,38 @@ const renderContent = (notification: Notification): JSX.Element | null => {
           >
             {linkText}
           </Link>
-          {parts[1].replace(regex, formattedTime)}
+          {parts[1]}
         </>
       );
     }
 
-    // If the linkText is not found, just replace the time in the whole message
-    return message.replace(regex, formattedTime);
-  };
+    return message;
+  }
+
+  const formattedTime = getDay_Time(time);
+  const isoTime = time.toISOString();
+  const regex = new RegExp(isoTime.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g");
+
+  if (parts.length === 2) {
+    return (
+      <>
+        {parts[0]}
+        <Link
+          href={`/tasks/${linkText}`}
+          style={{ textDecoration: "underline", fontWeight: "bold" }}
+        >
+          {linkText}
+        </Link>
+        {parts[1].replace(regex, formattedTime)}
+      </>
+    );
+  }
+
+  return message.replace(regex, formattedTime);
+};
+
+const renderContent = (notification: Notification): JSX.Element | null => {
+  const createdAt = format(new Date(notification.createdAt), "MMM dd, h:mm a");
 
   return (
     <>
@@ -100,12 +99,12 @@ const renderContent = (notification: Notification): JSX.Element | null => {
             }}
           >
             <Typography sx={{ mr: 0.5 }} variant="subtitle2">
-              {notification.sender.fullName}{" "}
+              {notification.sender.full_name}{" "}
               <Box component="span" sx={{ fontSize: "inherit" }}>
                 {formatMessageWithLink(
                   notification.message,
                   notification.link,
-                  notification.time
+                  new Date(notification.time)
                 )}
               </Box>
             </Typography>
@@ -190,7 +189,7 @@ export const NotificationsPopover: FC<NotificationsPopoverProps> = (props) => {
             {notifications.map((notification) => (
               <ListItem
                 divider
-                key={notification.id}
+                key={notification._id}
                 sx={{
                   alignItems: "flex-start",
                   "&:hover": {
@@ -204,7 +203,7 @@ export const NotificationsPopover: FC<NotificationsPopoverProps> = (props) => {
                   <Tooltip title="Remove">
                     <IconButton
                       edge="end"
-                      onClick={() => onRemoveOne?.(notification.id)}
+                      onClick={() => onRemoveOne?.(notification._id)}
                       size="small"
                     >
                       <SvgIcon>

@@ -30,7 +30,7 @@ export interface UserBankDetails {
 }
 
 export interface User {
-  _id?: string;
+  _id: string;
   bio?: string;
   mobile?: string;
   dob?: Date;

@@ -22,31 +22,31 @@ import Typography from "@mui/material/Typography";
 
 import { usePopover } from "src/hooks/use-popover";
 import type { Participant } from "src/types";
-import { useAuth, useMockedUser } from "src/hooks";
+import { useAuth } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 
 const getRecipients = (
   participants: Participant[],
-  userId: string
+  userId: string | undefined
 ): Participant[] => {
-  return participants.filter((participant) => participant.id !== userId);
+  return participants.filter((participant) => participant._id !== userId);
 };
 
 const getDisplayName = (recipients: Participant[]): string => {
-  return recipients.map((participant) => participant.name).join(", ");
+  return recipients.map((participant) => participant.full_name).join(", ");
 };
 
-const getLastActive = (recipients: Participant[]): string | null => {
-  const hasLastActive = recipients.length === 1 && recipients[0].lastActivity;
+// const getLastActive = (recipients: Participant[]): string | null => {
+//   const hasLastActive = recipients.length === 1 && recipients[0].lastActivity;
 
-  if (hasLastActive) {
-    return formatDistanceToNowStrict(recipients[0].lastActivity!, {
-      addSuffix: true,
-    });
-  }
+//   if (hasLastActive) {
+//     return formatDistanceToNowStrict(recipients[0].lastActivity!, {
+//       addSuffix: true,
+//     });
+//   }
 
-  return null;
-};
+//   return null;
+// };
 
 interface ChatThreadToolbarProps {
   participants?: Participant[];
@@ -54,14 +54,14 @@ interface ChatThreadToolbarProps {
 
 export const ChatThreadToolbar: FC<ChatThreadToolbarProps> = (props) => {
   const { participants = [], ...other } = props;
-  const user = useMockedUser();
   const popover = usePopover<HTMLButtonElement>();
+  const { user } = useAuth<AuthContextType>();
 
   // Maybe use memo for these values
 
-  const recipients = getRecipients(participants, user._id);
+  const recipients = getRecipients(participants, user?._id);
+
   const displayName = getDisplayName(recipients);
-  const lastActive = getLastActive(recipients);
 
   return (
     <>
@@ -94,16 +94,16 @@ export const ChatThreadToolbar: FC<ChatThreadToolbarProps> = (props) => {
             }}
           >
             {recipients.map((recipient) => (
-              <Avatar key={recipient.id} src={recipient.avatar || undefined} />
+              <Avatar key={recipient._id} src={recipient.avatar || undefined} />
             ))}
           </AvatarGroup>
           <div>
             <Typography variant="subtitle2">{displayName}</Typography>
-            {lastActive && (
+            {/* {lastActive && (
               <Typography color="text.secondary" variant="caption">
                 Last active {lastActive}
               </Typography>
-            )}
+            )} */}
           </div>
         </Stack>
         <Stack alignItems="center" direction="row" spacing={1}>

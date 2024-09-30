@@ -8,9 +8,10 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 
 import type { Message, Participant, Thread } from "src/types";
-import { useAuth, useMockedUser } from "src/hooks";
+import { useAuth, useSocketContext } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { customLocale } from "src/utils";
+import { OnlineBadge } from "src/components/shared";
 
 const getLastMessage = (thread: Thread): Message | undefined => {
   return thread.messages?.[thread.messages.length - 1];
@@ -18,21 +19,24 @@ const getLastMessage = (thread: Thread): Message | undefined => {
 
 const getRecipients = (
   participants: Participant[],
-  userId: string
+  userId: string | undefined
 ): Participant[] => {
-  return participants.filter((participant) => participant.id !== userId);
+  return participants.filter((participant) => participant._id !== userId);
 };
 
 const getDisplayName = (recipients: Participant[]): string => {
-  return recipients.map((participant) => participant.name).join(", ");
+  return recipients.map((participant) => participant.full_name).join(", ");
 };
 
-const getDisplayContent = (userId: string, lastMessage?: Message): string => {
+const getDisplayContent = (
+  userId: string | undefined,
+  lastMessage?: Message
+): string => {
   if (!lastMessage) {
     return "";
   }
 
-  const author = lastMessage.authorId === userId ? "Me: " : "";
+  const author = lastMessage.author === userId ? "Me: " : "";
   const message =
     lastMessage.contentType === "image" ? "Sent a photo" : lastMessage.body;
 
@@ -44,7 +48,7 @@ const getLastActivity = (lastMessage?: Message): string | null => {
     return null;
   }
 
-  return formatDistanceStrict(lastMessage.createdAt, new Date(), {
+  return formatDistanceStrict(new Date(lastMessage.createdAt), new Date(), {
     addSuffix: false,
     locale: customLocale,
   });
@@ -58,17 +62,21 @@ interface ChatThreadItemProps {
 
 export const ChatThreadItem: FC<ChatThreadItemProps> = (props) => {
   const { active = false, thread, onSelect, ...other } = props;
-  const user = useMockedUser();
+  const { user } = useAuth<AuthContextType>();
 
-  console.log("message box thread", thread);
-
-  const recipients = getRecipients(thread.participants || [], user._id);
+  const recipients = getRecipients(thread.participants || [], user?._id);
   const lastMessage = getLastMessage(thread);
   const lastActivity = getLastActivity(lastMessage);
   const displayName = getDisplayName(recipients);
-  const displayContent = getDisplayContent(user._id, lastMessage);
+  const displayContent = getDisplayContent(user?._id, lastMessage);
   const groupThread = recipients.length > 1;
   const isUnread = !!(thread.unreadCount && thread.unreadCount > 0);
+
+  const { onlineUsers } = useSocketContext();
+
+  const onlineRecipients = recipients.filter((recipient) =>
+    onlineUsers.includes(recipient._id as string)
+  );
 
   return (
     <Stack
@@ -108,9 +116,14 @@ export const ChatThreadItem: FC<ChatThreadItemProps> = (props) => {
                 },
           }}
         >
-          {recipients.map((recipient) => (
-            <Avatar key={recipient.id} src={recipient.avatar || undefined} />
-          ))}
+          {recipients.map((recipient) => {
+            const isOnline = onlineUsers.includes(recipient._id as string);
+            return isOnline ? (
+              <OnlineBadge key={recipient._id} image={recipient.avatar} />
+            ) : (
+              <Avatar key={recipient._id} src={recipient.avatar || undefined} />
+            );
+          })}
         </AvatarGroup>
       </div>
       <Box

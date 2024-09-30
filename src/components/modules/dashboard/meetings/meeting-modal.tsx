@@ -12,8 +12,8 @@ import Button from "@mui/material/Button";
 import { useFormik } from "formik";
 import { CloseCircleOutline } from "mdi-material-ui";
 import { useEffect, useState, type FC } from "react";
-import { employeesApi } from "src/api";
-import { Employee, Meeting, WorkSpace } from "src/types";
+import { contactsApi, employeesApi } from "src/api";
+import { Contact, Employee, Meeting, WorkSpace } from "src/types";
 import { SelectMultipleUsers } from "src/components/shared";
 import { LoadingButton } from "@mui/lab";
 import { DateTimePicker } from "@mui/x-date-pickers";
@@ -46,16 +46,13 @@ export const MeetingModal: FC<MeetingModalProps> = ({
     },
   });
 
-  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [employees, setEmployees] = useState<Contact[]>([]);
 
   const handleGetEmployees = async () => {
-    const response = await employeesApi.getAllEmployees({
-      fields: "full_name,avatar,department",
-      account_status: "active",
-      search: "",
-      role: "",
+    const response = await contactsApi.getContacts({
+      query: "",
     });
-    setEmployees(response.users);
+    setEmployees(response);
   };
 
   useEffect(() => {
@@ -106,7 +103,6 @@ export const MeetingModal: FC<MeetingModalProps> = ({
               <SelectMultipleUsers
                 label="Select Participants"
                 employees={employees}
-                isRequired={!formik.values.participants.length}
                 formikUsers={formik.values.participants.map(
                   (user: any) => user._id
                 )}

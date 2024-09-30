@@ -91,7 +91,7 @@ export const ShiftDetails: FC<ShiftDetailsProps> = ({
               <Grid item xs={12}>
                 <Stack direction={isSmallScreen ? "column" : "row"} spacing={3}>
                   <Typography variant="subtitle1" fontWeight={900}>
-                    Weekends :
+                    Off Days :
                   </Typography>
                   <Typography variant="subtitle1">
                     {employeeShift.weekends.join(", ")}
