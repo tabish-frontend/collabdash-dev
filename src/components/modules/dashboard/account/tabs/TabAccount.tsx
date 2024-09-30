@@ -20,20 +20,12 @@ import {
   EmailField,
   DesignationField,
   CompanyField,
-  GenderField,
+  DepartmentField,
 } from "src/components/shared/form-fields";
 
 // ** MUI Imports
 import { LoadingButton } from "@mui/lab";
-import {
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  Grid,
-  CardContent,
-  FormControl,
-} from "@mui/material";
+import { Grid, CardContent } from "@mui/material";
 
 export const TabAccount = () => {
   const { user, updateCurrentUser } = useAuth<AuthContextType>();
@@ -43,8 +35,8 @@ export const TabAccount = () => {
     email = "",
     full_name = "",
     username = "",
+    department = "",
     designation = "",
-    gender = "",
     company = "",
   } = user || {};
 
@@ -53,8 +45,8 @@ export const TabAccount = () => {
     email,
     full_name,
     username,
+    department,
     designation,
-    gender,
     company,
   };
 
@@ -114,16 +106,6 @@ export const TabAccount = () => {
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <DesignationField
-                value={formik.values.designation}
-                handleChange={formik.handleChange}
-                handleBlur={formik.handleBlur}
-                formikError={formik.errors.designation}
-                formikTouched={formik.touched.designation}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
               <CompanyField
                 value={formik.values.company}
                 handleChange={formik.handleChange}
@@ -134,12 +116,22 @@ export const TabAccount = () => {
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <GenderField
-                value={formik.values.gender}
+              <DepartmentField
+                value={formik.values.department}
                 handleChange={formik.handleChange}
                 handleBlur={formik.handleBlur}
-                formikTouched={formik.touched.gender}
-                formikError={formik.errors.gender}
+                formikError={formik.errors.department}
+                formikTouched={formik.touched.department}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <DesignationField
+                value={formik.values.designation}
+                handleChange={formik.handleChange}
+                handleBlur={formik.handleBlur}
+                formikError={formik.errors.designation}
+                formikTouched={formik.touched.designation}
               />
             </Grid>
 

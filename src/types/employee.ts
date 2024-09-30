@@ -5,7 +5,7 @@ export interface Employee {
   full_name: string;
   bio?: string;
   dob?: Date | null;
-  country?: string;
+  country: string;
   role?: string;
   gender: string;
   department: string;
@@ -18,6 +18,10 @@ export interface Employee {
   company: string;
   account_status: string;
   national_identity_number?: number | undefined;
+  time_zone: {
+    name: string;
+    value: string;
+  };
   shift?: Shift;
   Today_Status?: string;
   bank_details?: {

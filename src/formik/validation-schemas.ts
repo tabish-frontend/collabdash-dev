@@ -20,6 +20,8 @@ export const common_user_validation = {
 
   company: Yup.string().required("Company is required"),
 
+  country: Yup.string().required("Country is required"),
+
   gender: Yup.string()
     .oneOf(["male", "female"], "Invalid gender")
     .required("Gender is required"),

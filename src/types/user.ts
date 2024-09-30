@@ -5,8 +5,8 @@ export interface UserAccountDetails {
   full_name: string;
   avatar: string;
   email: string;
-  gender: string;
   designation: string;
+  department: string;
   company: string;
 }
 
@@ -15,6 +15,10 @@ export interface UserBasicInformation {
   mobile: string;
   dob: Date | null;
   country: string;
+  time_zone: {
+    name: string;
+    value: string;
+  };
   languages: string[];
   qualification: string;
   national_identity_number: number;
@@ -53,4 +57,8 @@ export interface User {
   designation?: string;
   qualification_certificates?: string[];
   shift: Shift;
+  time_zone: {
+    name: string;
+    value: string;
+  };
 }
