@@ -45,6 +45,7 @@ export const ColumnCard: FC<ColumnCardProps> = (props) => {
           xs: 300,
           sm: 350,
         },
+      
       }}
       {...other}
     >
@@ -53,6 +54,7 @@ export const ColumnCard: FC<ColumnCardProps> = (props) => {
           backgroundColor: (theme) =>
             theme.palette.mode === "dark" ? "neutral.900" : "neutral.100",
           borderRadius: 2.5,
+          // height: "75vh"
         }}
       >
         <ColumnHeader

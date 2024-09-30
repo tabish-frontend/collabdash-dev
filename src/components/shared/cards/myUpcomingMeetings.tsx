@@ -24,6 +24,9 @@ import { useRouter } from "next/router";
 import { Scrollbar } from "src/utils/scrollbar";
 import { paths } from "src/constants/paths";
 import dayjs from "dayjs";
+import { useDialog } from "src/hooks";
+import { meetingInitialValues } from "src/formik";
+import { MeetingModal } from "src/components/modules/dashboard/meetings/meeting-modal";
 
 const MeetingItem = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -33,10 +36,16 @@ const MeetingItem = styled(Box)(({ theme }) => ({
   },
 }));
 
+interface MeetingDialogData {
+  type: string;
+  values?: Meeting;
+}
+
 export const UpcomingMeetingsCard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [meetingList, setMeetingList] = useState<Meeting[]>([]);
   const [meetingStatus, setMeetingStatus] = useState<string>("upcoming");
+  const meetingDialog = useDialog<MeetingDialogData>();
 
   const router = useRouter();
   const theme = useTheme();
@@ -53,12 +62,35 @@ export const UpcomingMeetingsCard = () => {
     getMeetins();
   }, [getMeetins]);
 
+  const createMeeting = async (values: Meeting) => {
+    const { _id, ...meetingValues } = values;
+
+    const response = await meetingApi.createMeeting(meetingValues);
+    setMeetingList((prev) => [response.data, ...prev]);
+
+    meetingDialog.handleClose();
+  };
+
   return (
     <>
       <Card sx={{ minHeight: 490 }}>
         <CardHeader
           sx={{ padding: isSmallScreen ? "28px 20px" : "28px 24px" }}
           title="Upcoming Meetings"
+          action={
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => {
+                meetingDialog.handleOpen({
+                  type: "Create",
+                  values: meetingInitialValues,
+                });
+              }}
+            >
+              Create Meeting
+            </Button>
+          }
         />
 
         <Scrollbar sx={{ maxHeight: 360, overflowY: "auto" }}>
@@ -172,6 +204,16 @@ export const UpcomingMeetingsCard = () => {
           </CardContent>
         </Scrollbar>
       </Card>
+
+      {meetingDialog.open && (
+        <MeetingModal
+          modalType={meetingDialog.data?.type}
+          modal={meetingDialog.open}
+          meetingValues={meetingDialog.data?.values || meetingInitialValues}
+          onCancel={meetingDialog.handleClose}
+          onSubmit={createMeeting}
+        />
+      )}
     </>
   );
 };

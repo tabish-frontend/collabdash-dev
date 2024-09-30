@@ -14,7 +14,7 @@ import {
   EmployeePerformanceCard,
   LeavesCard,
 } from "src/components/shared";
-import { UpcomingMeetingsCard } from "src/components/shared/cards/upcomingMeetings";
+import { UpcomingMeetingsCard } from "src/components/shared/cards/myUpcomingMeetings";
 import { MyTasksCard } from "src/components/shared/cards/myTasks";
 import { TodoCard } from "src/components/shared/cards/todoCard";
 import { WeatherCard } from "src/components/shared/cards/WeatherCard";

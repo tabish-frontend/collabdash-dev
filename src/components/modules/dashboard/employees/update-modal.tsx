@@ -59,7 +59,7 @@ export const UpdateEmployeeModal: FC<UpdateEmployeeModalProps> = ({
   });
 
   return (
-    <Dialog fullWidth maxWidth={"sm"} open={modal} onClose={onCancel}>
+    <Dialog fullWidth maxWidth={"sm"} open={modal} >
       <form onSubmit={formik.handleSubmit}>
         <Paper elevation={12}>
           <DialogTitle sx={{ m: 0, p: 3, fontSize: 24, fontWeight: 600 }}>

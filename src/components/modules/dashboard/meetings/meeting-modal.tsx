@@ -64,7 +64,6 @@ export const MeetingModal: FC<MeetingModalProps> = ({
       fullWidth
       maxWidth="sm"
       open={modal}
-      onClose={onCancel}
       sx={{ "& .MuiPaper-root": { overflowY: "unset" } }}
     >
       <form onSubmit={formik.handleSubmit}>
