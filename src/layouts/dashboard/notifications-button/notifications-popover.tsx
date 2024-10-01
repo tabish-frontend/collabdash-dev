@@ -23,19 +23,123 @@ import { Scrollbar } from "src/utils/scrollbar";
 import { Notification } from "src/types";
 import { getDay_Time } from "src/utils";
 import { RouterLink } from "src/components";
+import dayjs from "dayjs";
+import React from "react";
 
+// const formatMessageWithLink = (
+//   message: string,
+//   linkText: string,
+//   time: Date | null | undefined,
+//   targetLink: string
+// ): React.ReactNode => {
+//   console.log("Time", time);
+//   console.log(dayjs(time).format("MMM DD dddd, hh:mm a"));
+//   const parts = message.split(linkText);
+
+//   if (!time || !(time instanceof Date) || isNaN(time.getTime())) {
+//     if (parts.length === 2) {
+//       return (
+//         <>
+//           {parts[0]}
+//           <Link
+//             component={RouterLink}
+//             href={targetLink}
+//             style={{ textDecoration: "underline", fontWeight: "bold" }}
+//           >
+//             {linkText}
+//           </Link>
+//           {parts[1]}
+//         </>
+//       );
+//     }
+
+//     return message
+//       .split("\n")
+//       .map((line, index) => <div key={index}>{line}</div>);
+//   }
+
+//   const formattedTime = dayjs(time).format("MMM DD dddd, hh:mm a");
+//   console.log("Formatted Time:", formattedTime);
+
+//   const isoTime = time.toISOString();
+//   const regex = new RegExp(isoTime.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g");
+
+//   if (parts.length === 2) {
+//     return (
+//       <>
+//         {parts[0]}
+//         <Link
+//           component={RouterLink}
+//           href={targetLink}
+//           style={{ textDecoration: "underline", fontWeight: "bold" }}
+//         >
+//           {linkText}
+//         </Link>
+//         {parts[1].replace(time.toString(), formattedTime || "")}
+//       </>
+//     );
+//   }
+
+//   return message;
+// };
 const formatMessageWithLink = (
   message: string,
   linkText: string,
   time: Date | null | undefined,
   targetLink: string
 ): React.ReactNode => {
-  const parts = message.split(linkText);
+  console.log("Time", time);
+  console.log(dayjs(time).format("MMM DD dddd, hh:mm a"));
 
-  if (!time || !(time instanceof Date) || isNaN(time.getTime())) {
+  // Split the message by new lines
+  const messageLines = message.split("\n");
+
+  // Map over each line and process the links
+  return messageLines.map((line, lineIndex) => {
+    const parts = line.split(linkText);
+
+    // Check if the time is valid
+    if (!time || !(time instanceof Date) || isNaN(time.getTime())) {
+      if (parts.length === 2) {
+        return (
+          <React.Fragment key={lineIndex}>
+            {parts[0]}
+            <Link
+              component={RouterLink}
+              href={targetLink}
+              style={{ textDecoration: "underline", fontWeight: "bold" }}
+            >
+              {linkText}
+            </Link>
+            {parts[1]}
+            {lineIndex < messageLines.length - 1 && <br />}{" "}
+            {/* Add <br /> between lines */}
+          </React.Fragment>
+        );
+      }
+
+      return (
+        <React.Fragment key={lineIndex}>
+          {line}
+          {lineIndex < messageLines.length - 1 && <br />}{" "}
+          {/* Add <br /> between lines */}
+        </React.Fragment>
+      );
+    }
+
+    // Time is valid, format it
+    const formattedTime = dayjs(time).format("MMM DD dddd, hh:mm a");
+    console.log("Formatted Time:", formattedTime);
+
+    const isoTime = time.toISOString();
+    const regex = new RegExp(
+      isoTime.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+      "g"
+    );
+
     if (parts.length === 2) {
       return (
-        <>
+        <React.Fragment key={lineIndex}>
           {parts[0]}
           <Link
             component={RouterLink}
@@ -44,35 +148,21 @@ const formatMessageWithLink = (
           >
             {linkText}
           </Link>
-          {parts[1]}
-        </>
+          {parts[1].replace(time.toString(), formattedTime || "")}
+          {lineIndex < messageLines.length - 1 && <br />}{" "}
+          {/* Add <br /> between lines */}
+        </React.Fragment>
       );
     }
 
-    return message;
-  }
-
-  const formattedTime = getDay_Time(time);
-  const isoTime = time.toISOString();
-  const regex = new RegExp(isoTime.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g");
-
-  if (parts.length === 2) {
     return (
-      <>
-        {parts[0]}
-        <Link
-          component={RouterLink}
-          href={targetLink}
-          style={{ textDecoration: "underline", fontWeight: "bold" }}
-        >
-          {linkText}
-        </Link>
-        {parts[1].replace(regex, formattedTime)}
-      </>
+      <React.Fragment key={lineIndex}>
+        {line}
+        {lineIndex < messageLines.length - 1 && <br />}{" "}
+        {/* Add <br /> between lines */}
+      </React.Fragment>
     );
-  }
-
-  return message.replace(regex, formattedTime);
+  });
 };
 
 const renderContent = (notification: Notification): JSX.Element | null => {
@@ -97,7 +187,10 @@ const renderContent = (notification: Notification): JSX.Element | null => {
             }}
           >
             <Typography sx={{ mr: 0.5 }} variant="subtitle2">
-              {notification.sender.full_name}{" "}
+              {!notification.hide_sender_name && (
+                <>{notification.sender.full_name} </>
+              )}
+
               <Box component="span" sx={{ fontSize: "inherit" }}>
                 {formatMessageWithLink(
                   notification.message,

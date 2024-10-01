@@ -11,5 +11,6 @@ export interface Notification {
   target_link: string;
   time: Date;
   read: boolean;
+  hide_sender_name: boolean;
   createdAt: Date;
 }
