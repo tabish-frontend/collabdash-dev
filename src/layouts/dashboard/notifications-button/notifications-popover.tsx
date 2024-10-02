@@ -26,62 +26,6 @@ import { RouterLink } from "src/components";
 import dayjs from "dayjs";
 import React from "react";
 
-// const formatMessageWithLink = (
-//   message: string,
-//   linkText: string,
-//   time: Date | null | undefined,
-//   targetLink: string
-// ): React.ReactNode => {
-//   console.log("Time", time);
-//   console.log(dayjs(time).format("MMM DD dddd, hh:mm a"));
-//   const parts = message.split(linkText);
-
-//   if (!time || !(time instanceof Date) || isNaN(time.getTime())) {
-//     if (parts.length === 2) {
-//       return (
-//         <>
-//           {parts[0]}
-//           <Link
-//             component={RouterLink}
-//             href={targetLink}
-//             style={{ textDecoration: "underline", fontWeight: "bold" }}
-//           >
-//             {linkText}
-//           </Link>
-//           {parts[1]}
-//         </>
-//       );
-//     }
-
-//     return message
-//       .split("\n")
-//       .map((line, index) => <div key={index}>{line}</div>);
-//   }
-
-//   const formattedTime = dayjs(time).format("MMM DD dddd, hh:mm a");
-//   console.log("Formatted Time:", formattedTime);
-
-//   const isoTime = time.toISOString();
-//   const regex = new RegExp(isoTime.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g");
-
-//   if (parts.length === 2) {
-//     return (
-//       <>
-//         {parts[0]}
-//         <Link
-//           component={RouterLink}
-//           href={targetLink}
-//           style={{ textDecoration: "underline", fontWeight: "bold" }}
-//         >
-//           {linkText}
-//         </Link>
-//         {parts[1].replace(time.toString(), formattedTime || "")}
-//       </>
-//     );
-//   }
-
-//   return message;
-// };
 const formatMessageWithLink = (
   message: string,
   linkText: string,
