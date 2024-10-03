@@ -39,6 +39,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import dayjs from "dayjs";
 import { todosApi } from "src/api";
+import { formatDate, getClassDate, getDay_Time } from "src/utils";
 
 interface Todo {
   _id: string;
@@ -99,14 +100,22 @@ export const TodoCard = () => {
   };
 
   const handleToggleTodo = async (id: string) => {
-    // const response = await todosApi.updateTodo(id, {
-    //   completed: !todo.completed,
-    // });
-    setTodos(
-      todos.map((todo) =>
-        todo._id === id ? { ...todo, completed: !todo.completed } : todo
-      )
+    const updatedTodos = await Promise.all(
+      todos.map(async (todo) => {
+        if (todo._id === id) {
+          // Call the API to update the todo
+          const response = await todosApi.updateTodo(id, {
+            completed: !todo.completed,
+          });
+          // Update the todo item in the state based on the API response
+          return { ...todo, completed: response.completed };
+        }
+        return todo; // Return the todo unchanged if id doesn't match
+      })
     );
+
+    // Update the state after all API calls are done
+    setTodos(updatedTodos);
   };
 
   const handleDeleteTodo = async (id: string) => {
@@ -132,18 +141,10 @@ export const TodoCard = () => {
     setEditingId("");
     setEditText("");
   };
+
   const handleCancelAdd = () => {
     setNewTodo("");
     setShowInput(false);
-  };
-
-  const getCurrentDate = () => {
-    return queryDate.toLocaleDateString("en-US", {
-      weekday: "short",
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
   };
 
   const getTodos = async () => {
@@ -153,6 +154,7 @@ export const TodoCard = () => {
 
   useEffect(() => {
     getTodos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryDate]);
 
   return (
@@ -208,7 +210,7 @@ export const TodoCard = () => {
             <Card sx={{ maxWidth: 600 }} variant="outlined">
               <Stack direction={"column"} p={2} spacing={1}>
                 <Typography variant="h6" gutterBottom>
-                  {getCurrentDate()}
+                  {getClassDate(queryDate)}
                 </Typography>
 
                 <Box>

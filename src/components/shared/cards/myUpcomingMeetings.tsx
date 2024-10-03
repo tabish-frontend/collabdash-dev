@@ -106,7 +106,7 @@ export const UpcomingMeetingsCard = () => {
               >
                 <CircularProgress />
               </Box>
-            ) : meetingList.length === 0 ? (
+            ) : !meetingList.length ? (
               <Box
                 display="flex"
                 justifyContent="center"

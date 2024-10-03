@@ -36,43 +36,6 @@ interface Task {
   createdAt: any;
 }
 
-// const fetchTasks = (): Promise<Task[]> => {
-//   return new Promise((resolve) => {
-//     setTimeout(() => {
-//       resolve([
-//         {
-//           id: "1",
-//           name: "Complete project ",
-//           dueDate: "2024-09-30",
-//           priority: "high",
-//           attachments: 2,
-//         },
-//         {
-//           id: "2",
-//           name: "Review team performance",
-//           dueDate: "2024-10-05",
-//           priority: "medium",
-//           attachments: 0,
-//         },
-//         {
-//           id: "3",
-//           name: "Prepare for client meeting",
-//           dueDate: "2024-09-28",
-//           priority: "high",
-//           attachments: 3,
-//         },
-//         {
-//           id: "4",
-//           name: "Update documentation",
-//           dueDate: "2024-10-10",
-//           priority: "low",
-//           attachments: 1,
-//         },
-//       ]);
-//     }, 1000);
-//   });
-// };
-
 const filterValues = [
   {
     label: "Recent Tasks",
@@ -151,6 +114,7 @@ export const MyTasksCard = () => {
     if (user && WorkSpaces) {
       getTasksForUser(filter);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, WorkSpaces, filter]);
 
   useEffect(() => {
@@ -220,6 +184,17 @@ export const MyTasksCard = () => {
                 height={360}
               >
                 <CircularProgress />
+              </Box>
+            ) : !tasks.length ? (
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height="300px"
+              >
+                <Typography variant="h6" textAlign="center">
+                  No Tasks Found
+                </Typography>
               </Box>
             ) : (
               tasks.map((task) => (
