@@ -74,10 +74,6 @@ export const ChatThreadItem: FC<ChatThreadItemProps> = (props) => {
 
   const { onlineUsers } = useSocketContext();
 
-  const onlineRecipients = recipients.filter((recipient) =>
-    onlineUsers.includes(recipient._id as string)
-  );
-
   return (
     <Stack
       component="li"

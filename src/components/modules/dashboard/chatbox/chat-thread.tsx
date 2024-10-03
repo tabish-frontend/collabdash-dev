@@ -26,6 +26,8 @@ const useParticipants = (threadKey: string): Participant[] => {
   const handleParticipantsGet = useCallback(async (): Promise<void> => {
     try {
       const participants = await chatApi.getParticipants({ threadKey });
+
+      console.log("participants", participants);
       setParticipants(participants);
     } catch (err) {
       console.error(err);
@@ -153,6 +155,8 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
   const thread = useThread(threadKey);
 
   const participants = useParticipants(threadKey);
+
+  console.log("participants ", participants);
   const { messagesRef } = useMessagesScroll(thread);
 
   const handleSend = useCallback(
@@ -162,6 +166,8 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
       const recipientIds = participants.map(
         (participant) => participant._id as string
       );
+
+      console.log("recipientIds", recipientIds);
 
       if (thread) {
         try {
