@@ -38,37 +38,21 @@ import {
 import { DatePicker } from "@mui/x-date-pickers";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import dayjs from "dayjs";
+import { todosApi } from "src/api";
 
 interface Todo {
-  id: number;
-  text: string;
+  _id: string;
+  title: string;
   completed: boolean;
+  date: Date;
 }
 
-const initialValues = [
-  {
-    id: 1,
-    text: "Complete project documentation",
-    completed: true,
-  },
-  {
-    id: 2,
-    text: "Team meeting for sprint planning",
-    completed: true,
-  },
-  {
-    id: 3,
-    text: "Update design mockups",
-    completed: false,
-  },
-];
-
 export const TodoCard = () => {
-  const [todos, setTodos] = useState<Todo[]>(initialValues);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState("");
   const [showInput, setShowInput] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string>("");
   const [editText, setEditText] = useState("");
   const [queryDate, setQueryDate] = useState<Date>(new Date());
 
@@ -102,45 +86,50 @@ export const TodoCard = () => {
     setProgress(totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0);
   };
 
-  const handleAddTodo = () => {
+  const handleAddTodo = async () => {
     if (newTodo.trim() !== "") {
-      setTodos([...todos, { id: Date.now(), text: newTodo, completed: false }]);
+      const response = await todosApi.addTodos({
+        title: newTodo,
+        date: queryDate,
+      });
+      setTodos([...todos, response]);
       setNewTodo("");
       setShowInput(false);
     }
   };
 
-  const handleToggleTodo = (id: number) => {
+  const handleToggleTodo = async (id: string) => {
+    // const response = await todosApi.updateTodo(id, {
+    //   completed: !todo.completed,
+    // });
     setTodos(
       todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+        todo._id === id ? { ...todo, completed: !todo.completed } : todo
       )
     );
   };
 
-  const handleDeleteTodo = (id: number) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+  const handleDeleteTodo = async (id: string) => {
+    await todosApi.deleteTodo(id);
+    setTodos(todos.filter((todo) => todo._id !== id));
   };
 
-  const handleEditTodo = (id: number, text: string) => {
+  const handleEditTodo = (id: string, text: string) => {
     setEditingId(id);
     setEditText(text);
   };
 
-  const handleSaveEdit = () => {
-    if (editingId !== null && editText.trim() !== "") {
-      setTodos(
-        todos.map((todo) =>
-          todo.id === editingId ? { ...todo, text: editText } : todo
-        )
-      );
-      setEditingId(null);
+  const handleSaveEdit = async (id: string) => {
+    if (id) {
+      const response = await todosApi.updateTodo(id, { title: editText });
+      setTodos(todos.map((todo) => (todo._id === id ? response : todo)));
+      setEditingId("");
       setEditText("");
     }
   };
 
   const handleCancelEdit = () => {
-    setEditingId(null);
+    setEditingId("");
     setEditText("");
   };
   const handleCancelAdd = () => {
@@ -156,6 +145,15 @@ export const TodoCard = () => {
       day: "numeric",
     });
   };
+
+  const getTodos = async () => {
+    const response = await todosApi.getTodos(queryDate);
+    setTodos(response);
+  };
+
+  useEffect(() => {
+    getTodos();
+  }, [queryDate]);
 
   return (
     <>
@@ -229,7 +227,7 @@ export const TodoCard = () => {
                 </Box>
 
                 {todos.map((todo, index) => (
-                  <List sx={{ px: 1, pb: 0 }} key={todo.id}>
+                  <List sx={{ px: 1, pb: 0 }} key={todo._id}>
                     <ListItem
                       dense
                       sx={{
@@ -250,16 +248,16 @@ export const TodoCard = () => {
                           <Checkbox
                             edge="start"
                             checked={todo.completed}
-                            onChange={() => handleToggleTodo(todo.id)}
+                            onChange={() => handleToggleTodo(todo._id)}
                             inputProps={{
-                              "aria-labelledby": `todo-${todo.id}`,
+                              "aria-labelledby": `todo-${todo._id}`,
                             }}
                             color={
                               theme.palette.mode === "dark" ? "info" : "primary"
                             }
                           />
                         </ListItemIcon>
-                        {editingId === todo.id ? (
+                        {editingId === todo._id ? (
                           <Box
                             sx={{
                               display: "flex",
@@ -274,7 +272,7 @@ export const TodoCard = () => {
                               value={editText}
                               onChange={(e) => setEditText(e.target.value)}
                               onKeyUp={(e) =>
-                                e.key === "Enter" && handleSaveEdit()
+                                e.key === "Enter" && handleSaveEdit(todo._id)
                               }
                               autoFocus
                               variant="outlined"
@@ -286,7 +284,7 @@ export const TodoCard = () => {
                                   ? "info"
                                   : "primary"
                               }
-                              onClick={handleSaveEdit}
+                              onClick={() => handleSaveEdit(todo._id)}
                               size="small"
                             >
                               Save
@@ -315,8 +313,8 @@ export const TodoCard = () => {
                             }}
                           >
                             <ListItemText
-                              id={`todo-${todo.id}`}
-                              primary={todo.text}
+                              id={`todo-${todo._id}`}
+                              primary={todo.title}
                               sx={{
                                 textDecoration: todo.completed
                                   ? "line-through"
@@ -335,14 +333,16 @@ export const TodoCard = () => {
                                   borderRadius: 1,
                                 },
                               }}
-                              onClick={() => handleEditTodo(todo.id, todo.text)}
+                              onClick={() =>
+                                handleEditTodo(todo._id, todo.title)
+                              }
                             />
                           </Box>
                         )}
-                        {editingId !== todo.id && (
+                        {editingId !== todo._id && (
                           <IconButton
                             aria-label="delete"
-                            onClick={() => handleDeleteTodo(todo.id)}
+                            onClick={() => handleDeleteTodo(todo._id)}
                           >
                             <DeleteIcon />
                           </IconButton>
