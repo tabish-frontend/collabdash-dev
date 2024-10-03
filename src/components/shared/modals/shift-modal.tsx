@@ -124,7 +124,7 @@ export const ShiftModal: FC<ShiftModalProps> = ({
   };
 
   return (
-    <Dialog fullWidth maxWidth={"md"} open={modal} onClose={onCancel}>
+    <Dialog fullWidth maxWidth={"md"} open={modal} >
       <form onSubmit={formik.handleSubmit}>
         <Paper elevation={12}>
           <DialogTitle sx={{ m: 0, p: 3, fontSize: 24, fontWeight: 600 }}>
@@ -190,7 +190,7 @@ export const ShiftModal: FC<ShiftModalProps> = ({
                 const fieldName = `times[${index}]`;
 
                 return (
-                  <Grid container spacing={2} p={2} key={index}>
+                  <Grid container spacing={2} px={2} key={index}>
                     <Grid item xs={12} sm={3}>
                       <TimePicker
                         sx={{ width: "100%" }}

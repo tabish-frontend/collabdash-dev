@@ -99,7 +99,7 @@ export const MyLeavesCard: React.FC = () => {
       <CardHeader
         title="My Leaves"
         action={
-          <Button color="primary" variant="contained">
+          <Button color="primary" variant="contained" size="small">
             Apply for Leaves
           </Button>
         }

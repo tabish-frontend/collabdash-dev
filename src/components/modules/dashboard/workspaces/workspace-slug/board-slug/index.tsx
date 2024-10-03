@@ -149,14 +149,14 @@ const BoardComponent = () => {
           display: "flex",
           flexDirection: "column",
           flexGrow: 1,
-          pt: 4,
+          pt: 2,
         }}
       >
         <Container maxWidth={settings.stretch ? false : "xl"}>
           <Stack
             spacing={{
               xs: 2,
-              lg: 2,
+              lg: 1,
             }}
           >
             <Box display="flex" alignItems={"center"}>
@@ -174,57 +174,59 @@ const BoardComponent = () => {
               <Typography variant="h5">{"Tasks"}</Typography>
             </Box>
 
-            <Box sx={{ px: 3, py: 3 }}>
-              <Typography variant="h5" textTransform={"capitalize"}>
-                {`${workSpaceBoard?.workspace.name} - ${workSpaceBoard?.name}`}
-              </Typography>
-            </Box>
+            <Stack direction={"row"} alignItems={"center"}>
+              <Box sx={{ px: 3, py: 1 }}>
+                <Typography variant="h5" textTransform={"capitalize"}>
+                  {`${workSpaceBoard?.workspace.name} - ${workSpaceBoard?.name}`}
+                </Typography>
+              </Box>
 
-            <Stack
-              direction={"row"}
-              justifyContent={"flex-start"}
-              sx={{ px: 3 }}
-              spacing={0.5}
-            >
-              {workSpaceBoard?.members.map((user: any, index: number) => (
-                <Tooltip key={index} title={user.full_name} arrow>
-                  <Avatar
-                    src={user.avatar}
-                    alt={user.full_name}
-                    onClick={() => handleSelectedAssignee(user._id)}
-                    sx={{
-                      width: 50,
-                      height: 50,
-                      cursor: "pointer",
-                      border:
-                        selectedAssignee === user._id
-                          ? "3px solid #06aed4"
-                          : "none",
-                    }}
-                  />
-                </Tooltip>
-              ))}
+              <Stack
+                direction={"row"}
+                justifyContent={"flex-start"}
+                sx={{ px: 3 }}
+                spacing={0.5}
+              >
+                {workSpaceBoard?.members.map((user: any, index: number) => (
+                  <Tooltip key={index} title={user.full_name} arrow>
+                    <Avatar
+                      src={user.avatar}
+                      alt={user.full_name}
+                      onClick={() => handleSelectedAssignee(user._id)}
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        cursor: "pointer",
+                        border:
+                          selectedAssignee === user._id
+                            ? "3px solid #06aed4"
+                            : "none",
+                      }}
+                    />
+                  </Tooltip>
+                ))}
 
-              <Tooltip key="unassigned" title="Unassigned" arrow>
-                <Stack
-                  style={{ cursor: "pointer" }}
-                  onClick={() => handleSelectedAssignee("unassigned")}
-                >
-                  <Avatar
-                    alt="Unassigned"
-                    sx={{
-                      width: 50,
-                      height: 50,
-                      border:
-                        selectedAssignee === "unassigned"
-                          ? "3px solid #06aed4"
-                          : "none",
-                    }}
+                <Tooltip key="unassigned" title="Unassigned Tasks" arrow>
+                  <Stack
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleSelectedAssignee("unassigned")}
                   >
-                    U
-                  </Avatar>
-                </Stack>
-              </Tooltip>
+                    <Avatar
+                      alt="Unassigned"
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        border:
+                          selectedAssignee === "unassigned"
+                            ? "3px solid #06aed4"
+                            : "none",
+                      }}
+                    >
+                      U
+                    </Avatar>
+                  </Stack>
+                </Tooltip>
+              </Stack>
             </Stack>
 
             <DragDropContext onDragEnd={handleDragEnd}>

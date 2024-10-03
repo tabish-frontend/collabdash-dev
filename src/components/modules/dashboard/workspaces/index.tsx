@@ -13,7 +13,7 @@ import { useAuth, useDialog, useSettings } from "src/hooks";
 import { NextPage } from "next";
 import { DashboardLayout } from "src/layouts";
 import { Plus } from "mdi-material-ui";
-import { ConfirmationModal } from "src/components/shared";
+import { ConfirmationModal, NoRecordFound } from "src/components/shared";
 import { useWorkSpace } from "src/hooks/use-workSpace";
 import { WorkSpace } from "src/types";
 import { ROLES } from "src/constants/roles";
@@ -66,8 +66,8 @@ const WorkSpacesComponent = () => {
       <Container maxWidth={settings.stretch ? false : "xl"}>
         <Stack
           spacing={{
-            xs: 3,
-            lg: 4,
+            xs: 2,
+            lg: 1,
           }}
         >
           <Stack
@@ -98,28 +98,38 @@ const WorkSpacesComponent = () => {
             )}
           </Stack>
 
-          <Grid container spacing={2} sx={{ pr: 3 }}>
-            {WorkSpaces.map((workspace: any) => {
-              return (
-                <Grid item xs={12} xl={3} lg={4} md={6} key={workspace.slug}>
-                  <WorkspaceCard
-                    workspace={workspace}
-                    handleUpdateWorkspace={() => {
-                      WorkSpaceDialog.handleOpen({
-                        type: "Update",
-                        values: workspace,
-                      });
-                    }}
-                    handleDeleteWorkspace={() =>
-                      DeleteWorkSpaceDialog.handleOpen({
-                        _id: workspace._id,
-                        name: workspace.name,
-                      })
-                    }
-                  />
-                </Grid>
-              );
-            })}
+          <Grid container spacing={2} sx={{ pr: 3 }} minHeight={"70vh"}>
+            {WorkSpaces.length === 0 ? (
+              <Stack
+                justifyContent={"center"}
+                alignItems={"center"}
+                width={"100%"}
+              >
+                <NoRecordFound />
+              </Stack>
+            ) : (
+              WorkSpaces.map((workspace: any) => {
+                return (
+                  <Grid item xs={12} xl={3} lg={4} md={6} key={workspace.slug}>
+                    <WorkspaceCard
+                      workspace={workspace}
+                      handleUpdateWorkspace={() => {
+                        WorkSpaceDialog.handleOpen({
+                          type: "Update",
+                          values: workspace,
+                        });
+                      }}
+                      handleDeleteWorkspace={() =>
+                        DeleteWorkSpaceDialog.handleOpen({
+                          _id: workspace._id,
+                          name: workspace.name,
+                        })
+                      }
+                    />
+                  </Grid>
+                );
+              })
+            )}
           </Grid>
         </Stack>
       </Container>

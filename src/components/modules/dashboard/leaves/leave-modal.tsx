@@ -84,7 +84,7 @@ export const LeaveModal: FC<LeaveModalProps> = ({
   }, [modalType, showEmployees]);
 
   return (
-    <Dialog fullWidth maxWidth="sm" open={modal} onClose={onCancel}>
+    <Dialog fullWidth maxWidth="sm" open={modal} >
       <form onSubmit={formik.handleSubmit}>
         <Paper elevation={12}>
           <DialogTitle sx={{ m: 0, p: 3, fontSize: 24, fontWeight: 600 }}>
@@ -105,7 +105,7 @@ export const LeaveModal: FC<LeaveModalProps> = ({
 
           <Divider />
 
-          <Grid container spacing={4} p={2}>
+          <Grid container spacing={2} p={2}>
             <Grid item xs={12}>
               <TextField
                 fullWidth

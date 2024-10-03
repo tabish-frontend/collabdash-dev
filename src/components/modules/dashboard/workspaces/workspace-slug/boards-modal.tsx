@@ -48,7 +48,6 @@ export const BoardsModal: FC<BoardsModalProps> = ({
       fullWidth
       maxWidth="sm"
       open={modal}
-      onClose={onCancel}
       sx={{ "& .MuiPaper-root": { overflowY: "unset" } }}
     >
       <form onSubmit={formik.handleSubmit}>

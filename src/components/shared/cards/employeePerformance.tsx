@@ -112,9 +112,7 @@ export const EmployeePerformanceCard = () => {
               <Grid item xs={12} sm={3} key={index}>
                 <Tooltip
                   arrow
-                  placement={
-                    index === 0 || index === 2 ? "left-start" : "right-start"
-                  }
+                  placement="bottom-start"
                   title={
                     employees.length ? (
                       <UsersListPopover users={employees} />
