@@ -50,7 +50,7 @@ const formatMessageWithLink = (
             {parts[0]}
             <Link
               component={RouterLink}
-              href={targetLink}
+              href={targetLink || ""}
               style={{ textDecoration: "underline", fontWeight: "bold" }}
             >
               {linkText}
@@ -87,7 +87,7 @@ const formatMessageWithLink = (
           {parts[0]}
           <Link
             component={RouterLink}
-            href={targetLink}
+            href={targetLink || ""}
             style={{ textDecoration: "underline", fontWeight: "bold" }}
           >
             {linkText}
