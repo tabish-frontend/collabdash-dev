@@ -53,20 +53,43 @@ export const TimeLogCard = () => {
     attendanceDuration: 0,
   });
 
+  // useEffect(() => {
+  //   if (attendance) {
+  //     const { workingTime, shiftDuration }: any = calculateWorkingPercentage(
+  //       user?.shift,
+  //       attendance.timeIn,
+  //       attendance.timeOut,
+  //       attendance.breaks
+  //     );
+
+  //     setWorkingProgress({
+  //       percentage: (workingTime / shiftDuration) * 100,
+  //       shiftDuration: shiftDuration,
+  //       attendanceDuration: workingTime,
+  //     });
+  //   }
+  // }, [user, attendance]);
+
   useEffect(() => {
     if (attendance) {
-      const { workingTime, shiftDuration }: any = calculateWorkingPercentage(
-        user?.shift,
-        attendance.timeIn,
-        attendance.timeOut,
-        attendance.breaks
-      );
+      // Update progress every second
+      const interval = setInterval(() => {
+        const { workingTime, shiftDuration }: any = calculateWorkingPercentage(
+          user?.shift,
+          attendance.timeIn,
+          attendance.timeOut,
+          attendance.breaks
+        );
 
-      setWorkingProgress({
-        percentage: (workingTime / shiftDuration) * 100,
-        shiftDuration: shiftDuration,
-        attendanceDuration: workingTime,
-      });
+        setWorkingProgress({
+          percentage: (workingTime / shiftDuration) * 100,
+          shiftDuration: shiftDuration,
+          attendanceDuration: workingTime,
+        });
+      }, 3000); // Update every second (1000ms)
+
+      // Cleanup interval on component unmount
+      return () => clearInterval(interval);
     }
   }, [user, attendance]);
 

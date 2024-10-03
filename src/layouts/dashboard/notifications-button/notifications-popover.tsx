@@ -130,12 +130,16 @@ const renderContent = (notification: Notification): JSX.Element | null => {
               flexWrap: "wrap",
             }}
           >
-            <Typography sx={{ mr: 0.5 }} variant="subtitle2">
+            <Typography sx={{ mr: 0.5 }} variant="subtitle2" fontWeight={700}>
               {!notification.hide_sender_name && (
                 <>{notification.sender.full_name} </>
               )}
 
-              <Box component="span" sx={{ fontSize: "inherit" }}>
+              <Box
+                component="span"
+                sx={{ fontSize: "inherit" }}
+                fontWeight={400}
+              >
                 {formatMessageWithLink(
                   notification.message,
                   notification.link,
