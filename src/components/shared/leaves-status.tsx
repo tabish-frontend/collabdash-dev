@@ -16,45 +16,43 @@ const UpdateLeavesStatus: FC<LeavesStatusProps> = ({
   handleUpdateStatus,
 }) => {
   return (
-    <TableCell>
-      <Stack direction={"row"} width={150}>
-        <Tooltip title="Approved">
-          <span>
-            <IconButton
-              onClick={() => handleUpdateStatus(leaveId, LeavesStatus.Approved)}
-              disabled={leaveStatus === LeavesStatus.Approved}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "green",
-                  color: "white",
-                },
-                color: "green",
-              }}
-            >
-              <CheckCircleOutline />
-            </IconButton>
-          </span>
-        </Tooltip>
+    <Stack direction={"row"} width={150} justifyContent={"center"}>
+      <Tooltip title="Approved">
+        <span>
+          <IconButton
+            onClick={() => handleUpdateStatus(leaveId, LeavesStatus.Approved)}
+            disabled={leaveStatus === LeavesStatus.Approved}
+            sx={{
+              "&:hover": {
+                backgroundColor: "green",
+                color: "white",
+              },
+              color: "green",
+            }}
+          >
+            <CheckCircleOutline />
+          </IconButton>
+        </span>
+      </Tooltip>
 
-        <Tooltip title="Rejected">
-          <span>
-            <IconButton
-              onClick={() => handleUpdateStatus(leaveId, LeavesStatus.Rejected)}
-              disabled={leaveStatus === LeavesStatus.Rejected}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "red",
-                  color: "white",
-                },
-                color: "red",
-              }}
-            >
-              <CloseCircleOutline />
-            </IconButton>
-          </span>
-        </Tooltip>
-      </Stack>
-    </TableCell>
+      <Tooltip title="Rejected">
+        <span>
+          <IconButton
+            onClick={() => handleUpdateStatus(leaveId, LeavesStatus.Rejected)}
+            disabled={leaveStatus === LeavesStatus.Rejected}
+            sx={{
+              "&:hover": {
+                backgroundColor: "red",
+                color: "white",
+              },
+              color: "red",
+            }}
+          >
+            <CloseCircleOutline />
+          </IconButton>
+        </span>
+      </Tooltip>
+    </Stack>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Card,
   CardHeader,
@@ -16,15 +16,19 @@ import {
   SvgIcon,
   TextField,
   MenuItem,
+  Link,
 } from "@mui/material";
 import { Attachment, AccessTime } from "@mui/icons-material";
 import FlagIcon from "@mui/icons-material/Flag";
 import { Scrollbar } from "src/utils/scrollbar";
-import Trash02Icon from "@untitled-ui/icons-react/build/esm/Trash02";
 import { useWorkSpace } from "src/hooks/use-workSpace";
-import { useAuth } from "src/hooks";
+import { useAuth, useDialog } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { SeverityPill } from "../severity-pill";
+import { RouterLink } from "../router-link";
+import { paths } from "src/constants/paths";
+import { Contact } from "src/types";
+import { TaskModal } from "src/components/shared/modals/task-modal";
 
 interface Task {
   _id: string;
@@ -34,6 +38,11 @@ interface Task {
   attachments: [];
   columnName: string;
   createdAt: any;
+  boardMembers: Contact[];
+}
+
+interface TaskDialogData {
+  values: any;
 }
 
 const filterValues = [
@@ -51,19 +60,24 @@ const filterValues = [
   },
 ];
 
-export const MyTasksCard = () => {
-  const [tasks, setTasks] = useState<Task[]>([]);
+export const MyTasksCard = ({
+  cardHeight = 490,
+  userId,
+}: {
+  cardHeight?: number;
+  userId: string;
+}) => {
+  const [tasks, setTasks] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [filter, setFilter] = useState("createdAt");
 
-  const { user } = useAuth<AuthContextType>();
+  // const { user } = useAuth<AuthContextType>();
 
   const { WorkSpaces } = useWorkSpace();
 
-  console.log("Workspaces", WorkSpaces);
-  console.log("User: ", user?._id);
+  const taskDialog = useDialog<TaskDialogData>();
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilter(event.target.value);
@@ -78,11 +92,15 @@ export const MyTasksCard = () => {
         board.columns.forEach((column: any) => {
           column.tasks.forEach((task: any) => {
             const isUserAssigned = task.assignedTo.some(
-              (assignee: any) => assignee._id === user?._id
+              (assignee: any) => assignee._id === userId
             );
 
             if (isUserAssigned) {
-              fetchedTasks.push({ ...task, columnName: column.name });
+              fetchedTasks.push({
+                ...task,
+                columnName: column.name,
+                boardMembers: board.members,
+              });
             }
           });
         });
@@ -111,11 +129,11 @@ export const MyTasksCard = () => {
   };
 
   useEffect(() => {
-    if (user && WorkSpaces) {
+    if (userId && WorkSpaces) {
       getTasksForUser(filter);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, WorkSpaces, filter]);
+  }, [userId, WorkSpaces, filter]);
 
   useEffect(() => {
     console.log("Loading", isLoading);
@@ -141,10 +159,26 @@ export const MyTasksCard = () => {
 
   return (
     <>
-      <Card sx={{ minHeight: 490, display: "flex", flexDirection: "column" }}>
+      <Card
+        sx={{
+          minHeight: cardHeight,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         <CardHeader
           title="My Tasks"
           titleTypographyProps={{ variant: "h6", fontWeight: "bold" }}
+          subheader={
+            <Link
+              // color=""
+              component={RouterLink}
+              href={paths.workspaces}
+              underline="hover"
+            >
+              <Typography variant="subtitle2">View All Workspaces</Typography>
+            </Link>
+          }
           action={
             <TextField
               fullWidth
@@ -207,6 +241,12 @@ export const MyTasksCard = () => {
                         flexDirection: isSmallScreen ? "column" : "row",
                         alignItems: isSmallScreen ? "flex-start" : "center",
                         padding: 2,
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        taskDialog.handleOpen({
+                          values: task,
+                        });
                       }}
                     >
                       <Stack
@@ -315,6 +355,15 @@ export const MyTasksCard = () => {
             )}
           </CardContent>
         </Scrollbar>
+
+        {taskDialog.open && (
+          <TaskModal
+            onClose={taskDialog.handleClose}
+            open={taskDialog.open}
+            task={taskDialog.data?.values || undefined}
+            boardMembers={taskDialog.data?.values.boardMembers}
+          />
+        )}
       </Card>
     </>
   );

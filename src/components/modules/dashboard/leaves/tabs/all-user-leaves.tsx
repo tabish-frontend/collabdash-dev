@@ -148,11 +148,13 @@ export const AllUserLeaves: React.FC<AllUserLeavesProps> = ({
                       <Typography>{leave.status.toUpperCase()}</Typography>
                     </TableCell>
 
-                    <UpdateLeavesStatus
-                      handleUpdateStatus={handleUpdateStatus}
-                      leaveId={leave._id}
-                      leaveStatus={leave.status}
-                    />
+                    <TableCell>
+                      <UpdateLeavesStatus
+                        handleUpdateStatus={handleUpdateStatus}
+                        leaveId={leave._id}
+                        leaveStatus={leave.status}
+                      />
+                    </TableCell>
 
                     <TableCell>
                       <Stack
