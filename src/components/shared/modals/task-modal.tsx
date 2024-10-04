@@ -19,14 +19,16 @@ import {
   SelectMultipleUsers,
   SeverityPill,
   ConfirmationAlert,
+  ConfirmationModal,
 } from "src/components/shared";
 import { useFormik } from "formik";
 import { MobileDateTimePicker } from "@mui/x-date-pickers";
-import { AttachFile, Description } from "@mui/icons-material";
+import { AttachFile, Delete, Description } from "@mui/icons-material";
 import VideoFileIcon from "@mui/icons-material/VideoFile";
 import AudioFileIcon from "@mui/icons-material/AudioFile";
 import {
   Alert,
+  Button,
   Dialog,
   Divider,
   FormControl,
@@ -44,6 +46,7 @@ import { LoadingButton } from "@mui/lab";
 import "react-quill/dist/quill.snow.css";
 import dynamic from "next/dynamic";
 import { Priorities } from "src/constants/list-items";
+import { useDialog } from "src/hooks";
 
 export interface TaskModalValues {
   _id: string;
@@ -69,8 +72,11 @@ interface TaskModalProps {
   onClose?: () => void;
   open?: boolean;
   task?: Tasks;
-  boardColumns?: Column[];
   boardMembers?: any;
+}
+
+interface DeleteTaskDialogData {
+  id: any;
 }
 
 const allowedFileTypes = [
@@ -85,21 +91,18 @@ const allowedFileTypes = [
 ];
 
 export const TaskModal: FC<TaskModalProps> = (props) => {
-  const {
-    task,
-    boardColumns,
-    boardMembers,
-    onClose,
-    open = false,
-    ...other
-  } = props;
+  const { task, boardMembers, onClose, open = false, ...other } = props;
 
   const ReactQuill = useMemo(
     () => dynamic(() => import("react-quill"), { ssr: false }),
     []
   );
+  const DeleteTaskDialog = useDialog<DeleteTaskDialogData>();
 
   const { handleDeleteTask, handleUpdateTask } = useWorkSpace();
+  const theme = useTheme();
+
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("md"));
 
@@ -205,8 +208,6 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     }
   };
 
-  const theme = useTheme();
-
   // Memoize the toolbar styles to update based on the theme
   const customToolbarStyles = useMemo(() => {
     return {
@@ -252,41 +253,37 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
             }}
             spacing={1}
           >
-            <Stack direction={"row"} spacing={2} alignItems={"center"}>
-              {mdUp && (
-                <IconButton onClick={handleAttemptClose}>
-                  <Close />
-                </IconButton>
-              )}
-              {showAlert && (
-                <SeverityPill color="error">Unsaved Changes!</SeverityPill>
-              )}
-            </Stack>
+            {/* <Stack direction={"row"} spacing={2} alignItems={"center"}> */}
+            {showAlert && (
+              <SeverityPill color="error">Unsaved Changes!</SeverityPill>
+            )}
+            {/* </Stack> */}
 
             <Stack
               justifyContent="flex-end"
               alignItems="center"
               direction="row"
               spacing={1}
-              sx={{ p: 2 }}
+              width={"100%"}
+              sx={{ py: 1 }}
             >
-              <IconButton
-                onClick={() => {
-                  handleDeleteTask(task._id);
-                  onClose?.();
-                }}
-              >
-                <SvgIcon>
-                  <ArchiveIcon />
-                </SvgIcon>
-              </IconButton>
-              {!mdUp && (
-                <IconButton onClick={handleAttemptClose}>
+              <Button
+                variant="outlined"
+                color="error"
+                size="small"
+                onClick={() =>
+                  DeleteTaskDialog.handleOpen({
+                    id: task._id,
+                  })
+                }
+                startIcon={
                   <SvgIcon>
-                    <XIcon />
+                    <Delete />
                   </SvgIcon>
-                </IconButton>
-              )}
+                }
+              >
+                Delete Task
+              </Button>
             </Stack>
           </Stack>
 
@@ -298,8 +295,13 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
             />
           )}
         </Stack>
-        <Box sx={{ px: 3, my: 2 }}>
-          <InputLabel id="label-select" sx={{ mb: 1 }}>
+        <Box
+          sx={{ px: 3, my: 1 }}
+          display={"flex"}
+          gap={2}
+          alignItems={"center"}
+        >
+          <InputLabel id="label-select" sx={{ width: 100 }}>
             Task Name
           </InputLabel>
 
@@ -331,7 +333,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
         <Divider />
 
         <Grid container sx={{ p: 0 }}>
-          <Grid container md={8} xs={12} sx={{ p: 3 }}>
+          <Grid container md={8} xs={12} sx={{ p: 2 }}>
             <Stack direction={"column"} spacing={2} width={"100%"}>
               <Grid xs={12}>
                 <Typography color="text.secondary" variant="caption">
@@ -355,6 +357,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                     }}
                     onChange={(value) => {
                       setIsFormBeingChanged(true);
+                      // formik.setFieldValue("description", value);
                       formik.setFieldValue("description", value);
                     }}
                   />
@@ -509,7 +512,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
             sx={(theme) => ({
               backgroundColor: (theme) =>
                 theme.palette.mode === "dark" ? "neutral.800" : "neutral.100",
-              p: 3,
+              p: 2,
             })}
           >
             <Stack
@@ -518,7 +521,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
               width={"100%"}
               justifyContent={"space-between"}
             >
-              <Stack direction={"column"} spacing={2}>
+              <Stack direction={"column"} spacing={1}>
                 <Grid xs={12}>
                   <Typography color="text.secondary" variant="caption">
                     Created by
@@ -623,9 +626,14 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                 <Stack
                   direction={"row"}
                   justifyContent={"flex-end"}
+                  spacing={2}
                   alignItems={"flex-end"}
                   height={"100%"}
                 >
+                  <Button onClick={handleAttemptClose} variant="outlined">
+                    Cancel
+                  </Button>
+
                   <LoadingButton
                     loading={formik.isSubmitting}
                     loadingPosition="start"
@@ -659,6 +667,21 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
       {...other}
     >
       {content}
+
+      {DeleteTaskDialog.open && (
+        <ConfirmationModal
+          modal={DeleteTaskDialog.open}
+          onCancel={DeleteTaskDialog.handleClose}
+          onConfirm={() => {
+            handleDeleteTask(DeleteTaskDialog.data?.id);
+            onClose?.();
+          }}
+          content={{
+            type: "Delete",
+            text: "Are you sure you want to delete the Task ?",
+          }}
+        />
+      )}
     </Dialog>
   );
 };

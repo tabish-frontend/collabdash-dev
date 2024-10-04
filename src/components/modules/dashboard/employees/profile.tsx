@@ -17,9 +17,9 @@ import {
   EmployeeDetails,
   ShiftDetails,
   AttendanceChartCard,
-  TaskCard,
   LeavesCard,
   ConfirmationModal,
+  MyTasksCard,
 } from "src/components/shared";
 import { useDialog, useSettings } from "src/hooks";
 import Button from "@mui/material/Button";
@@ -113,7 +113,7 @@ const EmployeeProfileComponent = () => {
               </Stack>
             </Grid>
 
-            <Grid item xs={12} md={7}>
+            <Grid item xs={12} md={8}>
               <Grid item xs={12} sx={{ mb: 3 }}>
                 <EmployeeDetails
                   employeeData={employeeData}
@@ -129,17 +129,18 @@ const EmployeeProfileComponent = () => {
               </Grid>
             </Grid>
 
-            <Grid item xs={12} md={5}>
-              <Grid item xs={12}>
-                <TaskCard />
-              </Grid>
+            <Grid item xs={12} md={4}>
+              <MyTasksCard
+                cardHeight={590}
+                userId={employeeData?._id as string}
+              />
             </Grid>
 
             <Grid item xs={12} md={4}>
               <AttendanceChartCard employeeUsername={employeeData?._id} />
             </Grid>
-            <Grid item xs={12} md={8}>
-              <LeavesCard employeeId={employeeData?._id} />
+            <Grid item xs={12} md={4}>
+              <LeavesCard employeeId={employeeData?._id} cardHeight={530} />
             </Grid>
           </Grid>
         </Stack>

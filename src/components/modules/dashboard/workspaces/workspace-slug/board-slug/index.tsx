@@ -7,7 +7,7 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { DashboardLayout } from "src/layouts";
-import { TaskModal } from "./task-modal";
+
 import { ColumnCard } from "./column-card";
 import { ColumnAdd } from "./column-add";
 import { Avatar, Button, Container, SvgIcon, Tooltip } from "@mui/material";
@@ -16,6 +16,7 @@ import ArrowLeftIcon from "@untitled-ui/icons-react/build/esm/ArrowLeft";
 import { useWorkSpace } from "src/hooks/use-workSpace";
 import { Column, Tasks } from "src/types";
 import { useSettings } from "src/hooks";
+import { TaskModal } from "src/components/shared";
 
 const BoardComponent = () => {
   const [currentTask, setCurrentTask] = useState<Tasks | null>(null);
@@ -308,13 +309,14 @@ const BoardComponent = () => {
           </Stack>
         </Container>
       </Box>
-      <TaskModal
-        onClose={handleTaskClose}
-        open={!!currentTask}
-        task={currentTask || undefined}
-        boardColumns={workSpaceBoard?.columns}
-        boardMembers={workSpaceBoard?.members}
-      />
+      {!!currentTask && (
+        <TaskModal
+          onClose={handleTaskClose}
+          open={!!currentTask}
+          task={currentTask || undefined}
+          boardMembers={workSpaceBoard?.members}
+        />
+      )}
     </>
   );
 };
