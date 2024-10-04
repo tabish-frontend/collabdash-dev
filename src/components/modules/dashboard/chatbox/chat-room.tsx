@@ -84,10 +84,20 @@ const ChatRoomComponent = () => {
     checkRoomExists();
   }, [router, threadKey, userId]);
 
+  // Define the handler for when the user leaves the video conference
+  const handleCallLeft = () => {
+    // toast.info("You have left the video conference.");
+    router.push(paths.chat + `?threadKey=${threadKey}`);
+  };
+
   return (
     <div>
       {chatRoomExist && (
-        <ConferenceRoom Allowed={true} RoomName={displayRoomName} />
+        <ConferenceRoom
+          Allowed={true}
+          RoomName={displayRoomName}
+          onConferenceLeft={handleCallLeft} // Pass the event listener for ChatRoom only
+        />
       )}
     </div>
   );

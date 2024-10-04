@@ -16,7 +16,7 @@ import { AuthContextType } from "src/contexts/auth";
 
 interface ChatMessageAddProps {
   disabled?: boolean;
-  onSend?: (value: string) => void;
+  onSend?: (body: string) => void;
 }
 
 export const ChatMessageAdd: FC<ChatMessageAddProps> = (props) => {

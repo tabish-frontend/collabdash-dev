@@ -8,6 +8,11 @@ import CardMedia from "@mui/material/CardMedia";
 import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import { Button, SvgIcon } from "@mui/material";
+import { Videocam } from "@mui/icons-material";
+import { useRouter } from "next/router";
+import { useSearchParams } from "next/navigation";
+import { paths } from "src/constants/paths";
 
 interface ChatMessageProps {
   authorAvatar?: string | null;
@@ -32,6 +37,24 @@ export const ChatMessage: FC<ChatMessageProps> = (props) => {
   } = props;
 
   const ago = formatDistanceToNowStrict(new Date(createdAt));
+
+  const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const threadKey = searchParams.get("threadKey") || undefined;
+
+  const handleCallAccept = () => {
+    const timeLimit = 180000; // 3 minutes in milliseconds
+    const timeDifference = new Date().getTime() - new Date(createdAt).getTime();
+
+    if (timeDifference > timeLimit) {
+      // If the difference is greater than 3 minutes, the call is missed
+      return null;
+    }
+
+    // Proceed to the chat room if the call is within 3 minutes
+    router.push(`${paths.chat_room}?threadKey=${threadKey}`);
+  };
 
   return (
     <Box
@@ -62,7 +85,11 @@ export const ChatMessage: FC<ChatMessageProps> = (props) => {
           <Card
             sx={{
               backgroundColor:
-                position === "right" ? "primary.main" : "background.paper",
+                contentType === "call"
+                  ? "primary.light"
+                  : position === "right"
+                  ? "primary.main"
+                  : "background.paper",
               color: position === "right" ? "white" : "text.primary",
               borderRadius: 1,
               px: 1,
@@ -94,6 +121,19 @@ export const ChatMessage: FC<ChatMessageProps> = (props) => {
               <Typography color="inherit" variant="body2">
                 {body}
               </Typography>
+            )}
+
+            {contentType === "call" && (
+              <Button
+                onClick={handleCallAccept}
+                startIcon={
+                  <SvgIcon>
+                    <Videocam />
+                  </SvgIcon>
+                }
+              >
+                Video Call
+              </Button>
             )}
           </Card>
           <Box

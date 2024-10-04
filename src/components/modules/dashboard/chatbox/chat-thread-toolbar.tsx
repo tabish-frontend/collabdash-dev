@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { useCallback, type FC } from "react";
 import PropTypes from "prop-types";
 import { formatDistanceToNowStrict } from "date-fns";
 import ArchiveIcon from "@untitled-ui/icons-react/build/esm/Archive";
@@ -26,6 +26,8 @@ import { useAuth } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { useRouter } from "next/router";
 import { paths } from "src/constants/paths";
+import { Button } from "@mui/material";
+import { Videocam, VideocamOff, VideoFileOutlined } from "@mui/icons-material";
 
 const getRecipients = (
   participants: Participant[],
@@ -53,20 +55,24 @@ const getDisplayName = (recipients: Participant[]): string => {
 interface ChatThreadToolbarProps {
   participants?: Participant[];
   threadKey?: string;
+  onSend?: (body: string, contentType: string) => void;
 }
 
 export const ChatThreadToolbar: FC<ChatThreadToolbarProps> = (props) => {
-  const { participants = [], threadKey, ...other } = props;
+  const { participants = [], threadKey, onSend, ...other } = props;
   const popover = usePopover<HTMLButtonElement>();
   const { user } = useAuth<AuthContextType>();
 
   const router = useRouter();
 
-  // Maybe use memo for these values
-
   const recipients = getRecipients(participants, user?._id);
 
   const displayName = getDisplayName(recipients);
+
+  const handleSendCall = useCallback((): void => {
+    router.push(`${paths.chat_room}?threadKey=${threadKey}`);
+    onSend?.("video call", "call");
+  }, [onSend, router, threadKey]);
 
   return (
     <>
@@ -112,7 +118,7 @@ export const ChatThreadToolbar: FC<ChatThreadToolbarProps> = (props) => {
           </div>
         </Stack>
         <Stack alignItems="center" direction="row" spacing={1}>
-          <IconButton
+          {/* <IconButton
             onClick={() =>
               router.push(`${paths.chat_room}?threadKey=${threadKey}`)
             }
@@ -120,7 +126,20 @@ export const ChatThreadToolbar: FC<ChatThreadToolbarProps> = (props) => {
             <SvgIcon>
               <PhoneIcon />
             </SvgIcon>
-          </IconButton>
+          </IconButton> */}
+          {/* <Button startIcon={<Videocam />  variant="contained" }>Video Call</Button> */}
+          <Button
+            onClick={handleSendCall}
+            startIcon={
+              <SvgIcon>
+                <Videocam />
+              </SvgIcon>
+            }
+            variant="outlined"
+          >
+            Video Call
+          </Button>
+
           {/* <IconButton>
             <SvgIcon>
               <Camera01Icon />

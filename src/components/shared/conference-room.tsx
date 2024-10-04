@@ -10,11 +10,13 @@ import { AuthContextType } from "src/contexts/auth";
 interface ConferenceRoomProps {
   Allowed: boolean;
   RoomName: string;
+  onConferenceLeft?: () => void; // Optional prop, only passed when needed
 }
 
 export const ConferenceRoom: React.FC<ConferenceRoomProps> = ({
   Allowed,
   RoomName,
+  onConferenceLeft, // Optional event listener
 }) => {
   const { user } = useAuth<AuthContextType>();
 
@@ -54,6 +56,13 @@ export const ConferenceRoom: React.FC<ConferenceRoomProps> = ({
         }}
         onApiReady={(externalApi) => {
           console.log("Jitsi Meeting API is ready!", externalApi);
+
+          // Add listener for videoConferenceLeft if the prop is passed
+          if (onConferenceLeft) {
+            externalApi.addListener("videoConferenceLeft", () => {
+              onConferenceLeft(); // Trigger the callback when the user leaves
+            });
+          }
         }}
       />
     </div>

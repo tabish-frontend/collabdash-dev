@@ -160,14 +160,12 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
   const { messagesRef } = useMessagesScroll(thread);
 
   const handleSend = useCallback(
-    async (body: string): Promise<void> => {
+    async (body: string, contentType: string = "text"): Promise<void> => {
       // If we have the thread, we use its ID to add a new message
 
       const recipientIds = participants.map(
         (participant) => participant._id as string
       );
-
-      console.log("recipientIds", recipientIds);
 
       if (thread) {
         try {
@@ -176,7 +174,7 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
               threadId: thread._id,
               body,
               recipientIds,
-              contentType: "text",
+              contentType,
               attachments: [],
             })
           );
@@ -186,13 +184,6 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
 
         return;
       }
-
-      // Otherwise we use the recipients IDs. When using participant IDs, it means that we have to
-      // get the thread.
-
-      // Filter the current user to get only the other participants
-
-      // Add the new message
 
       let threadId: string;
 
@@ -238,7 +229,11 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
       }}
       {...other}
     >
-      <ChatThreadToolbar participants={participants} threadKey={threadKey} />
+      <ChatThreadToolbar
+        participants={participants}
+        threadKey={threadKey}
+        onSend={handleSend}
+      />
       <Divider />
       <Box
         sx={{
