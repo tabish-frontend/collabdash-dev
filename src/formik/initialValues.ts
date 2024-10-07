@@ -112,4 +112,6 @@ export const meetingInitialValues: Meeting = {
   title: "",
   time: null,
   participants: [],
+  recurring: false,
+  meeting_days: [],
 };
