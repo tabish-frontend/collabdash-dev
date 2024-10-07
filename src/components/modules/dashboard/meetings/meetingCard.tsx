@@ -8,6 +8,9 @@ import {
   IconButton,
   useTheme,
   useMediaQuery,
+  Tooltip,
+  Chip,
+  SvgIcon,
 } from "@mui/material";
 import {
   CoptToClipboard,
@@ -27,6 +30,7 @@ import { InviteModal } from "./invite-modal";
 import { useAuth } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { ROLES } from "src/constants/roles";
+import RepeatIcon from "@mui/icons-material/Repeat";
 
 interface MeetingCardProps {
   meeting: Meeting;
@@ -48,6 +52,20 @@ export const MeetingCard: FC<MeetingCardProps> = ({
   const [inviteDialog, setInviteDialog] = useState(false);
 
   const { user } = useAuth<AuthContextType>();
+
+  console.log("meetingsg", meeting);
+
+  const formatRecurringDays = (days: string[]) => {
+    return days.map((day) => day.slice(0, 3)).join(", ");
+  };
+
+  const formatMeetingTime = (time: Date | null): string => {
+    if (!time) return "Time not set";
+    return new Date(time).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   return (
     <Card sx={{ position: "relative", minHeight: 310 }}>
@@ -85,9 +103,33 @@ export const MeetingCard: FC<MeetingCardProps> = ({
       />
       <CardContent sx={{ paddingTop: 2 }}>
         <Stack direction={"column"} minHeight={80} spacing={1}>
-          <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-            {meeting?.title}
-          </Typography>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+              {meeting?.title}
+            </Typography>
+            {meeting.recurring && (
+              <Tooltip
+                title={`Recurring: ${formatRecurringDays(
+                  meeting.meeting_days
+                )}`}
+              >
+                <Chip
+                  icon={
+                    <SvgIcon>
+                      <RepeatIcon sx={{ color: "white" }} />
+                    </SvgIcon>
+                  }
+                  label="Recurring"
+                  size="small"
+                  color="info"
+                />
+              </Tooltip>
+            )}
+          </Stack>
           <Stack
             direction={isSmallScreen ? "column" : "column"}
             justifyContent={"space-between"}
@@ -108,7 +150,11 @@ export const MeetingCard: FC<MeetingCardProps> = ({
                 />
 
                 <Typography variant="body2">
-                  {getDay_Time(meeting!.time)}
+                  {meeting.recurring
+                    ? `Every ${formatRecurringDays(
+                        meeting.meeting_days
+                      )} at ${formatMeetingTime(meeting.time)}`
+                    : getDay_Time(meeting!.time)}
                 </Typography>
               </Stack>
               <Stack direction={"row"} alignItems={"center"} spacing={1}>

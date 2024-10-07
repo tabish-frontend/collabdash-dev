@@ -6,4 +6,6 @@ export interface Meeting {
   time: Date | null;
   participants: Employee[];
   owner?: Employee;
+  recurring: boolean;
+  meeting_days: string[];
 }

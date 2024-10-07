@@ -6,6 +6,13 @@ import {
   IconButton,
   TextField,
   Paper,
+  FormControlLabel,
+  Switch,
+  InputLabel,
+  FormControl,
+  Select,
+  MenuItem,
+  OutlinedInput,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -16,7 +23,8 @@ import { contactsApi, employeesApi } from "src/api";
 import { Contact, Employee, Meeting, WorkSpace } from "src/types";
 import { SelectMultipleUsers } from "src/components/shared";
 import { LoadingButton } from "@mui/lab";
-import { DateTimePicker } from "@mui/x-date-pickers";
+import { DateTimePicker, TimePicker } from "@mui/x-date-pickers";
+import { weekDays } from "src/constants/days";
 
 interface MeetingModalProps {
   modal: boolean;
@@ -58,6 +66,10 @@ export const MeetingModal: FC<MeetingModalProps> = ({
   useEffect(() => {
     handleGetEmployees();
   }, []);
+
+  useEffect(() => {
+    console.log("Formik", formik.values);
+  }, [formik.values]);
 
   return (
     <Dialog
@@ -111,14 +123,60 @@ export const MeetingModal: FC<MeetingModalProps> = ({
               />
             </Grid>
             <Grid item xs={12}>
-              <DateTimePicker
-                sx={{ width: "100%" }}
-                label="Select Date and Time"
-                value={formik.values.time}
-                onChange={(date: Date | null) => {
-                  formik.setFieldValue("time", date);
-                }}
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="info"
+                    name="recurring"
+                    checked={formik.values.recurring}
+                    onChange={formik.handleChange}
+                    // onKeyDown={handleKeyPress}
+                    value={formik.values.recurring}
+                  />
+                }
+                label="Recurring"
+                labelPlacement="start"
               />
+            </Grid>
+            <Grid item xs={12}>
+              {formik.values.recurring ? (
+                <>
+                  <FormControl fullWidth required>
+                    <InputLabel>Meeting Days</InputLabel>
+                    <Select
+                      multiple
+                      name="meeting_days"
+                      value={formik.values.meeting_days}
+                      onChange={formik.handleChange}
+                      input={<OutlinedInput label="Meeting Days" />}
+                    >
+                      {weekDays.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                  <TimePicker
+                    sx={{ width: "100%", mt: 2 }}
+                    label="Select Time"
+                    value={formik.values.time}
+                    onChange={(date: Date | null) => {
+                      formik.setFieldValue("time", date);
+                    }}
+                  />
+                </>
+              ) : (
+                <DateTimePicker
+                  sx={{ width: "100%" }}
+                  label="Select Date and Time"
+                  value={formik.values.time}
+                  onChange={(date: Date | null) => {
+                    formik.setFieldValue("time", date);
+                  }}
+                />
+              )}
             </Grid>
           </Grid>
 

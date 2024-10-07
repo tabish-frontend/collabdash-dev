@@ -107,6 +107,12 @@ const MeetingListComponent = () => {
     getMeetins();
   }, [getMeetins]);
 
+  const sortedMeetings = meetingList.sort((a, b) => {
+    if (a.recurring && !b.recurring) return -1;
+    if (!a.recurring && b.recurring) return 1;
+    return 0;
+  });
+
   return (
     <Box
       component="main"
@@ -132,20 +138,18 @@ const MeetingListComponent = () => {
               Schedule Meetings
             </Typography>
 
-            
-              <Button
-                variant="contained"
-                size={isSmallScreen ? "small" : "medium"}
-                onClick={() => {
-                  meetingDialog.handleOpen({
-                    type: "Create",
-                    values: meetingInitialValues,
-                  });
-                }}
-              >
-                Create Meeting
-              </Button>
-         
+            <Button
+              variant="contained"
+              size={isSmallScreen ? "small" : "medium"}
+              onClick={() => {
+                meetingDialog.handleOpen({
+                  type: "Create",
+                  values: meetingInitialValues,
+                });
+              }}
+            >
+              Create Meeting
+            </Button>
           </Stack>
 
           <Tabs
@@ -175,12 +179,12 @@ const MeetingListComponent = () => {
                     <SkeletonMeetingCard />
                   </Grid>
                 ))
-              ) : !meetingList.length ? (
+              ) : !sortedMeetings.length ? (
                 <Grid item xs={12}>
                   <NoRecordFound />
                 </Grid>
               ) : (
-                meetingList.map((meeting: Meeting) => (
+                sortedMeetings.map((meeting: Meeting) => (
                   <Grid item xs={12} xl={4} lg={4} md={6} key={meeting._id}>
                     <MeetingCard
                       meeting={meeting}

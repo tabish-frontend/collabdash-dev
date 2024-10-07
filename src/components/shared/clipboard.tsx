@@ -6,15 +6,22 @@ import { Meeting } from "src/types";
 import { paths } from "src/constants/paths";
 
 export const CoptToClipboard = ({ meeting }: { meeting: Meeting }) => {
-  const meetingInformation =
-    `${process.env.NEXT_PUBLIC_COMPANY_NAME} is inviting you to a meeting\n` +
-    `\n` +
-    `Date: ${getClassDate(meeting.time)}\n` +
-    `Time: ${getClassTime(meeting.time)} ${getUserTimeZone()}\n` +
-    `\n` +
-    `Agenda: ${meeting.title}\n` +
-    "Join Meeting\n" +
-    `${process.env.NEXT_PUBLIC_COMPANY_DOMAIN}/${paths.meetings}/${meeting._id}`;
+  const formatRecurringDays = (days: string[]) =>
+    days.map((day) => day.slice(0, 3)).join(", ");
+
+  const meetingInformation = `${
+    process.env.NEXT_PUBLIC_COMPANY_NAME
+  } is inviting you to a ${
+    meeting.recurring ? "recurring meeting" : "meeting"
+  }\n\n${
+    meeting.recurring
+      ? `Days: ${formatRecurringDays(meeting.meeting_days)}`
+      : `Date: ${getClassDate(meeting.time)}`
+  }\nTime: ${getClassTime(meeting.time)} ${getUserTimeZone()}\n\nAgenda: ${
+    meeting.title
+  }\nJoin Meeting\n${process.env.NEXT_PUBLIC_COMPANY_DOMAIN}/${
+    paths.meetings
+  }/${meeting._id}`;
 
   const handleCopyClick = (information: any) => {
     navigator.clipboard

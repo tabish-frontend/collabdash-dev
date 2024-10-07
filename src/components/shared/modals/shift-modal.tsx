@@ -124,7 +124,7 @@ export const ShiftModal: FC<ShiftModalProps> = ({
   };
 
   return (
-    <Dialog fullWidth maxWidth={"md"} open={modal} >
+    <Dialog fullWidth maxWidth={"md"} open={modal}>
       <form onSubmit={formik.handleSubmit}>
         <Paper elevation={12}>
           <DialogTitle sx={{ m: 0, p: 3, fontSize: 24, fontWeight: 600 }}>
@@ -172,7 +172,7 @@ export const ShiftModal: FC<ShiftModalProps> = ({
                   multiple
                   value={formik.values.weekends}
                   onChange={handleweekendsChange}
-                  input={<OutlinedInput label="weekends" />}
+                  input={<OutlinedInput label="Off Days" />}
                 >
                   {weekDays.map((option) => (
                     <MenuItem key={option} value={option}>
