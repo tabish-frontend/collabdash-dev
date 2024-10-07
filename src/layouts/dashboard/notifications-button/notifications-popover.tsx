@@ -54,7 +54,6 @@ const formatMessageWithLink = (
             </Link>
             {parts[1]}
             {lineIndex < messageLines.length - 1 && <br />}{" "}
-            {/* Add <br /> between lines */}
           </React.Fragment>
         );
       }
@@ -63,19 +62,9 @@ const formatMessageWithLink = (
         <React.Fragment key={lineIndex}>
           {line}
           {lineIndex < messageLines.length - 1 && <br />}{" "}
-          {/* Add <br /> between lines */}
         </React.Fragment>
       );
     }
-
-    // Time is valid, format it
-    const formattedTime = dayjs(time).format("MMM DD dddd, hh:mm a");
-
-    const isoTime = time.toISOString();
-    const regex = new RegExp(
-      isoTime.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-      "g"
-    );
 
     if (parts.length === 2) {
       return (
@@ -87,10 +76,9 @@ const formatMessageWithLink = (
             style={{ textDecoration: "underline", fontWeight: "bold" }}
           >
             {linkText}
-          </Link>
-          {parts[1].replace(time.toString(), formattedTime || "")}
+          </Link>{" "}
+          {getDay_Time(time)}
           {lineIndex < messageLines.length - 1 && <br />}{" "}
-          {/* Add <br /> between lines */}
         </React.Fragment>
       );
     }
