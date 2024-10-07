@@ -81,6 +81,13 @@ const reducers = {
 
     if (thread) {
       thread.messages.push(message);
+
+      // Move the threadId to the top of the allIds array
+      const index = state.threads.allIds.indexOf(threadId);
+      if (index !== -1) {
+        state.threads.allIds.splice(index, 1); // Remove the threadId from its current position
+      }
+      state.threads.allIds.unshift(threadId); // Add threadId to the top
     }
   },
 };

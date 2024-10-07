@@ -67,15 +67,7 @@ export const ChatMessageAdd: FC<ChatMessageAddProps> = (props) => {
       }}
       {...other}
     >
-      <Avatar
-        sx={{
-          display: {
-            xs: "none",
-            sm: "inline",
-          },
-        }}
-        src={user?.avatar}
-      />
+      <Avatar src={user?.avatar} />
       <OutlinedInput
         disabled={disabled}
         fullWidth

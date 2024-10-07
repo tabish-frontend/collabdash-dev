@@ -27,7 +27,6 @@ const useParticipants = (threadKey: string): Participant[] => {
     try {
       const participants = await chatApi.getParticipants({ threadKey });
 
-      console.log("participants", participants);
       setParticipants(participants);
     } catch (err) {
       console.error(err);
@@ -113,12 +112,10 @@ const useMessagesScroll = (
   const messagesRef = useRef<SimpleBarCore | null>(null);
 
   const handleUpdate = useCallback((): void => {
-    // Thread does not exist
     if (!thread) {
       return;
     }
 
-    // Ref is not used
     if (!messagesRef.current) {
       return;
     }
@@ -127,17 +124,14 @@ const useMessagesScroll = (
     const scrollElement = container!.getScrollElement();
 
     if (scrollElement) {
-      scrollElement.scrollTop = container.el.scrollHeight;
+      // Scroll to the bottom of the container
+      scrollElement.scrollTop = scrollElement.scrollHeight;
     }
   }, [thread]);
 
-  useEffect(
-    () => {
-      handleUpdate();
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [thread]
-  );
+  useEffect(() => {
+    handleUpdate(); // Trigger scroll after thread change
+  }, [thread, handleUpdate]);
 
   return {
     messagesRef,
@@ -156,7 +150,6 @@ export const ChatThread: FC<ChatThreadProps> = (props) => {
 
   const participants = useParticipants(threadKey);
 
-  console.log("participants ", participants);
   const { messagesRef } = useMessagesScroll(thread);
 
   const handleSend = useCallback(

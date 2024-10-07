@@ -135,10 +135,6 @@ export const MyTasksCard = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, WorkSpaces, filter]);
 
-  useEffect(() => {
-    console.log("Loading", isLoading);
-  }, [isLoading]);
-
   const getPriorityColor = (priority: Task["priority"], theme: any) => {
     switch (priority) {
       case "high":

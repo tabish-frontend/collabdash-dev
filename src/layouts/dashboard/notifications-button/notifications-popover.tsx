@@ -32,9 +32,6 @@ const formatMessageWithLink = (
   time: Date | null | undefined,
   targetLink: string
 ): React.ReactNode => {
-  console.log("Time", time);
-  console.log(dayjs(time).format("MMM DD dddd, hh:mm a"));
-
   // Split the message by new lines
   const messageLines = message.split("\n");
 
@@ -73,7 +70,6 @@ const formatMessageWithLink = (
 
     // Time is valid, format it
     const formattedTime = dayjs(time).format("MMM DD dddd, hh:mm a");
-    console.log("Formatted Time:", formattedTime);
 
     const isoTime = time.toISOString();
     const regex = new RegExp(
