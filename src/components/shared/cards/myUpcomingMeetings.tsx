@@ -12,6 +12,7 @@ import {
   useTheme,
   useMediaQuery,
   Divider,
+  SvgIcon,
 } from "@mui/material";
 
 import { useCallback, useEffect, useState } from "react";
@@ -27,6 +28,7 @@ import dayjs from "dayjs";
 import { useDialog } from "src/hooks";
 import { meetingInitialValues } from "src/formik";
 import { MeetingModal } from "src/components/modules/dashboard/meetings/meeting-modal";
+import RepeatIcon from "@mui/icons-material/Repeat";
 
 const MeetingItem = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -71,6 +73,16 @@ export const UpcomingMeetingsCard = () => {
     meetingDialog.handleClose();
   };
 
+  const formatRecurringDays = (days: string[]) => {
+    return days.map((day) => day.slice(0, 3)).join(", ");
+  };
+
+  const sortedMeetings = meetingList.sort((a, b) => {
+    if (a.recurring && !b.recurring) return -1;
+    if (!a.recurring && b.recurring) return 1;
+    return 0;
+  });
+
   return (
     <>
       <Card sx={{ minHeight: 490 }}>
@@ -106,7 +118,7 @@ export const UpcomingMeetingsCard = () => {
               >
                 <CircularProgress />
               </Box>
-            ) : !meetingList.length ? (
+            ) : !sortedMeetings.length ? (
               <Box
                 display="flex"
                 justifyContent="center"
@@ -118,7 +130,7 @@ export const UpcomingMeetingsCard = () => {
                 </Typography>
               </Box>
             ) : (
-              meetingList.map((meeting) => {
+              sortedMeetings.map((meeting) => {
                 const meetingMonth = dayjs(meeting.time).format("MMM");
                 const meetingDate = dayjs(meeting.time).format("D");
                 const meetingTime = dayjs(meeting.time).format("h:mm A");
@@ -134,22 +146,37 @@ export const UpcomingMeetingsCard = () => {
                           mb: 1,
                         }}
                       >
-                        <Stack
-                          direction={"column"}
-                          justifyContent={"center"}
-                          alignItems={"center"}
-                        >
-                          <Typography variant="body2" color="text.secondary">
-                            {meetingMonth}
-                          </Typography>
-                          <Typography
-                            variant="h5"
-                            component="span"
-                            sx={{ fontWeight: "bold" }}
+                        {meeting.recurring ? (
+                          <Stack
+                            direction={"column"}
+                            justifyContent={"center"}
+                            alignItems={"center"}
+                            height={"100%"}
                           >
-                            {meetingDate}
-                          </Typography>
-                        </Stack>
+                            <Typography variant="body2" color="text.secondary">
+                              Rec
+                            </Typography>
+                            <RepeatIcon sx={{ fontSize: 23 }} />
+                          </Stack>
+                        ) : (
+                          <Stack
+                            direction={"column"}
+                            justifyContent={"center"}
+                            alignItems={"center"}
+                            mr={0.2}
+                          >
+                            <Typography variant="body2" color="text.secondary">
+                              {meetingMonth}
+                            </Typography>
+                            <Typography
+                              variant="h5"
+                              component="span"
+                              sx={{ fontWeight: "bold" }}
+                            >
+                              {meetingDate}
+                            </Typography>
+                          </Stack>
+                        )}
                       </Box>
                       {/* <ColorBar barcolor={getRandomColor()} /> */}
                       <Divider
@@ -172,11 +199,15 @@ export const UpcomingMeetingsCard = () => {
                             {meeting.title}
                           </Typography>
                           <Typography
-                            variant="body2"
+                            variant="caption"
                             color="text.secondary"
                             sx={{ mb: 1 }}
                           >
-                            {meetingTime}
+                            {meeting.recurring
+                              ? `${formatRecurringDays(
+                                  meeting.meeting_days
+                                )} - ${meetingTime}`
+                              : meetingTime}
                           </Typography>
                         </Box>
                         <Button
