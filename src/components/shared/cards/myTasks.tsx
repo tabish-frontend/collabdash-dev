@@ -68,14 +68,11 @@ export const MyTasksCard = ({
   userId: string;
 }) => {
   const [tasks, setTasks] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [filter, setFilter] = useState("createdAt");
 
-  // const { user } = useAuth<AuthContextType>();
-
-  const { WorkSpaces } = useWorkSpace();
+  const { getAllTasksForUser, isLoading } = useWorkSpace();
 
   const taskDialog = useDialog<TaskDialogData>();
 
@@ -83,57 +80,10 @@ export const MyTasksCard = ({
     setFilter(event.target.value);
   };
 
-  const getTasksForUser = (filter: string) => {
-    setIsLoading(true);
-    let fetchedTasks: Task[] = []; // Initialize a local array for fetched tasks
-
-    WorkSpaces.forEach((workspace: any) => {
-      workspace.boards.forEach((board: any) => {
-        board.columns.forEach((column: any) => {
-          column.tasks.forEach((task: any) => {
-            const isUserAssigned = task.assignedTo.some(
-              (assignee: any) => assignee._id === userId
-            );
-
-            if (isUserAssigned) {
-              fetchedTasks.push({
-                ...task,
-                columnName: column.name,
-                boardMembers: board.members,
-              });
-            }
-          });
-        });
-      });
-      setIsLoading(false);
-    });
-
-    // Sort tasks after collecting them
-    fetchedTasks = fetchedTasks.sort((a, b) => {
-      switch (filter) {
-        case "createdAt":
-          return (
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          ); // Most recent first
-        case "dueDate":
-          return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(); // Earliest due date first
-        case "priority":
-          const priorityOrder = { high: 1, moderate: 2, low: 3 };
-          return priorityOrder[a.priority] - priorityOrder[b.priority]; // Priority order
-        default:
-          return 0;
-      }
-    });
-
-    setTasks(fetchedTasks); // Set the sorted tasks in state
-  };
-
   useEffect(() => {
-    if (userId && WorkSpaces) {
-      getTasksForUser(filter);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, WorkSpaces, filter]);
+    const tasksForUser = getAllTasksForUser(userId, filter);
+    setTasks(tasksForUser);
+  }, [userId, filter, getAllTasksForUser]);
 
   const getPriorityColor = (priority: Task["priority"], theme: any) => {
     switch (priority) {
@@ -167,7 +117,6 @@ export const MyTasksCard = ({
           titleTypographyProps={{ variant: "h6", fontWeight: "bold" }}
           subheader={
             <Link
-              // color=""
               component={RouterLink}
               href={paths.workspaces}
               underline="hover"
@@ -186,7 +135,7 @@ export const MyTasksCard = ({
                 minWidth: 150,
               }}
               size="small"
-              value={filter} // Set the current selected value
+              value={filter}
               onChange={handleFilterChange}
             >
               {filterValues.map((option) => (

@@ -6,7 +6,7 @@ export interface Employee {
   bio?: string;
   dob?: Date | null;
   country: string;
-  role?: string;
+  role: string;
   gender: string;
   department: string;
   designation: string;

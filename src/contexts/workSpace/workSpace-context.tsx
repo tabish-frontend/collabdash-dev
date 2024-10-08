@@ -47,6 +47,8 @@ export interface WorkSpaceContextType extends State {
     column_id?: string;
   }) => void;
   handleUpdateTask: (data: any) => void;
+  getAllTasksForUser: (userId: string, filter: string) => any;
+  isLoading: boolean;
 }
 
 export const WorkSpaceContext = createContext<WorkSpaceContextType>({
@@ -68,4 +70,6 @@ export const WorkSpaceContext = createContext<WorkSpaceContextType>({
   handleDeleteTask: () => {},
   handleMoveTask: () => {},
   handleUpdateTask: () => {},
+  getAllTasksForUser: () => {},
+  isLoading: false,
 });

@@ -38,7 +38,7 @@ export const employeeInitialValues: Employee = {
   username: "",
   full_name: "",
   mobile: "",
-  role: "employee",
+  role: "",
   email: "",
   qualification: "",
   gender: "",

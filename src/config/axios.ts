@@ -31,32 +31,86 @@ Axios.interceptors.response.use(
     return response.data;
   },
   (error) => {
+    // if (error.response) {
+    //   const htmlResponse = error.response.data;
+    //   const errorMessageStart = "Error: ";
+    //   const errorMessageEnd = "<br>";
+    //   const startIndex = htmlResponse.indexOf(errorMessageStart);
+    //   const endIndex = htmlResponse.indexOf(errorMessageEnd, startIndex);
+
+    //   const duplicate = htmlResponse.includes("E11000");
+
+    //   const duplicateErrorMap: any = {
+    //     email: "Email",
+    //     mobile: "Mobile",
+    //     meetings: "Meeting",
+    //     workspace: "Workspace", // Added Workspace here
+    //   };
+
+    //   const getDuplicateErrorMessage = (htmlResponse: any) => {
+    //     for (const key in duplicateErrorMap) {
+    //       if (htmlResponse.includes(key)) {
+    //         return `${duplicateErrorMap[key]} is duplicate. Please enter a different ${duplicateErrorMap[key]}.`;
+    //       }
+    //     }
+    //   };
+
+    //   if (duplicate) {
+    //     const errorMessage = getDuplicateErrorMessage(htmlResponse);
+
+    //     toast.error(errorMessage);
+    //   } else if (startIndex !== -1 && endIndex !== -1) {
+    //     const errorMessage = htmlResponse.substring(
+    //       startIndex + errorMessageStart.length,
+    //       endIndex
+    //     );
+    //     toast.error(errorMessage);
+    //   } else {
+    //   }
+    // }
+
     if (error.response) {
       const htmlResponse = error.response.data;
       const errorMessageStart = "Error: ";
       const errorMessageEnd = "<br>";
-      const startIndex = htmlResponse.indexOf(errorMessageStart);
-      const endIndex = htmlResponse.indexOf(errorMessageEnd, startIndex);
-
       const duplicate = htmlResponse.includes("E11000");
 
-      if (duplicate) {
-        const isEmail = htmlResponse.includes("email");
-        const isMobile = htmlResponse.includes("mobile");
-        toast.error(
-          `${
-            isEmail ? "Email" : isMobile ? "Mobile" : "WorkSpace"
-          } is duplicate please enter different ${
-            isEmail ? "Email" : isMobile ? "Mobile" : "WorkSpace"
-          }`
-        );
-      } else if (startIndex !== -1 && endIndex !== -1) {
-        const errorMessage = htmlResponse.substring(
-          startIndex + errorMessageStart.length,
-          endIndex
-        );
+      const duplicateErrorMap: any = {
+        email: "Email",
+        mobile: "Mobile",
+        meetings: "Meeting",
+        workspace: "Workspace",
+      };
+
+      const getErrorMessage = (htmlResponse: any) => {
+        const startIndex = htmlResponse.indexOf(errorMessageStart);
+        const endIndex = htmlResponse.indexOf(errorMessageEnd, startIndex);
+
+        if (startIndex !== -1 && endIndex !== -1) {
+          return htmlResponse.substring(
+            startIndex + errorMessageStart.length,
+            endIndex
+          );
+        }
+        return null; // Return null if no error message found
+      };
+
+      const getDuplicateErrorMessage = (htmlResponse: any) => {
+        for (const key in duplicateErrorMap) {
+          if (htmlResponse.includes(key)) {
+            return `${duplicateErrorMap[key]} is duplicate. Please enter a different ${duplicateErrorMap[key]}.`;
+          }
+        }
+        return null; // Return null if no duplicate error found
+      };
+
+      const errorMessage = duplicate
+        ? getDuplicateErrorMessage(htmlResponse)
+        : getErrorMessage(htmlResponse);
+
+      // Show the appropriate error message if one is found
+      if (errorMessage) {
         toast.error(errorMessage);
-      } else {
       }
     }
 

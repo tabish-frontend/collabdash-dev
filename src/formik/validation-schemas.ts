@@ -25,6 +25,10 @@ export const common_user_validation = {
   gender: Yup.string()
     .oneOf(["male", "female"], "Invalid gender")
     .required("Gender is required"),
+
+  role: Yup.string()
+    .oneOf(["hr", "employee"], "Invalid role")
+    .required("Account Role is required"),
 };
 
 export const LoginValidation = Yup.object({

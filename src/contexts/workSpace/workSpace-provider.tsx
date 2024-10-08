@@ -19,15 +19,19 @@ interface WorkSpaceProviderProps {
 export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
   const { children } = props;
   const [state, setState] = useState<State>(initialState);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const router = useRouter();
 
   const handleGetWorkSpaces = useCallback(async () => {
+    setIsLoading(true);
     const response = await WorkSpaceApi.getAllWorkSpaces();
 
     setState((prev) => ({
       ...prev,
       WorkSpaces: response.data,
     }));
+    setIsLoading(false);
   }, []);
 
   const getCurrentWorkSpace = useCallback(
@@ -579,6 +583,49 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     [router.query]
   );
 
+  const getAllTasksForUser = useCallback(
+    (userId: string, filter: string) => {
+      // Collect tasks assigned to the user
+      const fetchedTasks = state.WorkSpaces.flatMap((workspace: any) =>
+        workspace.boards.flatMap((board: any) =>
+          board.columns.flatMap((column: any) =>
+            column.tasks
+              .filter((task: any) =>
+                task.assignedTo.some((assignee: any) => assignee._id === userId)
+              )
+              .map((task: any) => ({
+                ...task,
+                columnName: column.name,
+                boardMembers: board.members,
+              }))
+          )
+        )
+      );
+
+      // Sort tasks after collecting them
+      const sortedTasks = fetchedTasks.sort((a, b) => {
+        switch (filter) {
+          case "createdAt":
+            return (
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            ); // Most recent first
+          case "dueDate":
+            return (
+              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+            ); // Earliest due date first
+          case "priority":
+            const priorityOrder: any = { high: 1, moderate: 2, low: 3 };
+            return priorityOrder[a.priority] - priorityOrder[b.priority]; // Priority order
+          default:
+            return 0;
+        }
+      });
+
+      return sortedTasks;
+    },
+    [state.WorkSpaces]
+  );
+
   const accessToken = window.localStorage.getItem("accessToken");
 
   useEffect(() => {
@@ -591,9 +638,11 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     <WorkSpaceContext.Provider
       value={{
         ...state,
+        isLoading,
         getCurrentWorkSpace,
         handleAddWorkSpace,
         handleUpdateWorkSpace,
+        getAllTasksForUser,
         handleDeleteWorkSpace,
         getCurrentBoard,
         handleAddBoard,

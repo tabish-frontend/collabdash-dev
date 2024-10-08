@@ -8,6 +8,7 @@ import { meetingApi } from "src/api";
 import { Meeting } from "src/types";
 import { WaitingScreen } from "./waiting-card";
 import { ConferenceRoom } from "src/components/shared";
+import dayjs from "dayjs";
 
 // Function to fetch session data from API
 const fetchMeetingData = async (
@@ -23,28 +24,87 @@ const fetchMeetingData = async (
   }
 };
 
-// Function to validate session timing
-const validateMeetingTiming = (
-  meetingData: Meeting,
+const validateRecurringMeeting = (
+  meetingStartTime: dayjs.Dayjs,
+  meetingDays: string[],
   setErrorMessage: any
 ): boolean => {
-  if (meetingData.time === null) return false;
+  const now = dayjs();
 
-  const currentTime = new Date().getTime();
+  const todayDay = now.format("dddd"); // Get the full name of the day (e.g., "Monday")
 
-  const meetingStartTime = new Date(meetingData.time).getTime();
-  const meetingEndTime = new Date(meetingData.time).getTime() + 120 * 60 * 1000; // 2 hour after end time
+  // Validate if today is a scheduled meeting day
+  if (!meetingDays.includes(todayDay)) {
+    setErrorMessage("Meeting has not been scheduled for today.");
+    return false;
+  }
 
-  const fifteenMinutesBeforeStart = meetingStartTime - 15 * 60 * 1000; // 15 minutes before start time
+  // Extract hour and minute for both current time and meeting start time
+  const currentHour = now.hour();
+  const currentMinute = now.minute();
+  const meetingHour = meetingStartTime.hour();
+  const meetingMinute = meetingStartTime.minute();
 
-  if (currentTime < fifteenMinutesBeforeStart) {
+  // Validate if current time is within the allowed joining period (15 minutes before)
+  const fifteenMinutesBeforeMeeting = meetingStartTime.subtract(15, "minute");
+  const joinableHour = fifteenMinutesBeforeMeeting.hour();
+  const joinableMinute = fifteenMinutesBeforeMeeting.minute();
+
+  // Check if now is before the joinable time
+  if (
+    currentHour < joinableHour ||
+    (currentHour === joinableHour && currentMinute < joinableMinute)
+  ) {
     setErrorMessage(
-      "You can only join the meeting up to 15 minutes before it starts."
+      "You can only join the meeting up to 15 minutes before it starts"
     );
     return false;
   }
 
-  if (currentTime > meetingEndTime) {
+  // Calculate the latest joinable time (2 hours after the meeting starts)
+  const twoHoursAfterMeetingHour = meetingHour + 2;
+
+  // Check if the meeting time has already passed or if it's too late to join
+  if (
+    currentHour > twoHoursAfterMeetingHour ||
+    (currentHour === twoHoursAfterMeetingHour && currentMinute > meetingMinute)
+  ) {
+    setErrorMessage("Meeting time has already passed");
+    return false;
+  }
+
+  return true; // All validations passed for recurring meetings
+};
+
+const validateMeetingTiming = (
+  meetingData: Meeting,
+  setErrorMessage: any
+): boolean => {
+  if (!meetingData.time) return false;
+  const now = dayjs();
+  const meetingStartTime = dayjs(meetingData.time);
+
+  // Check if the meeting is recurring
+  if (meetingData.recurring) {
+    return validateRecurringMeeting(
+      meetingStartTime,
+      meetingData.meeting_days,
+      setErrorMessage
+    );
+  }
+
+  const fifteenMinutesBeforeMeeting = meetingStartTime.subtract(15, "minute");
+
+  if (now < fifteenMinutesBeforeMeeting) {
+    setErrorMessage(
+      "You can only join the meeting up to 15 minutes before it starts"
+    );
+    return false;
+  }
+
+  const twoHoursAfterMeeting = meetingStartTime.add(2, "hour");
+
+  if (now > twoHoursAfterMeeting) {
     setErrorMessage("Meeting has been ended");
     return false;
   }
@@ -53,7 +113,7 @@ const validateMeetingTiming = (
 };
 
 // Main function to handle validation of room and session
-const validateRoomAndSession = (
+const validateRoomAndMeeting = (
   meetingData: Meeting,
   setRoomExists: (exists: boolean) => void,
   setErrorMessage: any
@@ -95,7 +155,7 @@ const MeetingRoomComponent = () => {
       }
 
       setDisplayRoomName(data.title);
-      validateRoomAndSession(data, setMeetingExist, setErrorMessage);
+      validateRoomAndMeeting(data, setMeetingExist, setErrorMessage);
     };
 
     checkRoomExists();

@@ -102,10 +102,6 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
   const { handleDeleteTask, handleUpdateTask } = useWorkSpace();
   const theme = useTheme();
 
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("md"));
-
   const [showAlert, setShowAlert] = useState(false);
   const [isFormBeingChanged, setIsFormBeingChanged] = useState(false);
 

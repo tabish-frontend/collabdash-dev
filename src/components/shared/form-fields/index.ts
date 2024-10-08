@@ -13,3 +13,4 @@ export * from "./select-multiple-departments";
 export * from "./password";
 export * from "./country";
 export * from "./time-zone";
+export * from "./account-role";

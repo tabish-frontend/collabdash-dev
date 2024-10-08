@@ -32,6 +32,7 @@ import {
   DepartmentField,
   CountryField,
   TimeZoneField,
+  AccountRoleField,
 } from "src/components/shared/form-fields";
 import { getTimeZones } from "src/utils";
 
@@ -215,6 +216,16 @@ const CreateEmployeeComponent = () => {
                           setFieldValue={(value: any) => {
                             return formik.setFieldValue("time_zone", value);
                           }}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} sm={4}>
+                        <AccountRoleField
+                          value={formik.values.role}
+                          handleChange={formik.handleChange}
+                          handleBlur={formik.handleBlur}
+                          formikTouched={formik.touched.role}
+                          formikError={formik.errors.role}
                         />
                       </Grid>
 
