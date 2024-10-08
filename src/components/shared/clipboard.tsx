@@ -19,9 +19,9 @@ export const CoptToClipboard = ({ meeting }: { meeting: Meeting }) => {
       : `Date: ${getClassDate(meeting.time)}`
   }\nTime: ${getClassTime(meeting.time)} ${getUserTimeZone()}\n\nAgenda: ${
     meeting.title
-  }\nJoin Meeting\n${process.env.NEXT_PUBLIC_COMPANY_DOMAIN}/${
-    paths.meetings
-  }/${meeting._id}`;
+  }\nJoin Meeting\n${process.env.NEXT_PUBLIC_COMPANY_DOMAIN}${paths.meetings}/${
+    meeting._id
+  }`;
 
   const handleCopyClick = (information: any) => {
     navigator.clipboard
