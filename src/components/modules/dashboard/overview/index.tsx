@@ -50,11 +50,9 @@ const OverviewComponent = () => {
             )}
           </Grid>
 
-          {user?.role !== "admin" && (
-            <Grid xs={12} md={6} xl={4}>
-              <TimeLogCard />
-            </Grid>
-          )}
+          <Grid xs={12} md={6} xl={4}>
+            <TimeLogCard />
+          </Grid>
 
           <Grid xs={12} md={6} xl={4}>
             <UpcomingMeetingsCard />

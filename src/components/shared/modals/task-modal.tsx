@@ -88,6 +88,7 @@ const allowedFileTypes = [
   "text/plain",
   "video/mp4",
   "audio/mpeg",
+  "text/csv",
 ];
 
 export const TaskModal: FC<TaskModalProps> = (props) => {

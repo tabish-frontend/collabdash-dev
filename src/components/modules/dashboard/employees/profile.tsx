@@ -26,6 +26,7 @@ import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import ArrowLeftIcon from "@untitled-ui/icons-react/build/esm/ArrowLeft";
+import { UpdateEmployeeModal } from "./update-modal";
 
 const EmployeeProfileComponent = () => {
   const settings = useSettings();
@@ -35,6 +36,7 @@ const EmployeeProfileComponent = () => {
 
   const [employeeData, setEmployeeData] = useState<Employee | undefined>();
 
+  const UpdateEmployeeDialog = useDialog();
   const DeleteEmployeeDialog = useDialog();
 
   const handleGetEmployee = useCallback(async () => {
@@ -46,9 +48,10 @@ const EmployeeProfileComponent = () => {
   }, [username]);
 
   const handleUpdateEmployee = async (values: any) => {
-    const { username, ...UpdatedValues } = values;
-
-    const response = await employeesApi.updateEmployee(username, UpdatedValues);
+    const response = await employeesApi.updateEmployee(
+      username as string,
+      values
+    );
 
     setEmployeeData(response);
   };
@@ -117,7 +120,7 @@ const EmployeeProfileComponent = () => {
               <Grid item xs={12} sx={{ mb: 3 }}>
                 <EmployeeDetails
                   employeeData={employeeData}
-                  UpdateEmployee={handleUpdateEmployee}
+                  openEditDialog={() => UpdateEmployeeDialog.handleOpen()}
                 />
               </Grid>
 
@@ -154,6 +157,23 @@ const EmployeeProfileComponent = () => {
           content={{
             type: "Delete",
             text: "Are you sure you want to delete the Employee ?",
+          }}
+        />
+      )}
+
+      {UpdateEmployeeDialog.open && (
+        <UpdateEmployeeModal
+          employeeValues={{
+            department: employeeData?.department || "",
+            designation: employeeData?.designation || "",
+            account_status: employeeData?.account_status || "",
+            email: employeeData?.email || "",
+          }}
+          modal={UpdateEmployeeDialog.open}
+          onCancel={UpdateEmployeeDialog.handleClose}
+          onConfirm={async (values: Employee) => {
+            await handleUpdateEmployee(values);
+            UpdateEmployeeDialog.handleClose();
           }}
         />
       )}

@@ -13,22 +13,6 @@ export const common_user_validation = {
   email: Yup.string()
     .matches(/^.+@.+\..+$/, "Must be a valid email")
     .required("Email is required"),
-
-  designation: Yup.string()
-    .matches(/^[A-Za-z\s]+$/, "Designation must contain alphabetic")
-    .required("Designation is required"),
-
-  company: Yup.string().required("Company is required"),
-
-  country: Yup.string().required("Country is required"),
-
-  gender: Yup.string()
-    .oneOf(["male", "female"], "Invalid gender")
-    .required("Gender is required"),
-
-  role: Yup.string()
-    .oneOf(["hr", "employee"], "Invalid role")
-    .required("Account Role is required"),
 };
 
 export const LoginValidation = Yup.object({
@@ -77,13 +61,23 @@ export const UserBankValidation = Yup.object().shape({
 export const employeeValidation = Yup.object().shape({
   ...common_user_validation,
   department: Yup.string().required("Department is required"),
+  company: Yup.string().required("Company is required"),
+  country: Yup.string().required("Country is required"),
+  designation: Yup.string()
+    .matches(/^[A-Za-z\s]+$/, "Designation must contain alphabetic")
+    .required("Designation is required"),
+  gender: Yup.string()
+    .oneOf(["male", "female"], "Invalid gender")
+    .required("Gender is required"),
+  role: Yup.string()
+    .oneOf(["hr", "employee"], "Invalid role")
+    .required("Account Role is required"),
   mobile: Yup.string()
     .required("Mobile number is required")
     .min(10, "Mobile number must be at least 15 digits")
     .max(15, "Mobile number must be no more than 17 digits"),
-  national_identity_number: Yup.string()
-    .required("National Identity Number is required")
-    .matches(/^[0-9]+$/, "National Identity Number must contain only numbers")
-    .max(15, "National Identity Number must be no more than 15 digits"),
-  // .min(13, "National Identity Number must be at least 13 digits")
+  // national_identity_number: Yup.string()
+  //   .required("National Identity Number is required")
+  //   .matches(/^[0-9]+$/, "National Identity Number must contain only numbers")
+  //   .max(15, "National Identity Number must be no more than 15 digits"),
 });

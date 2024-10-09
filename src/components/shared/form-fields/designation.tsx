@@ -7,6 +7,7 @@ interface DesignationFieldProps {
   handleBlur: <T = string>(e: T) => void;
   formikTouched: boolean | undefined;
   formikError: string | undefined;
+  isDisabled?: boolean;
 }
 
 export const DesignationField: React.FC<DesignationFieldProps> = ({
@@ -15,6 +16,7 @@ export const DesignationField: React.FC<DesignationFieldProps> = ({
   handleBlur,
   formikError,
   formikTouched,
+  isDisabled = false,
 }) => {
   return (
     <TextField
@@ -23,6 +25,7 @@ export const DesignationField: React.FC<DesignationFieldProps> = ({
       label="Designation"
       name="designation"
       value={value}
+      disabled={isDisabled}
       onChange={handleChange}
       onKeyDown={handleKeyPress}
       onBlur={handleBlur}

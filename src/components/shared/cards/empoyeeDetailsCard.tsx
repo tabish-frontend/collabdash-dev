@@ -52,24 +52,20 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
 
 interface EmployeeDetailsProps {
   employeeData: Employee | undefined;
-  UpdateEmployee: (values: Employee) => void;
+  openEditDialog: () => void;
 }
 
 export const EmployeeDetails: FC<EmployeeDetailsProps> = ({
   employeeData,
-  UpdateEmployee,
+  openEditDialog,
 }) => {
   const [extandable, setExtandable] = useState(false);
-  const UpdateEmployeeDialog = useDialog();
 
   return (
     <>
       <Card sx={{ position: "relative" }}>
         <Box sx={{ position: "absolute", top: 20, right: 15 }}>
-          <SvgIcon
-            sx={{ cursor: "pointer" }}
-            onClick={() => UpdateEmployeeDialog.handleOpen()}
-          >
+          <SvgIcon sx={{ cursor: "pointer" }} onClick={openEditDialog}>
             <Pencil />
           </SvgIcon>
         </Box>
@@ -280,23 +276,6 @@ export const EmployeeDetails: FC<EmployeeDetailsProps> = ({
           </Grid>
         </Grid>
       </Card>
-
-      {UpdateEmployeeDialog.open && (
-        <UpdateEmployeeModal
-          employeeValues={{
-            designation: employeeData?.designation || "",
-            account_status: employeeData?.account_status || "",
-            username: employeeData?.username || "",
-            email: employeeData?.email || "",
-          }}
-          modal={UpdateEmployeeDialog.open}
-          onCancel={UpdateEmployeeDialog.handleClose}
-          onConfirm={async (values: Employee) => {
-            await UpdateEmployee(values);
-            UpdateEmployeeDialog.handleClose();
-          }}
-        />
-      )}
     </>
   );
 };

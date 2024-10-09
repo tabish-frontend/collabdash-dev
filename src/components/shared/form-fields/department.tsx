@@ -8,6 +8,7 @@ interface DepartmentFieldProps {
   handleBlur: <T = string>(e: T) => void;
   formikTouched: boolean | undefined;
   formikError: string | undefined;
+  isDisabled?: boolean;
 }
 
 export const DepartmentField: React.FC<DepartmentFieldProps> = ({
@@ -16,15 +17,17 @@ export const DepartmentField: React.FC<DepartmentFieldProps> = ({
   handleBlur,
   formikError,
   formikTouched,
+  isDisabled = false,
 }) => {
   return (
     <TextField
       fullWidth
       required
-      select
+      select={!isDisabled}
       label="Department"
       name="department"
       value={value}
+      disabled={isDisabled}
       onChange={handleChange}
       onKeyDown={handleKeyPress}
       onBlur={handleBlur}

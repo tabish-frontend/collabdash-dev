@@ -7,6 +7,7 @@ interface CompanyFieldProps {
   handleBlur: <T = string>(e: T) => void;
   formikTouched: boolean | undefined;
   formikError: string | undefined;
+  isDisabled?: boolean;
 }
 
 export const CompanyField: React.FC<CompanyFieldProps> = ({
@@ -15,6 +16,7 @@ export const CompanyField: React.FC<CompanyFieldProps> = ({
   handleBlur,
   formikError,
   formikTouched,
+  isDisabled = false,
 }) => {
   return (
     <TextField
@@ -23,6 +25,7 @@ export const CompanyField: React.FC<CompanyFieldProps> = ({
       label="Company"
       name="company"
       value={value}
+      disabled={isDisabled}
       onChange={handleChange}
       onKeyDown={handleKeyPress}
       onBlur={handleBlur}

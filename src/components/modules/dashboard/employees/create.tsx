@@ -73,7 +73,7 @@ const CreateEmployeeComponent = () => {
             <Grid item xs={12}>
               <Card>
                 <CardHeader
-                  title="Create Employee"
+                  title="Add Employee"
                   titleTypographyProps={{ variant: "h6" }}
                 />
                 <Divider sx={{ margin: 0 }} />

@@ -5,7 +5,6 @@ import { Grid, TextField, CardContent, Autocomplete } from "@mui/material";
 import { UserBankDetails } from "src/types";
 import { useFormik } from "formik";
 import { getChangedFields } from "src/utils/helpers";
-import { BankNames } from "src/constants/bank-names";
 import { useAuth } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { LoadingButton } from "@mui/lab";
@@ -44,23 +43,17 @@ export const TabBank = () => {
       <form onSubmit={formik.handleSubmit}>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-              options={BankNames}
-              value={formik.values.bank_name}
-              onChange={(event, newValue) => {
-                formik.setFieldValue("bank_name", newValue || "");
-              }}
+            <TextField
               fullWidth
-              ListboxProps={{ style: { maxHeight: 200 } }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  required
-                  label="Bank Name"
-                  name="bank_name"
-                  onKeyDown={handleKeyPress}
-                />
-              )}
+              required
+              label="Bank Name"
+              name="bank_name"
+              value={formik.values.bank_name}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              onKeyDown={handleKeyPress}
+              error={!!(formik.touched.bank_name && formik.errors.bank_name)}
+              helperText={formik.touched.bank_name && formik.errors.bank_name}
             />
           </Grid>
 

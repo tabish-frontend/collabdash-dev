@@ -88,6 +88,7 @@ export const TabAccount = () => {
             <Grid item xs={12} sm={6}>
               <FullNameField
                 value={formik.values.full_name}
+                // isDisabled={true}
                 handleChange={formik.handleChange}
                 handleBlur={formik.handleBlur}
                 formikError={formik.errors.full_name}
@@ -108,6 +109,7 @@ export const TabAccount = () => {
             <Grid item xs={12} sm={6}>
               <CompanyField
                 value={formik.values.company}
+                // isDisabled={true}
                 handleChange={formik.handleChange}
                 handleBlur={formik.handleBlur}
                 formikError={formik.errors.company}
@@ -118,6 +120,7 @@ export const TabAccount = () => {
             <Grid item xs={12} sm={6}>
               <DepartmentField
                 value={formik.values.department}
+                // isDisabled={true}
                 handleChange={formik.handleChange}
                 handleBlur={formik.handleBlur}
                 formikError={formik.errors.department}
@@ -128,6 +131,7 @@ export const TabAccount = () => {
             <Grid item xs={12} sm={6}>
               <DesignationField
                 value={formik.values.designation}
+                // isDisabled={true}
                 handleChange={formik.handleChange}
                 handleBlur={formik.handleBlur}
                 formikError={formik.errors.designation}

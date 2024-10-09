@@ -15,7 +15,11 @@ import { useFormik } from "formik";
 import { CloseCircleOutline } from "mdi-material-ui";
 
 import { type FC } from "react";
-import { DesignationField, EmailField } from "src/components/shared";
+import {
+  DepartmentField,
+  DesignationField,
+  EmailField,
+} from "src/components/shared";
 import { AccountStatus } from "src/constants/status";
 import { common_user_validation } from "src/formik";
 import * as Yup from "yup";
@@ -23,7 +27,7 @@ import * as Yup from "yup";
 interface UpdateEmployeeModalProps {
   modal: boolean;
   employeeValues: {
-    username: string;
+    department: string;
     designation: string;
     account_status: string;
     email: string;
@@ -34,7 +38,8 @@ interface UpdateEmployeeModalProps {
 
 const UpdateEmployeeValidation = Yup.object().shape({
   email: common_user_validation.email,
-  designation: common_user_validation.designation,
+  designation: Yup.string().required("Designation is required"),
+  department: Yup.string().required("Department is required"),
 });
 
 export const UpdateEmployeeModal: FC<UpdateEmployeeModalProps> = ({
@@ -44,12 +49,7 @@ export const UpdateEmployeeModal: FC<UpdateEmployeeModalProps> = ({
   onConfirm,
 }) => {
   const formik = useFormik({
-    initialValues: employeeValues || {
-      username: "",
-      designation: "",
-      account_status: "",
-      email: "",
-    },
+    initialValues: employeeValues,
     validationSchema: UpdateEmployeeValidation,
     onSubmit: async (values, helpers): Promise<void> => {
       await onConfirm(values);
@@ -59,7 +59,7 @@ export const UpdateEmployeeModal: FC<UpdateEmployeeModalProps> = ({
   });
 
   return (
-    <Dialog fullWidth maxWidth={"sm"} open={modal} >
+    <Dialog fullWidth maxWidth={"sm"} open={modal}>
       <form onSubmit={formik.handleSubmit}>
         <Paper elevation={12}>
           <DialogTitle sx={{ m: 0, p: 3, fontSize: 24, fontWeight: 600 }}>
@@ -100,6 +100,17 @@ export const UpdateEmployeeModal: FC<UpdateEmployeeModalProps> = ({
                 formikTouched={formik.touched.designation}
               />
             </Grid>
+
+            <Grid item xs={12}>
+              <DepartmentField
+                value={formik.values.department}
+                handleChange={formik.handleChange}
+                handleBlur={formik.handleBlur}
+                formikError={formik.errors.department}
+                formikTouched={formik.touched.department}
+              />
+            </Grid>
+
             <Grid item xs={12}>
               <TextField
                 label="Account Status"

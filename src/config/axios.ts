@@ -78,8 +78,8 @@ Axios.interceptors.response.use(
       const duplicateErrorMap: any = {
         email: "Email",
         mobile: "Mobile",
-        meetings: "Meeting",
-        workspace: "Workspace",
+        meetings: "Meeting title",
+        workspace: "Workspace name",
       };
 
       const getErrorMessage = (htmlResponse: any) => {
