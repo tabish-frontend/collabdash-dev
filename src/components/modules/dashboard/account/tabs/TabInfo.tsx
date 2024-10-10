@@ -17,8 +17,9 @@ import {
   CountryField,
   GenderField,
   MobileField,
-  NationalIdentityField,
+  IdentityNumberField,
   TimeZoneField,
+  IdentityTypeField,
 } from "src/components/shared/form-fields";
 import { useEffect, useState } from "react";
 
@@ -31,7 +32,8 @@ export const TabInfo = () => {
     bio = "",
     mobile = "",
     dob: rawDob = null, // Use an alias to avoid conflict with the dob conversion
-    national_identity_number = 0,
+    identity_number = 0,
+    identity_type = "",
     qualification = "",
     languages = [],
     gender = "",
@@ -52,7 +54,8 @@ export const TabInfo = () => {
     dob,
     country,
     gender,
-    national_identity_number,
+    identity_type,
+    identity_number,
     qualification,
     languages,
     time_zone,
@@ -92,7 +95,7 @@ export const TabInfo = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <DatePicker
               label="Date of Birth"
               disableFuture
@@ -108,12 +111,22 @@ export const TabInfo = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <MobileField
               value={formik.values.mobile}
               handleChange={(...value: any[]) => {
                 formik.setFieldValue("mobile", value[3]);
               }}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <GenderField
+              value={formik.values.gender}
+              handleChange={formik.handleChange}
+              handleBlur={formik.handleBlur}
+              formikTouched={formik.touched.gender}
+              formikError={formik.errors.gender}
             />
           </Grid>
 
@@ -150,18 +163,15 @@ export const TabInfo = () => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <GenderField
-              value={formik.values.gender}
+            <IdentityTypeField
+              value={formik.values.identity_type}
               handleChange={formik.handleChange}
-              handleBlur={formik.handleBlur}
-              formikTouched={formik.touched.gender}
-              formikError={formik.errors.gender}
             />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <NationalIdentityField
-              value={formik.values.national_identity_number}
+            <IdentityNumberField
+              value={formik.values.identity_number}
               handleChange={formik.handleChange}
             />
           </Grid>

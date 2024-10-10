@@ -19,7 +19,6 @@ import { employeesApi } from "src/api";
 import { useRouter } from "next/router";
 import { LoadingButton } from "@mui/lab";
 import { useSettings } from "src/hooks";
-import "react-phone-input-2/lib/material.css";
 import {
   CompanyField,
   DesignationField,
@@ -27,12 +26,13 @@ import {
   FullNameField,
   GenderField,
   MobileField,
-  NationalIdentityField,
   UsernameField,
   DepartmentField,
   CountryField,
   TimeZoneField,
   AccountRoleField,
+  IdentityTypeField,
+  IdentityNumberField,
 } from "src/components/shared/form-fields";
 import { getTimeZones } from "src/utils";
 
@@ -53,6 +53,14 @@ const CreateEmployeeComponent = () => {
       router.back();
     },
   });
+
+  useEffect(() => {
+    console.log("formik values", formik.values);
+  }, [formik.values]);
+
+  useEffect(() => {
+    console.log("formik errors", formik.errors);
+  }, [formik.errors]);
 
   return (
     <Box
@@ -86,7 +94,7 @@ const CreateEmployeeComponent = () => {
                         </Typography>
                       </Grid> */}
 
-                      <Grid item xs={12} sm={4}>
+                      <Grid item xs={12} sm={6} md={4} lg={3}>
                         <FullNameField
                           value={formik.values.full_name}
                           handleChange={formik.handleChange}
@@ -96,7 +104,7 @@ const CreateEmployeeComponent = () => {
                         />
                       </Grid>
 
-                      <Grid item xs={12} sm={4}>
+                      <Grid item xs={12} sm={6} md={4} lg={3}>
                         <EmailField
                           value={formik.values.email}
                           handleChange={(e: any) => {
@@ -113,7 +121,7 @@ const CreateEmployeeComponent = () => {
                         />
                       </Grid>
 
-                      <Grid item xs={12} sm={4}>
+                      <Grid item xs={12} sm={6} md={4} lg={3}>
                         <GenderField
                           value={formik.values.gender}
                           handleChange={formik.handleChange}
@@ -123,11 +131,12 @@ const CreateEmployeeComponent = () => {
                         />
                       </Grid>
 
-                      <Grid item xs={12} sm={4}>
+                      <Grid item xs={12} sm={6} md={4} lg={3}>
                         <MobileField
                           value={formik.values.mobile}
                           handleChange={(...value: any[]) => {
-                            formik.setFieldValue("mobile", value[3]);
+                            console.log("mobile value", value);
+                            formik.setFieldValue("mobile", value[0]);
                           }}
                           handleBlur={formik.handleBlur}
                           formikError={formik.errors.mobile}
@@ -146,14 +155,16 @@ const CreateEmployeeComponent = () => {
                       </Grid>
 
                       <Grid item xs={12} sm={4}>
-                        <NationalIdentityField
-                          value={formik.values.national_identity_number}
+                        <IdentityTypeField
+                          value={formik.values.identity_type}
                           handleChange={formik.handleChange}
-                          handleBlur={formik.handleBlur}
-                          formikError={formik.errors.national_identity_number}
-                          formikTouched={
-                            formik.touched.national_identity_number
-                          }
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} sm={4}>
+                        <IdentityNumberField
+                          value={formik.values.identity_number}
+                          handleChange={formik.handleChange}
                         />
                       </Grid>
 

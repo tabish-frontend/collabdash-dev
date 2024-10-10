@@ -1,5 +1,5 @@
-import { Typography, useTheme } from "@mui/material";
-import PhoneInput from "react-phone-input-2";
+import MuiPhoneNumber from "mui-phone-number";
+import { GlobalStyles } from "@mui/system";
 
 interface MobileFieldProps {
   value: string;
@@ -16,30 +16,31 @@ export const MobileField: React.FC<MobileFieldProps> = ({
   formikTouched,
   formikError,
 }) => {
-  const theme = useTheme();
   return (
     <>
-      <PhoneInput
-        inputStyle={{
-          backgroundColor: theme.palette.background.paper,
-          color: theme.palette.text.primary,
-          width: "100%",
-        }}
-        containerStyle={{ color: theme.palette.grey[900] }}
-        country="pk"
-        value={value}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        isValid={formikTouched && !formikError}
-        inputProps={{
-          name: "mobile",
+      <GlobalStyles
+        styles={{
+          ".custom-dropdown .MuiPaper-root.MuiMenu-paper": {
+            maxHeight: "250px", // Set max height
+            overflowY: "auto", // Enable scrolling
+          },
         }}
       />
-      {formikTouched && formikError && (
-        <Typography variant="caption" color="error">
-          {formikError}
-        </Typography>
-      )}
+
+      <MuiPhoneNumber
+        defaultCountry="pk"
+        onChange={handleChange}
+        value={value}
+        name="mobile"
+        variant="filled"
+        required
+        label="Phone"
+        fullWidth
+        onBlur={handleBlur}
+        error={!!(formikTouched && formikError)}
+        helperText={formikTouched && formikError}
+        dropdownClass="custom-dropdown"
+      />
     </>
   );
 };

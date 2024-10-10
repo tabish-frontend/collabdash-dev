@@ -21,7 +21,8 @@ export interface UserBasicInformation {
   };
   languages: string[];
   qualification: string;
-  national_identity_number: number;
+  identity_number: number;
+  identity_type: string;
 }
 
 export interface UserBankDetails {
@@ -46,7 +47,8 @@ export interface User {
   avatar: string;
   account_status?: string;
   company?: string;
-  national_identity_number?: number;
+  identity_number?: number;
+  identity_type: string;
   bank_details?: UserBankDetails;
   email: string;
   gender?: string;

@@ -61,7 +61,7 @@ const TabStatus = [
   {
     label: "My Attendance",
     value: "my_attendance",
-    roles: ["employee", "hr"], // Accessible by employees and HR
+    roles: ["employee", "hr", "admin"], // Accessible by employees and HR
   },
 ];
 

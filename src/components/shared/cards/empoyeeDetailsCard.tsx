@@ -123,7 +123,7 @@ export const EmployeeDetails: FC<EmployeeDetailsProps> = ({
                       >
                         <CardAccountDetails fontSize="small" />
                         <Typography variant="subtitle2">
-                          {employeeData?.national_identity_number}
+                          {employeeData?.identity_number}
                         </Typography>
                       </Box>
 

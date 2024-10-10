@@ -169,7 +169,7 @@ export const TimeLogCard = () => {
                     onClick={() =>
                       attendance && attendance.timeIn
                         ? setClockOutModal(true)
-                        : handleTimeLog("clockIn")
+                        : handleTimeLog("Time_in")
                     }
                   >
                     {attendance && attendance.timeIn ? "Time out" : "Time in"}
@@ -294,7 +294,7 @@ export const TimeLogCard = () => {
             setClockOutModal(false);
           }}
           onConfirm={async () => {
-            handleTimeLog("clockOut");
+            handleTimeLog("Time_out");
             setClockOutModal(false);
           }}
         />

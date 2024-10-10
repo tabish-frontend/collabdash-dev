@@ -76,8 +76,4 @@ export const employeeValidation = Yup.object().shape({
     .required("Mobile number is required")
     .min(10, "Mobile number must be at least 15 digits")
     .max(15, "Mobile number must be no more than 17 digits"),
-  // national_identity_number: Yup.string()
-  //   .required("National Identity Number is required")
-  //   .matches(/^[0-9]+$/, "National Identity Number must contain only numbers")
-  //   .max(15, "National Identity Number must be no more than 15 digits"),
 });

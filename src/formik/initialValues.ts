@@ -47,7 +47,8 @@ export const employeeInitialValues: Employee = {
   country: "",
   company: "",
   account_status: "active",
-  national_identity_number: undefined,
+  identity_type: "",
+  identity_number: undefined,
   time_zone: {
     name: "",
     value: "",

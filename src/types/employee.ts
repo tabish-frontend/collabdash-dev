@@ -17,7 +17,8 @@ export interface Employee {
   qualification: string;
   company: string;
   account_status: string;
-  national_identity_number?: number | undefined;
+  identity_type: string;
+  identity_number?: number | undefined;
   time_zone: {
     name: string;
     value: string;
