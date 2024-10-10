@@ -21,6 +21,7 @@ import { Shift } from "src/types";
 import { formatTime, getAbbreviatedDays } from "src/utils/helpers";
 import { Pencil } from "mdi-material-ui";
 import { useDialog } from "src/hooks";
+import React from "react";
 
 interface ShiftDetailsProps {
   employeeID: string | undefined;
@@ -78,62 +79,68 @@ export const ShiftDetails: FC<ShiftDetailsProps> = ({
           {employeeShift && (
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <Stack direction={isSmallScreen ? "column" : "row"} spacing={3}>
-                  <Typography variant="subtitle1" fontWeight={900}>
-                    Shift Type :
-                  </Typography>
-                  <Typography variant="subtitle1">
-                    {employeeShift.shift_type}
-                  </Typography>
-                </Stack>
-              </Grid>
-
-              <Grid item xs={12}>
-                <Stack direction={isSmallScreen ? "column" : "row"} spacing={3}>
-                  <Typography variant="subtitle1" fontWeight={900}>
-                    Off Days :
-                  </Typography>
-                  <Typography variant="subtitle1">
-                    {employeeShift.weekends.join(", ")}
-                  </Typography>
-                </Stack>
-              </Grid>
-
-              {employeeShift.shift_type === "Flexible" ? (
-                <Grid item xs={12}>
-                  <Stack
-                    direction={isSmallScreen ? "column" : "row"}
-                    spacing={3}
-                  >
-                    <Typography variant="subtitle1" fontWeight={900}>
-                      Hours :
+                <Stack direction="row" spacing={4} alignItems="flex-start">
+                  {/* Left Column for Labels */}
+                  <Stack direction="column" spacing={2}>
+                    <Typography variant="subtitle1" fontWeight={600}>
+                      Shift Type:
                     </Typography>
-                    <Typography variant="subtitle1">
-                      {`${employeeShift.hours} hours/day`}
+
+                    {employeeShift.shift_type === "Flexible" ? (
+                      <Typography variant="subtitle1" fontWeight={600}>
+                        Hours:
+                      </Typography>
+                    ) : (
+                      <>
+                        <Typography variant="subtitle1" fontWeight={600}>
+                          Working Days:
+                        </Typography>
+                        <Typography variant="subtitle1" fontWeight={600}>
+                          Start Time:
+                        </Typography>
+                        <Typography variant="subtitle1" fontWeight={600}>
+                          End Time:
+                        </Typography>
+                      </>
+                    )}
+
+                    <Typography variant="subtitle1" fontWeight={600}>
+                      Off Days:
                     </Typography>
                   </Stack>
-                </Grid>
-              ) : (
-                employeeShift.times.map((shift, index) => (
-                  <Grid item xs={12} key={index}>
-                    <Stack
-                      direction={isSmallScreen ? "column" : "row"}
-                      spacing={3}
-                    >
+
+                  {/* Right Column for Values */}
+                  <Stack direction="column" spacing={2}>
+                    <Typography variant="subtitle1">
+                      {employeeShift.shift_type}
+                    </Typography>
+
+                    {employeeShift.shift_type === "Flexible" ? (
                       <Typography variant="subtitle1">
-                        <b>Start Time :</b> {formatTime(shift.start)}
+                        {`${employeeShift.hours} hours/day`}
                       </Typography>
-                      <Typography variant="subtitle1">
-                        <b>End Time :</b> {formatTime(shift.end)}
-                      </Typography>
-                      <Typography variant="subtitle1">
-                        <b>Days :</b>{" "}
-                        {getAbbreviatedDays(shift.days).join(", ")}
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                ))
-              )}
+                    ) : (
+                      employeeShift.times.map((shift, index) => (
+                        <React.Fragment key={index}>
+                          <Typography variant="subtitle1">
+                            {getAbbreviatedDays(shift.days).join(", ")}
+                          </Typography>
+                          <Typography variant="subtitle1">
+                            {formatTime(shift.start)}
+                          </Typography>
+                          <Typography variant="subtitle1">
+                            {formatTime(shift.end)}
+                          </Typography>
+                        </React.Fragment>
+                      ))
+                    )}
+
+                    <Typography variant="subtitle1">
+                      {employeeShift.weekends.join(", ")}
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </Grid>
             </Grid>
           )}
 

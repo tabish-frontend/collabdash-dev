@@ -60,6 +60,8 @@ const BoardComponent = () => {
 
   const workSpaceBoard = getCurrentBoard(workspace_slug, boards_slug);
 
+  const boardMembers = [workSpaceBoard?.owner, ...workSpaceBoard?.members];
+
   const handleDragEnd = useCallback(
     async ({
       source,
@@ -188,7 +190,7 @@ const BoardComponent = () => {
                 sx={{ px: 3 }}
                 spacing={0.5}
               >
-                {workSpaceBoard?.members.map((user: any, index: number) => (
+                {boardMembers.map((user: any, index: number) => (
                   <Tooltip key={index} title={user.full_name} arrow>
                     <Avatar
                       src={user.avatar}
@@ -314,7 +316,7 @@ const BoardComponent = () => {
           onClose={handleTaskClose}
           open={!!currentTask}
           task={currentTask || undefined}
-          boardMembers={workSpaceBoard?.members}
+          boardMembers={boardMembers}
         />
       )}
     </>

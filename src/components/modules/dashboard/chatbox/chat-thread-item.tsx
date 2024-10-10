@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import PropTypes from "prop-types";
 import { formatDistanceStrict } from "date-fns";
-import Avatar, { avatarClasses } from "@mui/material/Avatar";
+import { avatarClasses } from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
@@ -114,10 +114,12 @@ export const ChatThreadItem: FC<ChatThreadItemProps> = (props) => {
         >
           {recipients.map((recipient) => {
             const isOnline = onlineUsers.includes(recipient._id as string);
-            return isOnline ? (
-              <OnlineBadge key={recipient._id} image={recipient.avatar} />
-            ) : (
-              <Avatar key={recipient._id} src={recipient.avatar || undefined} />
+            return (
+              <OnlineBadge
+                key={recipient._id}
+                image={recipient.avatar}
+                isOnline={isOnline}
+              />
             );
           })}
         </AvatarGroup>

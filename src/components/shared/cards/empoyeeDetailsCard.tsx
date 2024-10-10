@@ -78,13 +78,6 @@ export const EmployeeDetails: FC<EmployeeDetailsProps> = ({
                 width={137}
                 height={137}
               />
-              <Typography
-                variant="subtitle1"
-                fontWeight={500}
-                sx={{ my: 2, textAlign: "center" }}
-              >
-                {employeeData?.username}
-              </Typography>
             </CardContent>
           </StyledGrid>
           <Grid item md={9} xs={12}>

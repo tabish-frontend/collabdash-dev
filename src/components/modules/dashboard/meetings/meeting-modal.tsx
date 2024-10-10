@@ -67,10 +67,6 @@ export const MeetingModal: FC<MeetingModalProps> = ({
     handleGetEmployees();
   }, []);
 
-  useEffect(() => {
-    console.log("Formik", formik.values);
-  }, [formik.values]);
-
   return (
     <Dialog
       fullWidth

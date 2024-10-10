@@ -53,8 +53,6 @@ export const MeetingCard: FC<MeetingCardProps> = ({
 
   const { user } = useAuth<AuthContextType>();
 
-  console.log("meetingsg", meeting);
-
   const formatRecurringDays = (days: string[]) => {
     return days.map((day) => day.slice(0, 3)).join(", ");
   };

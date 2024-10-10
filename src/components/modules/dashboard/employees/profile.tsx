@@ -164,10 +164,11 @@ const EmployeeProfileComponent = () => {
       {UpdateEmployeeDialog.open && (
         <UpdateEmployeeModal
           employeeValues={{
+            email: employeeData?.email || "",
             department: employeeData?.department || "",
             designation: employeeData?.designation || "",
+            role: employeeData?.role || "",
             account_status: employeeData?.account_status || "",
-            email: employeeData?.email || "",
           }}
           modal={UpdateEmployeeDialog.open}
           onCancel={UpdateEmployeeDialog.handleClose}

@@ -14,27 +14,22 @@ export const LeavesStatus = {
   Rejected: "rejected",
 };
 
-const Sick = "sick";
-const Casual = "casual";
-const Half_Day = "half_day";
-const Emergency = "emergency";
-
 export const LeavesTypes = [
   {
+    label: "Annual Leaves",
+    value: "annual leave",
+  },
+  {
     label: "Sick Leave",
-    value: Sick,
+    value: "sick leave",
   },
   {
     label: "Casual Leave",
-    value: Casual,
+    value: "casual leave",
   },
   {
     label: "HalfDay Leave",
-    value: Half_Day,
-  },
-  {
-    label: "Emergency Leave",
-    value: Emergency,
+    value: "half_day leave",
   },
 ];
 
@@ -56,6 +51,7 @@ export const AccountStatus = [
     value: "terminate",
   },
 ];
+
 export const MeetingStatus = [
   {
     label: "Upcoming Meetings",

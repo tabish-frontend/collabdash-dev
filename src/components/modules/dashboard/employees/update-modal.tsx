@@ -16,6 +16,7 @@ import { CloseCircleOutline } from "mdi-material-ui";
 
 import { type FC } from "react";
 import {
+  AccountRoleField,
   DepartmentField,
   DesignationField,
   EmailField,
@@ -27,10 +28,11 @@ import * as Yup from "yup";
 interface UpdateEmployeeModalProps {
   modal: boolean;
   employeeValues: {
+    email: string;
     department: string;
     designation: string;
+    role: string;
     account_status: string;
-    email: string;
   };
   onConfirm: (values: any) => void;
   onCancel: () => void;
@@ -40,6 +42,7 @@ const UpdateEmployeeValidation = Yup.object().shape({
   email: common_user_validation.email,
   designation: Yup.string().required("Designation is required"),
   department: Yup.string().required("Department is required"),
+  role: Yup.string().required("Account Role is required"),
 });
 
 export const UpdateEmployeeModal: FC<UpdateEmployeeModalProps> = ({
@@ -92,6 +95,16 @@ export const UpdateEmployeeModal: FC<UpdateEmployeeModalProps> = ({
             </Grid>
 
             <Grid item xs={12}>
+              <DepartmentField
+                value={formik.values.department}
+                handleChange={formik.handleChange}
+                handleBlur={formik.handleBlur}
+                formikError={formik.errors.department}
+                formikTouched={formik.touched.department}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
               <DesignationField
                 value={formik.values.designation}
                 handleChange={formik.handleChange}
@@ -102,12 +115,12 @@ export const UpdateEmployeeModal: FC<UpdateEmployeeModalProps> = ({
             </Grid>
 
             <Grid item xs={12}>
-              <DepartmentField
-                value={formik.values.department}
+              <AccountRoleField
+                value={formik.values.role}
                 handleChange={formik.handleChange}
                 handleBlur={formik.handleBlur}
-                formikError={formik.errors.department}
-                formikTouched={formik.touched.department}
+                formikTouched={formik.touched.role}
+                formikError={formik.errors.role}
               />
             </Grid>
 

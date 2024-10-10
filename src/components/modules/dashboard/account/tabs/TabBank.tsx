@@ -15,7 +15,7 @@ export const TabBank = () => {
   const { user, updateCurrentUser } = useAuth<AuthContextType>();
 
   const userBankDetails = user?.bank_details || {
-    bank_name: "State Bank of Pakistan",
+    bank_name: "",
     account_holder_name: "",
     iban_number: undefined,
     account_number: undefined,
