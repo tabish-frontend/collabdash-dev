@@ -169,7 +169,7 @@ export const TimeLogCard = () => {
                     onClick={() =>
                       attendance && attendance.timeIn
                         ? setClockOutModal(true)
-                        : handleTimeLog("Time_in")
+                        : handleTimeLog("TimeIn")
                     }
                   >
                     {attendance && attendance.timeIn ? "Time out" : "Time in"}
@@ -214,7 +214,7 @@ export const TimeLogCard = () => {
                         variant="contained"
                         color={isOnBreak ? "success" : "info"}
                         onClick={() =>
-                          handleTimeLog(isOnBreak ? "resume" : "break")
+                          handleTimeLog(isOnBreak ? "Resume" : "Break")
                         }
                         disabled={completedBreaksCount >= 3} // Disable if 3 breaks are completed
                       >
@@ -294,7 +294,7 @@ export const TimeLogCard = () => {
             setClockOutModal(false);
           }}
           onConfirm={async () => {
-            handleTimeLog("Time_out");
+            handleTimeLog("TimeOut");
             setClockOutModal(false);
           }}
         />
