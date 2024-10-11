@@ -198,6 +198,7 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
 
       return {
         ...board,
+        members: [board.owner, ...board.members],
         workspace: {
           _id: workspace._id,
           name: workspace.name,
