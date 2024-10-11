@@ -11,6 +11,7 @@ import { ColumnApi } from "src/api/kanban/column";
 import { TaskApi } from "src/api/kanban/tasks";
 import { useRouter } from "next/router";
 import { paths } from "src/constants/paths";
+import { useSocketContext } from "src/hooks";
 
 interface WorkSpaceProviderProps {
   children?: ReactNode;
@@ -20,6 +21,8 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
   const { children } = props;
   const [state, setState] = useState<State>(initialState);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const { socket } = useSocketContext();
 
   const router = useRouter();
 
@@ -198,6 +201,7 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
 
       return {
         ...board,
+        members: [board.owner, ...board.members],
         workspace: {
           _id: workspace._id,
           name: workspace.name,
@@ -633,6 +637,37 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
       handleGetWorkSpaces();
     }
   }, [accessToken, handleGetWorkSpaces]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("receiveSocketBoard", (socketBoard) => {
+        console.log("socketBoard", socketBoard);
+        // Assuming updatedBoard contains the updated board data
+        setState((prev) => {
+          const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
+            if (workspace._id === socketBoard.workSpaceId) {
+              const updatedBoards = workspace.boards.map((board) =>
+                board._id === socketBoard.boardId
+                  ? socketBoard.boardData
+                  : board
+              );
+              return {
+                ...workspace,
+                boards: updatedBoards,
+              };
+            }
+            return workspace;
+          });
+          return { ...prev, WorkSpaces: updatedWorkSpaces };
+        });
+      });
+
+      // Clean up the listener when component unmounts
+      return () => {
+        socket.off("receiveSocketBoard");
+      };
+    }
+  }, [socket]);
 
   return (
     <WorkSpaceContext.Provider
