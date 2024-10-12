@@ -15,7 +15,7 @@ import { AccountButton } from "../account-button";
 import { NotificationsButton } from "../notifications-button";
 
 const TOP_NAV_HEIGHT = 64;
-const SIDE_NAV_WIDTH = 280;
+const SIDE_NAV_WIDTH = 240;
 
 interface TopNavProps {
   onMobileNavOpen?: () => void;
@@ -43,6 +43,9 @@ export const TopNav: FC<TopNavProps> = (props) => {
         backdropFilter: "blur(6px)",
         backgroundColor: (theme) =>
           alpha(theme.palette.background.default, 0.8),
+        // borderBottom: "1px solid #dcdfe4",
+        // borderTop: "1px solid #dcdfe4",
+        boxShadow: "inherit",
         position: "sticky",
         left: {
           lg: `${SIDE_NAV_WIDTH}px`,

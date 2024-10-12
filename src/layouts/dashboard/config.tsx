@@ -12,7 +12,6 @@ import {
   CardAccountDetailsStarOutline,
   ChatProcessingOutline,
 } from "mdi-material-ui";
-import { useWorkSpace } from "src/hooks/use-workSpace";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
 export interface Item {
@@ -38,7 +37,7 @@ const navItems: Item[] = [
     path: paths.index,
   },
   {
-    title: "Employees",
+    title: "Team Members",
     icon: <SvgIcon component={AccountMultipleOutline} />,
     path: paths.employees,
     roles: ["admin", "hr"],

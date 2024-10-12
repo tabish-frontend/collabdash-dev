@@ -88,7 +88,7 @@ const EmployeeListComponent = () => {
           }}
         >
           <Stack direction={"row"} justifyContent="space-between" spacing={2}>
-            <Typography variant="h4">{"Employee's"}</Typography>
+            <Typography variant="h5">{"Team Members"}</Typography>
 
             <Button
               variant="contained"
@@ -100,7 +100,7 @@ const EmployeeListComponent = () => {
                 </SvgIcon>
               }
             >
-              Add Employee
+              Add Member
             </Button>
           </Stack>
 
