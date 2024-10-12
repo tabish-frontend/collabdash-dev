@@ -358,6 +358,8 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
 
   const handleMoveColumn = useCallback(
     async (data: { board_id: string; column_id: string; index: number }) => {
+      await ColumnApi.moveColumn(data);
+
       setState((prev) => {
         const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
           const updatedBoards = workspace.boards.map((board) => {
@@ -392,8 +394,6 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
           WorkSpaces: updatedWorkSpaces,
         };
       });
-
-      await ColumnApi.moveColumn(data);
     },
     []
   );
