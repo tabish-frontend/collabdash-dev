@@ -13,23 +13,26 @@ import { useRouter } from "next/router";
 import { paths } from "src/constants/paths";
 import { useSocketContext } from "src/hooks";
 
+// Utility function to generate slugs
+const generateSlug = (name: string) => {
+  return name.trim().toLowerCase().replace(/\s+/g, "_").replace(/\//g, "-");
+};
+
+// Context provider component
 interface WorkSpaceProviderProps {
   children?: ReactNode;
 }
 
-export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
-  const { children } = props;
+export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = ({ children }) => {
   const [state, setState] = useState<State>(initialState);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const { socket } = useSocketContext();
-
   const router = useRouter();
 
+  // Fetch WorkSpaces
   const handleGetWorkSpaces = useCallback(async () => {
     setIsLoading(true);
     const response = await WorkSpaceApi.getAllWorkSpaces();
-
     setState((prev) => ({
       ...prev,
       WorkSpaces: response.data,
@@ -37,6 +40,7 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     setIsLoading(false);
   }, []);
 
+  // Get current WorkSpace
   const getCurrentWorkSpace = useCallback(
     (slug: string | string[] | undefined) => {
       return state.WorkSpaces.find((item) => item.slug === slug);
@@ -44,17 +48,11 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     [state.WorkSpaces]
   );
 
+  // Add WorkSpace
   const handleAddWorkSpace = useCallback(async (data: WorkSpace) => {
-    const slug = data.name
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, "_") // Replace spaces with underscores
-      .replace(/\//g, "-"); // Replace "/" with "-"
-
-    const datawithslug = { ...data, slug };
-
-    const response = await WorkSpaceApi.addWorkSpace(datawithslug);
-
+    const slug = generateSlug(data.name);
+    const dataWithSlug = { ...data, slug };
+    const response = await WorkSpaceApi.addWorkSpace(dataWithSlug);
     setState((prev) => ({
       ...prev,
       openModal: false,
@@ -62,23 +60,16 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     }));
   }, []);
 
+  // Update WorkSpace
   const handleUpdateWorkSpace = useCallback(
     async (data: { _id: string; name: string; members: Employee[] }) => {
-      const { _id, name, members } = data;
+      const slug = generateSlug(data.name);
+      const dataWithSlug = { ...data, slug };
 
-      const slug = name
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, "_") // Replace spaces with underscores
-        .replace(/\//g, "-"); // Replace "/" with "-"
-
-      const datawithslug = { ...data, slug };
-
-      // Update the state with the new data before making the API call
       setState((prev) => {
         const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
-          return workspace._id === _id
-            ? { ...workspace, ...datawithslug }
+          return workspace._id === data._id
+            ? { ...workspace, ...dataWithSlug }
             : workspace;
         });
 
@@ -88,28 +79,24 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
         };
       });
 
-      // Make the API call
-      await WorkSpaceApi.updateWorkSpace(_id, {
-        name,
+      await WorkSpaceApi.updateWorkSpace(data._id, {
+        name: data.name,
         slug,
-        members,
+        members: data.members,
       });
     },
     []
   );
 
+  // Delete WorkSpace
   const handleDeleteWorkSpace = useCallback(
     async (_id: string) => {
-      setState((prev) => {
-        const updatedWorkSpaces = prev.WorkSpaces.filter(
+      setState((prev) => ({
+        ...prev,
+        WorkSpaces: prev.WorkSpaces.filter(
           (workspace) => workspace._id !== _id
-        );
-
-        return {
-          ...prev,
-          WorkSpaces: updatedWorkSpaces,
-        };
-      });
+        ),
+      }));
 
       const { workspace_slug } = router.query;
 
@@ -122,68 +109,44 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     [router]
   );
 
+  // Add Board
   const handleAddBoard = useCallback(async (data: any) => {
-    const slug = data.name
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, "_") // Replace spaces with underscores
-      .replace(/\//g, "-"); // Replace "/" with "-"
-
-    const datawithslug = { ...data, slug };
-
-    const response = await BoardsApi.addBoard(datawithslug);
+    const slug = generateSlug(data.name);
+    const dataWithSlug = { ...data, slug };
+    const response = await BoardsApi.addBoard(dataWithSlug);
 
     setState((prev) => {
-      const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
-        if (workspace._id === data.workspace) {
-          return {
-            ...workspace,
-            boards: [...workspace.boards, response.data],
-          };
-        }
-        return workspace;
-      });
-      return {
-        ...prev,
-        WorkSpaces: updatedWorkSpaces,
-      };
+      const updatedWorkSpaces = prev.WorkSpaces.map((workspace) =>
+        workspace._id === data.workspace
+          ? { ...workspace, boards: [...workspace.boards, response.data] }
+          : workspace
+      );
+      return { ...prev, WorkSpaces: updatedWorkSpaces };
     });
   }, []);
 
+  // Update Board
   const handleUpdateBoard = useCallback(
     async (board_id: string, data: Board) => {
-      const slug = data.name
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, "_") // Replace spaces with underscores
-        .replace(/\//g, "-"); // Replace "/" with "-"
+      const slug = generateSlug(data.name);
+      const dataWithSlug = { ...data, slug };
 
-      const datawithslug = { ...data, slug };
+      setState((prev) => ({
+        ...prev,
+        WorkSpaces: prev.WorkSpaces.map((workspace) => ({
+          ...workspace,
+          boards: workspace.boards.map((board) =>
+            board._id === board_id ? { ...board, ...dataWithSlug } : board
+          ),
+        })),
+      }));
 
-      // Update the state with the new data before making the API call
-      setState((prev) => {
-        const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
-          const updatedBoards = workspace.boards.map((board) =>
-            board._id === board_id ? { ...board, ...datawithslug } : board
-          );
-          return {
-            ...workspace,
-            boards: updatedBoards,
-          };
-        });
-
-        return {
-          ...prev,
-          WorkSpaces: updatedWorkSpaces,
-        };
-      });
-
-      // Make the API call
-      await BoardsApi.updateBoard(board_id, datawithslug);
+      await BoardsApi.updateBoard(board_id, dataWithSlug);
     },
     []
   );
 
+  // Get current Board
   const getCurrentBoard = useCallback(
     (
       workspace_slug: string | string[] | undefined,
@@ -192,11 +155,9 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
       const workspace = state.WorkSpaces.find(
         (item) => item.slug === workspace_slug
       );
-
       if (!workspace) return undefined;
 
       const board = workspace.boards.find((board) => board.slug === board_slug);
-
       if (!board) return undefined;
 
       return {
@@ -212,157 +173,104 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     [state.WorkSpaces]
   );
 
+  // Delete Board
   const handleDeletBoard = useCallback(async (board_id: string) => {
     await BoardsApi.deleteBoard(board_id);
 
-    setState((prev) => {
-      const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
-        const updatedBoards = workspace.boards.filter(
-          (board) => board._id !== board_id
-        );
-        return {
-          ...workspace,
-          boards: updatedBoards,
-        };
-      });
-
-      return {
-        ...prev,
-        WorkSpaces: updatedWorkSpaces,
-      };
-    });
+    setState((prev) => ({
+      ...prev,
+      WorkSpaces: prev.WorkSpaces.map((workspace) => ({
+        ...workspace,
+        boards: workspace.boards.filter((board) => board._id !== board_id),
+      })),
+    }));
   }, []);
 
+  // Add Column
   const handleAddColumn = useCallback(
     async (data: { name: string; board: string }) => {
       const response = await ColumnApi.addColumn(data);
 
-      setState((prev) => {
-        const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
-          const updatedBoards = workspace.boards.map((board) => {
-            if (board._id === data.board) {
-              return {
-                ...board,
-
-                columns: [...board.columns, response.data],
-              };
-            }
-            return board;
-          });
-          return {
-            ...workspace,
-            boards: updatedBoards,
-          };
-        });
-        return {
-          ...prev,
-          WorkSpaces: updatedWorkSpaces,
-        };
-      });
+      setState((prev) => ({
+        ...prev,
+        WorkSpaces: prev.WorkSpaces.map((workspace) => ({
+          ...workspace,
+          boards: workspace.boards.map((board) =>
+            board._id === data.board
+              ? { ...board, columns: [...board.columns, response.data] }
+              : board
+          ),
+        })),
+      }));
     },
     []
   );
 
+  // Update Column
   const handleUpdateColumn = useCallback(
     async (column_id: string, data: { name: string }) => {
       const response = await ColumnApi.updateColumn(column_id, data);
 
-      setState((prev) => {
-        const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
-          const updatedBoards = workspace.boards.map((board) => {
-            const updatedColumns = board.columns.map((column) =>
+      setState((prev) => ({
+        ...prev,
+        WorkSpaces: prev.WorkSpaces.map((workspace) => ({
+          ...workspace,
+          boards: workspace.boards.map((board) => ({
+            ...board,
+            columns: board.columns.map((column) =>
               column._id === column_id ? response.data : column
-            );
-            return {
-              ...board,
-              columns: updatedColumns,
-            };
-          });
-          return {
-            ...workspace,
-            boards: updatedBoards,
-          };
-        });
-
-        return {
-          ...prev,
-          WorkSpaces: updatedWorkSpaces,
-        };
-      });
+            ),
+          })),
+        })),
+      }));
     },
     []
   );
 
+  // Delete Column
   const handleDeleteColumn = useCallback(async (column_id: string) => {
     await ColumnApi.clearAnddeleteColumn(column_id, "delete");
 
-    setState((prev) => {
-      const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
-        const updatedBoards = workspace.boards.map((board) => {
-          const updatedColumns = board.columns.filter(
-            (column) => column._id !== column_id
-          );
-          return {
-            ...board,
-            columns: updatedColumns,
-          };
-        });
-        return {
-          ...workspace,
-          boards: updatedBoards,
-        };
-      });
-
-      return {
-        ...prev,
-        WorkSpaces: updatedWorkSpaces,
-      };
-    });
+    setState((prev) => ({
+      ...prev,
+      WorkSpaces: prev.WorkSpaces.map((workspace) => ({
+        ...workspace,
+        boards: workspace.boards.map((board) => ({
+          ...board,
+          columns: board.columns.filter((column) => column._id !== column_id),
+        })),
+      })),
+    }));
   }, []);
 
+  // Clear Column
   const handleClearColumn = useCallback(async (column_id: string) => {
     await ColumnApi.clearAnddeleteColumn(column_id, "clear");
 
-    // Update the state to remove tasks from the column
-    setState((prev) => {
-      const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
-        const updatedBoards = workspace.boards.map((board) => {
-          const updatedColumns = board.columns.map((column) => {
-            if (column._id === column_id) {
-              return {
-                ...column,
-                tasks: [],
-              };
-            }
-            return column;
-          });
-
-          return {
-            ...board,
-            columns: updatedColumns,
-          };
-        });
-
-        return {
-          ...workspace,
-          boards: updatedBoards,
-        };
-      });
-
-      return {
-        ...prev,
-        WorkSpaces: updatedWorkSpaces,
-      };
-    });
+    setState((prev) => ({
+      ...prev,
+      WorkSpaces: prev.WorkSpaces.map((workspace) => ({
+        ...workspace,
+        boards: workspace.boards.map((board) => ({
+          ...board,
+          columns: board.columns.map((column) =>
+            column._id === column_id ? { ...column, tasks: [] } : column
+          ),
+        })),
+      })),
+    }));
   }, []);
 
+  // Move Column
   const handleMoveColumn = useCallback(
     async (data: { board_id: string; column_id: string; index: number }) => {
       await ColumnApi.moveColumn(data);
 
-      setState((prev) => {
-        const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
-          const updatedBoards = workspace.boards.map((board) => {
+      setState((prev) => ({
+        ...prev,
+        WorkSpaces: prev.WorkSpaces.map((workspace) => ({
+          ...workspace,
+          boards: workspace.boards.map((board) => {
             if (board._id === data.board_id) {
               const columns = [...board.columns];
               const columnIndex = columns.findIndex(
@@ -374,156 +282,83 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
                 columns.splice(data.index, 0, movedColumn);
               }
 
-              return {
-                ...board,
-                columns,
-              };
+              return { ...board, columns };
             }
 
             return board;
-          });
-
-          return {
-            ...workspace,
-            boards: updatedBoards,
-          };
-        });
-
-        return {
-          ...prev,
-          WorkSpaces: updatedWorkSpaces,
-        };
-      });
+          }),
+        })),
+      }));
     },
     []
   );
 
+  // Add Task
   const handleAddTask = useCallback(
-    async (data: { title: string; board: string; column: string }) => {
+    async (data: { title: string; column: string; board: string }) => {
       const response = await TaskApi.addTask(data);
-      const newTask = response.data;
 
-      setState((prev) => {
-        const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
-          const updatedBoards = workspace.boards.map((board) => {
-            if (board._id === data.board) {
-              const updatedColumns = board.columns.map((column) => {
-                if (column._id === data.column) {
-                  return {
-                    ...column,
-                    tasks: [...column.tasks, newTask],
-                  };
-                }
-                return column;
-              });
-
-              return {
-                ...board,
-                columns: updatedColumns,
-              };
-            }
-            return board;
-          });
-
-          return {
-            ...workspace,
-            boards: updatedBoards,
-          };
-        });
-
-        return {
-          ...prev,
-          WorkSpaces: updatedWorkSpaces,
-        };
-      });
+      setState((prev) => ({
+        ...prev,
+        WorkSpaces: prev.WorkSpaces.map((workspace) => ({
+          ...workspace,
+          boards: workspace.boards.map((board) => ({
+            ...board,
+            columns: board.columns.map((column) =>
+              column._id === data.column
+                ? { ...column, tasks: [...column.tasks, response.data] }
+                : column
+            ),
+          })),
+        })),
+      }));
     },
     []
   );
 
+  // Update Task
   const handleUpdateTask = useCallback(
-    async (data: {
-      _id: string;
-      board_id: string;
-      column_id: string;
-      [key: string]: any;
-    }) => {
+    async (data: { _id: string; board_id: string; column_id: string }) => {
       const { _id: task_id, ...restValues } = data;
-      const { workspace_slug, boards_slug } = router.query;
-      const target_link = `/workspaces/${workspace_slug}/boards/${boards_slug}`;
-      const response = await TaskApi.updateTask(task_id, {
-        ...restValues,
-        target_link,
-      });
 
-      setState((prev) => {
-        const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
-          const updatedBoards = workspace.boards.map((board) => {
-            const updatedColumns = board.columns.map((column) => {
-              const updatedTasks = column.tasks.map((task) =>
-                task._id === task_id ? { ...task, ...response } : task
-              );
+      const response = await TaskApi.updateTask(task_id, restValues);
 
-              return {
-                ...column,
-                tasks: updatedTasks,
-              };
-            });
-
-            return {
-              ...board,
-              columns: updatedColumns,
-            };
-          });
-
-          return {
-            ...workspace,
-            boards: updatedBoards,
-          };
-        });
-
-        return {
-          ...prev,
-          WorkSpaces: updatedWorkSpaces,
-        };
-      });
+      setState((prev) => ({
+        ...prev,
+        WorkSpaces: prev.WorkSpaces.map((workspace) => ({
+          ...workspace,
+          boards: workspace.boards.map((board) => ({
+            ...board,
+            columns: board.columns.map((column) => ({
+              ...column,
+              tasks: column.tasks.map((task) =>
+                task._id === task_id ? response : task
+              ),
+            })),
+          })),
+        })),
+      }));
     },
-    [router.query]
+    []
   );
 
-  const handleDeleteTask = useCallback(async (_id: string) => {
-    await TaskApi.deleteTask(_id);
+  // Delete Task
+  const handleDeleteTask = useCallback(async (task_id: string) => {
+    await TaskApi.deleteTask(task_id);
 
-    setState((prev) => {
-      const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
-        const updatedBoards = workspace.boards.map((board) => {
-          const updatedColumns = board.columns.map((column) => {
-            const updatedTasks = column.tasks.filter(
-              (task) => task._id !== _id
-            );
-
-            return {
-              ...column,
-              tasks: updatedTasks,
-            };
-          });
-
-          return {
-            ...board,
-            columns: updatedColumns,
-          };
-        });
-
-        return {
-          ...workspace,
-          boards: updatedBoards,
-        };
-      });
-
-      return {
-        ...prev,
-        WorkSpaces: updatedWorkSpaces,
-      };
-    });
+    setState((prev) => ({
+      ...prev,
+      WorkSpaces: prev.WorkSpaces.map((workspace) => ({
+        ...workspace,
+        boards: workspace.boards.map((board) => ({
+          ...board,
+          columns: board.columns.map((column) => ({
+            ...column,
+            tasks: column.tasks.filter((task) => task._id !== task_id),
+          })),
+        })),
+      })),
+    }));
   }, []);
 
   const handleMoveTask = useCallback(
@@ -638,36 +473,55 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
     }
   }, [accessToken, handleGetWorkSpaces]);
 
+  // Handle socket events
   useEffect(() => {
-    if (socket) {
-      socket.on("receiveSocketBoard", (socketBoard) => {
-        console.log("socketBoard", socketBoard);
-        // Assuming updatedBoard contains the updated board data
-        setState((prev) => {
-          const updatedWorkSpaces = prev.WorkSpaces.map((workspace) => {
-            if (workspace._id === socketBoard.workSpaceId) {
-              const updatedBoards = workspace.boards.map((board) =>
-                board._id === socketBoard.boardId
-                  ? socketBoard.boardData
-                  : board
-              );
-              return {
-                ...workspace,
-                boards: updatedBoards,
-              };
-            }
-            return workspace;
-          });
-          return { ...prev, WorkSpaces: updatedWorkSpaces };
-        });
-      });
+    if (!socket) return;
+    socket.on("task created", handleGetWorkSpaces);
+    socket.on("task updated", handleGetWorkSpaces);
+    socket.on("task moved", handleGetWorkSpaces);
+    socket.on("task deleted", handleGetWorkSpaces);
+    socket.on("column created", handleGetWorkSpaces);
+    socket.on("column updated", handleGetWorkSpaces);
+    socket.on("column moved", handleGetWorkSpaces);
+    socket.on("column cleared | deleted", handleGetWorkSpaces);
+    socket.on("board created", handleGetWorkSpaces);
+    socket.on("board updated", handleGetWorkSpaces);
+    socket.on("workSpace created", handleGetWorkSpaces);
+    socket.on("workSpace updated", handleGetWorkSpaces);
+    socket.on("board deleted", () => {
+      console.log("calling");
+      handleGetWorkSpaces();
+      const { workspace_slug } = router.query;
+      const { boards_slug } = router.query;
+      if (boards_slug) {
+        router.push(`${paths.workspaces}/${workspace_slug}`);
+      }
+    });
+    socket.on("workSpace deleted", () => {
+      handleGetWorkSpaces();
+      const { workspace_slug } = router.query;
+      if (workspace_slug) {
+        router.push(paths.workspaces);
+      }
+    });
 
-      // Clean up the listener when component unmounts
-      return () => {
-        socket.off("receiveSocketBoard");
-      };
-    }
-  }, [socket]);
+    return () => {
+      socket.off("task created");
+      socket.off("task updated");
+      socket.off("task moved");
+      socket.off("task deleted");
+      socket.off("column created");
+      socket.off("column updated");
+      socket.off("column moved");
+      socket.off("column cleared | deleted");
+      socket.off("board created");
+      socket.off("board updated");
+      socket.off("workSpace created");
+      socket.off("workSpace updated");
+      socket.off("board deleted");
+      socket.off("workSpace deleted");
+    };
+  }, [socket, handleGetWorkSpaces, router]);
 
   return (
     <WorkSpaceContext.Provider
@@ -700,5 +554,5 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = (props) => {
 };
 
 WorkSpaceProvider.propTypes = {
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node,
 };
