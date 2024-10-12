@@ -6,9 +6,11 @@ import { AuthContextType } from "src/contexts/auth";
 import { useRouter } from "next/router";
 import { meetingApi } from "src/api";
 import { Meeting } from "src/types";
-import { WaitingScreen } from "./waiting-card";
+import { WaitingScreen } from "./waiting-screen";
 import { ConferenceRoom } from "src/components/shared";
 import dayjs from "dayjs";
+import { paths } from "src/constants/paths";
+import { ThankYouScreen } from "./thankyou-screen";
 
 // Function to fetch session data from API
 const fetchMeetingData = async (
@@ -133,6 +135,7 @@ const MeetingRoomComponent = () => {
   const { meeting_url } = router.query;
 
   const [meetingExist, setMeetingExist] = useState<boolean>(false);
+  const [thankYouPage, setThankYouPage] = useState<boolean>(false);
   const [displayRoomName, setDisplayRoomName] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // Error state
 
@@ -161,17 +164,38 @@ const MeetingRoomComponent = () => {
     checkRoomExists();
   }, [meeting_url]);
 
+  console.log("user 111", user);
+
+  const handleLeaveMeeting = async () => {
+    console.log("Trigger Video Conference Leave");
+
+    setMeetingExist(false);
+
+    console.log("user 011", user);
+
+    if (user) {
+      router.push(paths.index);
+    } else {
+      setThankYouPage(true);
+    }
+  };
+
   // If there's an error, render the error message screen
   if (errorMessage) {
     return <WaitingScreen message={errorMessage} />;
+  }
+
+  if (thankYouPage) {
+    return <ThankYouScreen />;
   }
 
   return (
     <div>
       {meetingExist && (
         <ConferenceRoom
-          Allowed={user ? true : false}
+          readOnlyName={user ? true : false}
           RoomName={displayRoomName}
+          onConferenceLeft={handleLeaveMeeting}
         />
       )}
     </div>

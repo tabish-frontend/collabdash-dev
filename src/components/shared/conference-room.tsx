@@ -8,13 +8,13 @@ import { useAuth } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 
 interface ConferenceRoomProps {
-  Allowed: boolean;
+  readOnlyName: boolean;
   RoomName: string;
   onConferenceLeft?: () => void; // Optional prop, only passed when needed
 }
 
 export const ConferenceRoom: React.FC<ConferenceRoomProps> = ({
-  Allowed,
+  readOnlyName,
   RoomName,
   onConferenceLeft, // Optional event listener
 }) => {
@@ -30,7 +30,6 @@ export const ConferenceRoom: React.FC<ConferenceRoomProps> = ({
           position: "absolute",
           top: 20,
           left: 10,
-          height: 80,
           width: 150,
           textDecoration: "none",
         }}
@@ -43,7 +42,7 @@ export const ConferenceRoom: React.FC<ConferenceRoomProps> = ({
         roomName={RoomName}
         configOverwrite={{
           ...JitsiConfigOverwrite,
-          readOnlyName: Allowed,
+          readOnlyName,
         }}
         interfaceConfigOverwrite={{}}
         userInfo={{

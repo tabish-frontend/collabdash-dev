@@ -94,7 +94,7 @@ const CreateEmployeeComponent = () => {
                         </Typography>
                       </Grid> */}
 
-                      <Grid item xs={12} sm={6} md={4} lg={3}>
+                      <Grid item xs={12} sm={6} md={3} lg={3}>
                         <FullNameField
                           value={formik.values.full_name}
                           handleChange={formik.handleChange}
@@ -104,7 +104,7 @@ const CreateEmployeeComponent = () => {
                         />
                       </Grid>
 
-                      <Grid item xs={12} sm={6} md={4} lg={3}>
+                      <Grid item xs={12} sm={6} md={3} lg={3}>
                         <EmailField
                           value={formik.values.email}
                           handleChange={(e: any) => {
@@ -121,30 +121,7 @@ const CreateEmployeeComponent = () => {
                         />
                       </Grid>
 
-                      <Grid item xs={12} sm={6} md={4} lg={3}>
-                        <GenderField
-                          value={formik.values.gender}
-                          handleChange={formik.handleChange}
-                          handleBlur={formik.handleBlur}
-                          formikTouched={formik.touched.gender}
-                          formikError={formik.errors.gender}
-                        />
-                      </Grid>
-
-                      <Grid item xs={12} sm={6} md={4} lg={3}>
-                        <MobileField
-                          value={formik.values.mobile}
-                          handleChange={(...value: any[]) => {
-                            console.log("mobile value", value);
-                            formik.setFieldValue("mobile", value[0]);
-                          }}
-                          handleBlur={formik.handleBlur}
-                          formikError={formik.errors.mobile}
-                          formikTouched={formik.touched.mobile}
-                        />
-                      </Grid>
-
-                      <Grid item xs={12} sm={4}>
+                      <Grid item xs={12} sm={6} md={3} lg={3}>
                         <UsernameField
                           value={formik.values.username}
                           handleChange={formik.handleChange}
@@ -154,17 +131,16 @@ const CreateEmployeeComponent = () => {
                         />
                       </Grid>
 
-                      <Grid item xs={12} sm={4}>
-                        <IdentityTypeField
-                          value={formik.values.identity_type}
-                          handleChange={formik.handleChange}
-                        />
-                      </Grid>
-
-                      <Grid item xs={12} sm={4}>
-                        <IdentityNumberField
-                          value={formik.values.identity_number}
-                          handleChange={formik.handleChange}
+                      <Grid item xs={12} sm={6} md={3} lg={3}>
+                        <MobileField
+                          value={formik.values.mobile}
+                          handleChange={(...value: any[]) => {
+                            console.log("mobile value", value);
+                            formik.setFieldValue("mobile", value[0]);
+                          }}
+                          handleBlur={formik.handleBlur}
+                          formikError={formik.errors.mobile}
+                          formikTouched={formik.touched.mobile}
                         />
                       </Grid>
 
@@ -237,6 +213,30 @@ const CreateEmployeeComponent = () => {
                           handleBlur={formik.handleBlur}
                           formikTouched={formik.touched.role}
                           formikError={formik.errors.role}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} sm={4}>
+                        <GenderField
+                          value={formik.values.gender}
+                          handleChange={formik.handleChange}
+                          handleBlur={formik.handleBlur}
+                          formikTouched={formik.touched.gender}
+                          formikError={formik.errors.gender}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} sm={4}>
+                        <IdentityTypeField
+                          value={formik.values.identity_type}
+                          handleChange={formik.handleChange}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} sm={4}>
+                        <IdentityNumberField
+                          value={formik.values.identity_number}
+                          handleChange={formik.handleChange}
                         />
                       </Grid>
 

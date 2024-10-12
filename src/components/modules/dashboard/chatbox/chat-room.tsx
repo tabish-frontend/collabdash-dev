@@ -94,7 +94,7 @@ const ChatRoomComponent = () => {
     <div>
       {chatRoomExist && (
         <ConferenceRoom
-          Allowed={true}
+          readOnlyName={true}
           RoomName={displayRoomName}
           onConferenceLeft={handleCallLeft} // Pass the event listener for ChatRoom only
         />
