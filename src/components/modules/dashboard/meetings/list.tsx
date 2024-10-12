@@ -43,7 +43,6 @@ interface DeleteMeetingDialogData {
 
 const MeetingListComponent = () => {
   const settings = useSettings();
-  const { user } = useAuth<AuthContextType>();
   const theme = useTheme();
 
   const meetingDialog = useDialog<MeetingDialogData>();
@@ -58,6 +57,7 @@ const MeetingListComponent = () => {
   const getMeetins = useCallback(async () => {
     setIsLoading(true);
     const response = await meetingApi.getAllMeetings(meetingStatus);
+
     setMeetingList(response.data);
     setIsLoading(false);
   }, [meetingStatus]);
@@ -103,15 +103,17 @@ const MeetingListComponent = () => {
     setMeetingStatus(newValue);
   };
 
+  const sortedMeetings = meetingList.sort(
+    (a: { recurring: any }, b: { recurring: any }) => {
+      if (a.recurring && !b.recurring) return -1;
+      if (!a.recurring && b.recurring) return 1;
+      return 0;
+    }
+  );
+
   useEffect(() => {
     getMeetins();
   }, [getMeetins]);
-
-  const sortedMeetings = meetingList.sort((a, b) => {
-    if (a.recurring && !b.recurring) return -1;
-    if (!a.recurring && b.recurring) return 1;
-    return 0;
-  });
 
   return (
     <Box
@@ -175,7 +177,7 @@ const MeetingListComponent = () => {
             <Grid container spacing={2}>
               {isLoading ? (
                 [...Array(4)].map((_, index) => (
-                  <Grid item xs={12} xl={4} lg={4} md={6} key={index}>
+                  <Grid item xs={12} xl={4} lg={6} md={6} key={index}>
                     <SkeletonMeetingCard />
                   </Grid>
                 ))
@@ -185,7 +187,7 @@ const MeetingListComponent = () => {
                 </Grid>
               ) : (
                 sortedMeetings.map((meeting: Meeting) => (
-                  <Grid item xs={12} xl={4} lg={4} md={6} key={meeting._id}>
+                  <Grid item xs={12} xl={4} lg={6} md={6} key={meeting._id}>
                     <MeetingCard
                       meeting={meeting}
                       isUpcomingMeetings={meetingStatus === "upcoming"}

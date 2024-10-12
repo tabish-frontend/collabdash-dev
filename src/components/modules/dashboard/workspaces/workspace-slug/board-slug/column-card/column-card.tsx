@@ -6,6 +6,7 @@ import { TaskAdd } from "../task-add";
 import { TaskCard } from "../task-card";
 import { ColumnHeader } from "./column-header";
 import { Column, Tasks } from "src/types";
+import { Scrollbar } from "src/utils/scrollbar";
 
 interface ColumnCardProps {
   column: Column;
@@ -45,7 +46,6 @@ export const ColumnCard: FC<ColumnCardProps> = (props) => {
           xs: 300,
           sm: 350,
         },
-      
       }}
       {...other}
     >
@@ -53,66 +53,82 @@ export const ColumnCard: FC<ColumnCardProps> = (props) => {
         sx={{
           backgroundColor: (theme) =>
             theme.palette.mode === "dark" ? "neutral.900" : "neutral.100",
-          borderRadius: 2.5,
-          // height: "75vh"
+          borderRadius: 1,
+
+          py: 1,
+          // height: "75vh",
         }}
       >
-        <ColumnHeader
-          name={column.name}
-          onClear={onClear}
-          onDelete={onDelete}
-          onRename={onRename}
-          tasksCount={tasksCount}
-        />
-
-        <Box
+        <Scrollbar
           sx={{
-            pt: 1.5,
-            pb: 1.5,
-            px: 1,
+            maxHeight: {
+              lg: "71vh",
+              md: "56vh",
+            },
+            overflowY: "auto",
           }}
         >
-          <TaskAdd onAdd={onTaskAdd} />
-        </Box>
+          <ColumnHeader
+            name={column.name}
+            onClear={onClear}
+            onDelete={onDelete}
+            onRename={onRename}
+            tasksCount={tasksCount}
+          />
 
-        <Droppable droppableId={column._id} type="task">
-          {(droppableProvider): JSX.Element => (
-            <Box
-              ref={droppableProvider.innerRef}
-              sx={{
-                flexGrow: 1,
-                minHeight: 80,
-                overflowY: "auto",
-                p: 1,
-              }}
-            >
-              {column?.tasks?.map((task: Tasks, index) => (
-                <Draggable key={task._id} draggableId={task._id} index={index}>
-                  {(draggableProvided, snapshot): JSX.Element => (
-                    <Box
-                      ref={draggableProvided.innerRef}
-                      style={{ ...draggableProvided.draggableProps.style }}
-                      sx={{
-                        outline: "none",
-                        py: 1,
-                      }}
-                      {...draggableProvided.draggableProps}
-                      {...draggableProvided.dragHandleProps}
-                    >
-                      <TaskCard
-                        key={task._id}
-                        dragging={snapshot.isDragging}
-                        onOpen={() => onTaskOpen?.(task)}
-                        task={task}
-                      />
-                    </Box>
-                  )}
-                </Draggable>
-              ))}
-              {droppableProvider.placeholder}
-            </Box>
-          )}
-        </Droppable>
+          <Box
+            sx={{
+              pt: 0.5,
+              pb: 0.5,
+              px: 2,
+            }}
+          >
+            <TaskAdd onAdd={onTaskAdd} />
+          </Box>
+
+          <Droppable droppableId={column._id} type="task">
+            {(droppableProvider): JSX.Element => (
+              <Box
+                ref={droppableProvider.innerRef}
+                sx={{
+                  flexGrow: 1,
+                  minHeight: 80,
+                  overflowY: "auto",
+                  px: 2,
+                }}
+              >
+                {column?.tasks?.map((task: Tasks, index) => (
+                  <Draggable
+                    key={task._id}
+                    draggableId={task._id}
+                    index={index}
+                  >
+                    {(draggableProvided, snapshot): JSX.Element => (
+                      <Box
+                        ref={draggableProvided.innerRef}
+                        style={{ ...draggableProvided.draggableProps.style }}
+                        sx={{
+                          outline: "none",
+                          py: 0.5,
+                        }}
+                        {...draggableProvided.draggableProps}
+                        {...draggableProvided.dragHandleProps}
+                      >
+                        <TaskCard
+                          key={task._id}
+                          dragging={snapshot.isDragging}
+                          onOpen={() => onTaskOpen?.(task)}
+                          task={task}
+                        />
+                      </Box>
+                    )}
+                  </Draggable>
+                ))}
+                {droppableProvider.placeholder}
+              </Box>
+            )}
+          </Droppable>
+        </Scrollbar>
       </Box>
     </Box>
   );

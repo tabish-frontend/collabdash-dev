@@ -60,7 +60,7 @@ const WorkSpacesComponent = () => {
       component="main"
       sx={{
         flexGrow: 1,
-        py: 4,
+        py: 2,
       }}
     >
       <Container maxWidth={settings.stretch ? false : "xl"}>
@@ -76,7 +76,7 @@ const WorkSpacesComponent = () => {
             alignItems={"center"}
             sx={{ px: 2 }}
           >
-            <Typography variant="h4">Workspaces</Typography>
+            <Typography variant="h5">Workspaces</Typography>
 
             {!isEmployee && (
               <Button

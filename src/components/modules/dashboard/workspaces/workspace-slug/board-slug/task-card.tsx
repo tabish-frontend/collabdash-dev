@@ -37,13 +37,15 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
         sx={{
           backgroundColor: (theme) =>
             theme.palette.mode === "dark" ? "neutral.800" : "background.paper",
+          borderRadius: 1,
           ...(dragging && {
             backgroundColor: (theme) =>
               theme.palette.mode === "dark"
                 ? "neutral.800"
                 : "background.paper",
           }),
-          p: 2,
+          py: 1,
+          px: 2,
           userSelect: "none",
           "&:hover": {
             backgroundColor: (theme) =>

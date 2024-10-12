@@ -46,6 +46,7 @@ export const TaskAdd: FC<TaskAddProps> = (props) => {
       sx={{
         backgroundColor: (theme) =>
           theme.palette.mode === "dark" ? "neutral.800" : "background.paper",
+        borderRadius: 1,
       }}
       {...other}
     >
@@ -60,10 +61,15 @@ export const TaskAdd: FC<TaskAddProps> = (props) => {
             sx={{
               "& .MuiInputBase-input": {
                 px: 2,
-                py: 1,
+                // py: 0.5,
               },
             }}
             value={name}
+            onKeyUp={(event) => {
+              if (event.key === "Enter") {
+                handleAddConfirm();
+              }
+            }}
           />
           <Stack alignItems="center" direction="row" spacing={2} sx={{ mt: 2 }}>
             <Button
@@ -91,7 +97,7 @@ export const TaskAdd: FC<TaskAddProps> = (props) => {
           spacing={1}
           sx={{
             cursor: "pointer",
-            p: 2,
+            p: 1,
             userSelect: "none",
           }}
         >

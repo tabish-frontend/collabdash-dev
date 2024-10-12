@@ -77,7 +77,7 @@ const WorkSpaceSlugComponent = () => {
       component="main"
       sx={{
         flexGrow: 1,
-        py: 4,
+        py: 2,
       }}
     >
       <Container maxWidth={settings.stretch ? false : "xl"}>
@@ -87,29 +87,31 @@ const WorkSpaceSlugComponent = () => {
             lg: 1,
           }}
         >
-          <Box display="flex" alignItems={"center"}>
-            <Tooltip title="Back">
-              <Button
-                onClick={() => router.back()}
-                color="inherit"
-                size="small"
-              >
-                <SvgIcon>
-                  <ArrowLeftIcon />
-                </SvgIcon>
-              </Button>
-            </Tooltip>
-            <Typography variant="h5">{"Boards"}</Typography>
-          </Box>
-
           <Stack
             direction={"row"}
             justifyContent="space-between"
             alignItems={"center"}
-            flexWrap={"wrap"}
-            sx={{ px: 3 }}
           >
-            <Typography variant="h5">{workSpace?.name}</Typography>
+            <Box display="flex" alignItems={"center"}>
+              <Tooltip title="Back">
+                <Button
+                  onClick={() => router.back()}
+                  color="inherit"
+                  size="small"
+                >
+                  <SvgIcon>
+                    <ArrowLeftIcon />
+                  </SvgIcon>
+                </Button>
+              </Tooltip>
+
+              <Typography variant="h5" textTransform={"capitalize"}>
+                <Tooltip title="Workspace">
+                  <span>{workSpace?.name}</span>
+                </Tooltip>
+                {" - Boards"}
+              </Typography>
+            </Box>
 
             {user?.role !== ROLES.Employee && (
               <Button
@@ -131,7 +133,7 @@ const WorkSpaceSlugComponent = () => {
             )}
           </Stack>
 
-          <Grid container spacing={2} sx={{ pr: 3 }} minHeight={"70vh"}>
+          <Grid container spacing={2} sx={{ pr: 3 }} minHeight={200}>
             {workSpace?.boards?.length === 0 ? (
               <Stack
                 justifyContent={"center"}

@@ -28,7 +28,7 @@ export const ImageAvatar: React.FC<ImageAvatarProps> = ({
           style={{ borderRadius: "50%" }}
         />
       ) : (
-        <Avatar>
+        <Avatar sx={{ width, height }}>
           <SvgIcon>
             <User01Icon />
           </SvgIcon>

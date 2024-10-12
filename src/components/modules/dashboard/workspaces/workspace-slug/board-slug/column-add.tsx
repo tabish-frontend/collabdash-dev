@@ -45,7 +45,7 @@ export const ColumnAdd: FC<ColumnAddProps> = (props) => {
       sx={{
         backgroundColor: (theme) =>
           theme.palette.mode === "dark" ? "neutral.800" : "neutral.100",
-        borderRadius: 2.5,
+        borderRadius: 1,
         mt: 7,
         mx: 1,
         width: {
@@ -69,6 +69,11 @@ export const ColumnAdd: FC<ColumnAddProps> = (props) => {
                 px: 2,
                 py: 1,
               },
+            }}
+            onKeyUp={(event) => {
+              if (event.key === "Enter") {
+                handleAddConfirm();
+              }
             }}
           />
           <Box
