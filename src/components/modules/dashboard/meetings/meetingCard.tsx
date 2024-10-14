@@ -21,7 +21,7 @@ import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
 import { SquareEditOutline, TrashCanOutline } from "mdi-material-ui";
-import { getDay_Time } from "src/utils";
+import { getClassDate, getClassTime, getDay_Time } from "src/utils";
 import { FC, useState } from "react";
 import { Meeting } from "src/types";
 import { useRouter } from "next/router";
@@ -31,6 +31,7 @@ import { useAuth } from "src/hooks";
 import { AuthContextType } from "src/contexts/auth";
 import { ROLES } from "src/constants/roles";
 import RepeatIcon from "@mui/icons-material/Repeat";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
 interface MeetingCardProps {
   meeting: Meeting;
@@ -68,21 +69,15 @@ export const MeetingCard: FC<MeetingCardProps> = ({
   return (
     <Card sx={{ position: "relative", minHeight: 310 }}>
       <CardHeader
-        avatar={
-          <ImageAvatar
-            path={meeting?.owner!.avatar || ""}
-            alt={meeting?.owner!.full_name || ""}
-            width={50}
-            height={50}
-          />
-        }
         title={
-          <Typography variant="h6">{meeting?.owner!.full_name}</Typography>
-        }
-        subheader={
-          <Typography variant="body2" color="textSecondary">
-            Organiser
-          </Typography>
+          <Stack direction={"row"} spacing={1}>
+            <Typography variant={isSmallScreen ? "h6" : "h5"}>
+              Topic:
+            </Typography>
+            <Typography variant={isSmallScreen ? "subtitle1" : "h5"}>
+              {meeting?.title}
+            </Typography>
+          </Stack>
         }
         action={
           <Stack direction="row" spacing={0.5}>
@@ -106,10 +101,10 @@ export const MeetingCard: FC<MeetingCardProps> = ({
             justifyContent="space-between"
             alignItems="center"
           >
-            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+            {/* <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
               {meeting?.title}
-            </Typography>
-            {meeting.recurring && (
+            </Typography> */}
+            {/* {meeting.recurring && (
               <Tooltip
                 title={`Recurring: ${formatRecurringDays(
                   meeting.meeting_days
@@ -126,7 +121,7 @@ export const MeetingCard: FC<MeetingCardProps> = ({
                   color="info"
                 />
               </Tooltip>
-            )}
+            )} */}
           </Stack>
           <Stack
             direction={isSmallScreen ? "column" : "column"}
@@ -138,37 +133,104 @@ export const MeetingCard: FC<MeetingCardProps> = ({
             <Stack
               direction={"row"}
               justifyContent={"space-between"}
-              alignItems={"center"}
+              alignItems={"flex-start"}
               width={"100%"}
               flexWrap={"wrap"}
             >
-              <Stack direction={"row"} alignItems={"center"} spacing={1}>
-                <AccessTimeOutlinedIcon
-                  sx={{ fontSize: "18px", color: "text.secondary" }}
-                />
+              <Stack direction={"column"} spacing={0.5}>
+                {!meeting.recurring && (
+                  <Stack direction={"row"} alignItems={"center"} spacing={1}>
+                    <CalendarMonthIcon
+                      sx={{ fontSize: "18px", color: "text.secondary" }}
+                    />
 
-                <Typography variant="body2">
-                  {meeting.recurring
-                    ? `Every ${formatRecurringDays(
-                        meeting.meeting_days
-                      )} at ${formatMeetingTime(meeting.time)}`
-                    : getDay_Time(meeting!.time)}
-                </Typography>
+                    <Typography variant="body2">
+                      {getClassDate(meeting!.time)}
+                    </Typography>
+                  </Stack>
+                )}
+                <Stack direction={"row"} alignItems={"center"} spacing={1}>
+                  <AccessTimeOutlinedIcon
+                    sx={{ fontSize: "18px", color: "text.secondary" }}
+                  />
+
+                  <Typography variant="body2">
+                    {meeting.recurring
+                      ? `Every ${formatRecurringDays(
+                          meeting.meeting_days
+                        )} at ${formatMeetingTime(meeting.time)}`
+                      : getClassTime(meeting!.time)}
+                  </Typography>
+                </Stack>
               </Stack>
-              <Stack direction={"row"} alignItems={"center"} spacing={1}>
-                <GroupOutlinedIcon fontSize="small" />
-                <Typography variant="body2">
-                  {`${meeting?.participants?.length} Members`}
-                </Typography>
+
+              <Stack direction={"column"} spacing={0.5}>
+                <Stack direction={"row"} alignItems={"center"} spacing={1}>
+                  <GroupOutlinedIcon fontSize="small" />
+                  <Typography variant="body2">
+                    {`${meeting?.participants?.length} ${
+                      meeting?.participants?.length === 1 ? "Member" : "Members"
+                    }`}
+                  </Typography>
+                </Stack>
+
+                <Stack
+                  direction={"row"}
+                  justifyContent={"flex-start"}
+                  width={"100%"}
+                >
+                  <UserAvatarGroup users={meeting!.participants} />
+                </Stack>
               </Stack>
             </Stack>
 
             <Stack
               direction={"row"}
-              justifyContent={"flex-start"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
               width={"100%"}
+              flexWrap={"wrap"}
             >
-              <UserAvatarGroup users={meeting!.participants} />
+              <Stack direction={"row"} spacing={1} alignItems={"center"} mb={1}>
+                <ImageAvatar
+                  path={meeting?.owner!.avatar || ""}
+                  alt={meeting?.owner!.full_name || ""}
+                  width={isSmallScreen ? 40 : 40}
+                  height={isSmallScreen ? 40 : 40}
+                />
+                <Stack>
+                  <Typography variant="h6">
+                    {meeting?.owner!.full_name}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Organiser
+                  </Typography>
+                </Stack>
+              </Stack>
+              {meeting.recurring && (
+                <Tooltip
+                  title={`Recurring: ${formatRecurringDays(
+                    meeting.meeting_days
+                  )}`}
+                >
+                  <Chip
+                    icon={
+                      <SvgIcon>
+                        <RepeatIcon sx={{ color: "#20708b" }} />
+                      </SvgIcon>
+                    }
+                    label="Recurring"
+                    size="medium"
+                    color="primary"
+                    variant="outlined"
+                    sx={{
+                      p: { xs: 0, sm: 0.5 },
+                      border: "1px solid #20708b",
+                      fontSize: { xs: 12, sm: 14 },
+                    }}
+                  />
+                </Tooltip>
+              )}
             </Stack>
           </Stack>
         </Stack>
@@ -177,15 +239,16 @@ export const MeetingCard: FC<MeetingCardProps> = ({
           direction={"row"}
           justifyContent={"space-between"}
           alignItems={"center"}
-          pt={2}
+          pt={3}
         >
           <Button
-            variant="text"
-            sx={{ padding: "6px 8px" }}
+            variant="contained"
+            size="small"
             color={theme.palette.mode === "dark" ? "info" : "primary"}
             disabled={!isUpcomingMeetings}
             endIcon={<ChevronRightOutlinedIcon />}
             onClick={() => router.push(`${router.pathname}/${meeting?._id}`)}
+            sx={{ borderRadius: 30 }}
           >
             Join Meeting
           </Button>

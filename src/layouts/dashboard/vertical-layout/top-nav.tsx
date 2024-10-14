@@ -43,9 +43,7 @@ export const TopNav: FC<TopNavProps> = (props) => {
         backdropFilter: "blur(6px)",
         backgroundColor: (theme) =>
           alpha(theme.palette.background.default, 0.8),
-        // borderBottom: "1px solid #dcdfe4",
-        // borderTop: "1px solid #dcdfe4",
-        boxShadow: "inherit",
+
         position: "sticky",
         left: {
           lg: `${SIDE_NAV_WIDTH}px`,
@@ -55,6 +53,13 @@ export const TopNav: FC<TopNavProps> = (props) => {
           lg: `calc(100% - ${SIDE_NAV_WIDTH}px)`,
         },
         zIndex: (theme) => theme.zIndex.appBar,
+        boxShadow: (theme) =>
+          `0 1px 4px ${alpha(
+            theme.palette.mode === "light"
+              ? theme.palette.grey[700]
+              : theme.palette.grey[400], // Use a lighter shadow for better visibility in dark mode
+            theme.palette.mode === "light" ? 0.1 : 0.3 // Increase opacity in dark mode
+          )}`,
       }}
       {...other}
     >
