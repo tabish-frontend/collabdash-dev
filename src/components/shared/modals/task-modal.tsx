@@ -72,7 +72,6 @@ interface TaskModalProps {
   onClose?: () => void;
   open?: boolean;
   task?: Tasks;
-  boardMembers?: any;
 }
 
 interface DeleteTaskDialogData {
@@ -92,7 +91,7 @@ const allowedFileTypes = [
 ];
 
 export const TaskModal: FC<TaskModalProps> = (props) => {
-  const { task, boardMembers, onClose, open = false, ...other } = props;
+  const { task, onClose, open = false, ...other } = props;
 
   const ReactQuill = useMemo(
     () => dynamic(() => import("react-quill"), { ssr: false }),
@@ -100,7 +99,9 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
   );
   const DeleteTaskDialog = useDialog<DeleteTaskDialogData>();
 
-  const { handleDeleteTask, handleUpdateTask } = useWorkSpace();
+  const { handleDeleteTask, handleUpdateTask, getBoardMembersByTaskId } =
+    useWorkSpace();
+  const boardMembers = getBoardMembersByTaskId(task!._id);
   const theme = useTheme();
 
   const [showAlert, setShowAlert] = useState(false);
@@ -118,7 +119,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     onSubmit: async (values, helpers): Promise<void> => {
       setIsFormBeingChanged(false);
       setShowAlert(false);
-      const response = await handleUpdateTask(values);
+      await handleUpdateTask(values);
       onClose?.();
     },
   });

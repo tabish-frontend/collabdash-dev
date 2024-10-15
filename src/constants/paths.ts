@@ -17,5 +17,6 @@ export const paths = {
   chat_room: "/chat/room",
   meetings: "/meetings",
   workspaces: `/workspaces`,
+  calender: `/calender`,
   notFound: "/404",
 };

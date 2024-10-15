@@ -306,7 +306,6 @@ export const MyTasksCard = ({
             onClose={taskDialog.handleClose}
             open={taskDialog.open}
             task={taskDialog.data?.values || undefined}
-            boardMembers={taskDialog.data?.values.boardMembers}
           />
         )}
       </Card>

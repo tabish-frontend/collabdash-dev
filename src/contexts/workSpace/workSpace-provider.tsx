@@ -465,6 +465,25 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = ({ children }) => {
     [state.WorkSpaces]
   );
 
+  const getBoardMembersByTaskId = useCallback(
+    (taskId: string) => {
+      // Find the workspace containing the board with the task
+      for (const workspace of state.WorkSpaces) {
+        for (const board of workspace.boards) {
+          // Check each column of the board to find the task
+          for (const column of board.columns) {
+            if (column.tasks.some((task) => task._id === taskId)) {
+              // Task found, return the board members
+              return [board.owner, ...board.members];
+            }
+          }
+        }
+      }
+      return [];
+    },
+    [state.WorkSpaces]
+  );
+
   const accessToken = window.localStorage.getItem("accessToken");
 
   useEffect(() => {
@@ -532,6 +551,7 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = ({ children }) => {
         handleAddWorkSpace,
         handleUpdateWorkSpace,
         getAllTasksForUser,
+        getBoardMembersByTaskId,
         handleDeleteWorkSpace,
         getCurrentBoard,
         handleAddBoard,
