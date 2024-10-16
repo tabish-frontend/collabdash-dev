@@ -173,11 +173,11 @@ const BoardComponent = () => {
 
               <Typography variant="h5" textTransform={"capitalize"}>
                 <Tooltip title="Workspace">
-                  <span>{workSpaceBoard.workspace?.name}</span>
+                  <span>{workSpaceBoard?.workspace?.name}</span>
                 </Tooltip>
                 {" - "}
                 <Tooltip title="Board">
-                  <span>{workSpaceBoard.name}</span>
+                  <span>{workSpaceBoard?.name}</span>
                 </Tooltip>
                 {" - Tasks"}
               </Typography>

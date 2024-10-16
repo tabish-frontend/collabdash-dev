@@ -88,7 +88,8 @@ const allowedFileTypes = [
   "text/plain",
   "video/mp4",
   "audio/mpeg",
-  "text/csv",
+  "text/csv", // CSV files
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx files
 ];
 
 export const TaskModal: FC<TaskModalProps> = (props) => {
@@ -163,6 +164,8 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
           name: selectedFile?.name,
           url: URL.createObjectURL(selectedFile),
         };
+
+        console.log("newAttachment", newAttachment);
 
         // Add the new attachment to the formik values
         formik.setFieldValue("attachments", [

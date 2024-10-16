@@ -169,25 +169,14 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
 
         const attendance_response = await attendanceApi.getTodayAttendance();
 
-        if (attendance_response) {
-          dispatch({
-            type: ActionType.INITIALIZE,
-            payload: {
-              isAuthenticated: true,
-              user: user.data,
-              attendance: attendance_response.data.attendance,
-            },
-          });
-        } else {
-          dispatch({
-            type: ActionType.INITIALIZE,
-            payload: {
-              isAuthenticated: true,
-              user: user.data,
-              attendance: null,
-            },
-          });
-        }
+        dispatch({
+          type: ActionType.INITIALIZE,
+          payload: {
+            isAuthenticated: true,
+            user: user.data,
+            attendance: attendance_response.data,
+          },
+        });
       } else {
         dispatch({
           type: ActionType.INITIALIZE,
