@@ -42,7 +42,7 @@ export const TopNav: FC<TopNavProps> = (props) => {
       sx={{
         backdropFilter: "blur(6px)",
         backgroundColor: (theme) =>
-          alpha(theme.palette.background.default, 0.8),
+          alpha(theme.palette.background.default, 1),
 
         position: "sticky",
         left: {
