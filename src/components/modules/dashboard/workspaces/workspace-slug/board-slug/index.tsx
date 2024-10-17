@@ -17,6 +17,7 @@ import { useWorkSpace } from "src/hooks/use-workSpace";
 import { Column, Tasks } from "src/types";
 import { useSettings } from "src/hooks";
 import { TaskModal } from "src/components/shared";
+import { Scrollbar } from "src/utils/scrollbar";
 
 const BoardComponent = () => {
   const [currentTask, setCurrentTask] = useState<Tasks | null>(null);
@@ -238,9 +239,7 @@ const BoardComponent = () => {
                 type="COLUMN"
               >
                 {(provided) => (
-                  <Box
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
+                  <Scrollbar
                     sx={{
                       display: "flex",
                       flexGrow: 1,
@@ -251,59 +250,71 @@ const BoardComponent = () => {
                       py: 3,
                     }}
                   >
-                    <Stack alignItems="flex-start" direction="row" spacing={1}>
-                      {workSpaceBoard?.columns.map(
-                        (column: Column, index: number) => (
-                          <Draggable
-                            draggableId={column._id}
-                            index={index}
-                            key={column._id}
-                          >
-                            {(provided) => (
-                              <Box
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                              >
-                                <ColumnCard
-                                  column={filterTasksByAssignee(
-                                    column,
-                                    selectedAssignee
-                                  )}
-                                  onClear={() => handleClearColumn(column._id)}
-                                  onDelete={() =>
-                                    handleDeleteColumn(column._id)
-                                  }
-                                  onRename={(name) =>
-                                    handleUpdateColumn(column._id, {
-                                      name,
-                                    })
-                                  }
-                                  onTaskAdd={(name) =>
-                                    handleAddTask({
-                                      title: name || "Untitled Task",
-                                      column: column._id,
-                                      board: workSpaceBoard._id,
-                                    })
-                                  }
-                                  onTaskOpen={handleTaskOpen}
-                                />
-                              </Box>
-                            )}
-                          </Draggable>
-                        )
-                      )}
-                      {provided.placeholder}
-                      <ColumnAdd
-                        onAdd={(name) =>
-                          handleAddColumn({
-                            name: name || "Untitled Column",
-                            board: workSpaceBoard._id,
-                          })
-                        }
-                      />
-                    </Stack>
-                  </Box>
+                    <Box
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                      sx={{
+                        display: "flex",
+                      }}
+                    >
+                      <Stack
+                        alignItems="flex-start"
+                        direction="row"
+                        spacing={1}
+                      >
+                        {workSpaceBoard?.columns.map(
+                          (column: Column, index: number) => (
+                            <Draggable
+                              draggableId={column._id}
+                              index={index}
+                              key={column._id}
+                            >
+                              {(provided) => (
+                                <Box
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                >
+                                  <ColumnCard
+                                    column={filterTasksByAssignee(
+                                      column,
+                                      selectedAssignee
+                                    )}
+                                    onClear={() =>
+                                      handleClearColumn(column._id)
+                                    }
+                                    onDelete={() =>
+                                      handleDeleteColumn(column._id)
+                                    }
+                                    onRename={(name) =>
+                                      handleUpdateColumn(column._id, { name })
+                                    }
+                                    onTaskAdd={(name) =>
+                                      handleAddTask({
+                                        title: name || "Untitled Task",
+                                        column: column._id,
+                                        board: workSpaceBoard._id,
+                                      })
+                                    }
+                                    onTaskOpen={handleTaskOpen}
+                                  />
+                                </Box>
+                              )}
+                            </Draggable>
+                          )
+                        )}
+                        {provided.placeholder}
+                        <ColumnAdd
+                          onAdd={(name) =>
+                            handleAddColumn({
+                              name: name || "Untitled Column",
+                              board: workSpaceBoard._id,
+                            })
+                          }
+                        />
+                      </Stack>
+                    </Box>
+                  </Scrollbar>
                 )}
               </Droppable>
             </DragDropContext>
@@ -315,7 +326,6 @@ const BoardComponent = () => {
           onClose={handleTaskClose}
           open={!!currentTask}
           task={currentTask || undefined}
-          boardMembers={workSpaceBoard?.members}
         />
       )}
     </>

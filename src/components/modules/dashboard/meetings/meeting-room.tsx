@@ -164,14 +164,8 @@ const MeetingRoomComponent = () => {
     checkRoomExists();
   }, [meeting_url]);
 
-  console.log("user 111", user);
-
   const handleLeaveMeeting = async () => {
-    console.log("Trigger Video Conference Leave");
-
     setMeetingExist(false);
-
-    console.log("user 011", user);
 
     if (user) {
       router.push(paths.index);

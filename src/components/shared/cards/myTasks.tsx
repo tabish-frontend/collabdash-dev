@@ -183,8 +183,7 @@ export const MyTasksCard = ({
                       variant="outlined"
                       sx={{
                         display: "flex",
-                        flexDirection: isSmallScreen ? "column" : "row",
-                        alignItems: isSmallScreen ? "flex-start" : "center",
+                        flexDirection: "column",
                         padding: 2,
                         cursor: "pointer",
                       }}
@@ -194,46 +193,42 @@ export const MyTasksCard = ({
                         });
                       }}
                     >
-                      <Stack
-                        direction={isSmallScreen ? "column" : "row"}
-                        justifyContent={"space-between"}
-                        alignItems={isSmallScreen ? "flex-start" : "center"}
-                        width={"100%"}
+                      <Typography
+                        variant="body1"
+                        noWrap
+                        fontWeight="bold"
+                        sx={{ color: theme.palette.text.primary }}
                       >
-                        <Box sx={{ mr: 2, minWidth: "50%" }}>
-                          <Stack
-                            direction={"row"}
-                            alignItems={"center"}
-                            spacing={2}
-                          >
-                            <Typography
-                              variant="body1"
-                              fontWeight="bold"
-                              sx={{ color: theme.palette.text.primary }}
-                            >
-                              {task.title}
-                            </Typography>
+                        {task.title}
+                      </Typography>
 
-                            <SeverityPill color="info">
-                              {task.columnName}
-                            </SeverityPill>
-                          </Stack>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              mt: 1,
-                            }}
-                          >
-                            <AccessTime
-                              fontSize="small"
-                              color="action"
-                              sx={{ mr: 0.5 }}
-                            />
-                            <Typography variant="body2" color="text.secondary">
-                              Due {formatDate(task.dueDate)}
-                            </Typography>
-                          </Box>
+                      <Stack
+                        direction={"row"}
+                        justifyContent={"space-between"}
+                        width={"100%"}
+                        flexWrap={"wrap"}
+                        mt={1}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            mt: 1,
+                            gap: 1,
+                          }}
+                        >
+                          <AccessTime
+                            fontSize="small"
+                            color="action"
+                            sx={{ mr: 0.5 }}
+                          />
+                          <Typography variant="body2" color="text.secondary">
+                            Due {formatDate(task.dueDate)}
+                          </Typography>
+
+                          <SeverityPill color="info">
+                            {task.columnName}
+                          </SeverityPill>
                         </Box>
 
                         <Box
@@ -306,7 +301,6 @@ export const MyTasksCard = ({
             onClose={taskDialog.handleClose}
             open={taskDialog.open}
             task={taskDialog.data?.values || undefined}
-            boardMembers={taskDialog.data?.values.boardMembers}
           />
         )}
       </Card>

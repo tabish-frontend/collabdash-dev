@@ -5,7 +5,13 @@ import { toast } from "react-toastify";
 import { Meeting } from "src/types";
 import { paths } from "src/constants/paths";
 
-export const CoptToClipboard = ({ meeting }: { meeting: Meeting }) => {
+export const CopyToClipboard = ({
+  meeting,
+  disabled = false,
+}: {
+  meeting: Meeting;
+  disabled: boolean;
+}) => {
   const formatRecurringDays = (days: string[]) =>
     days.map((day) => day.slice(0, 3)).join(", ");
 
@@ -33,7 +39,10 @@ export const CoptToClipboard = ({ meeting }: { meeting: Meeting }) => {
   };
 
   return (
-    <IconButton onClick={() => handleCopyClick(meetingInformation)}>
+    <IconButton
+      onClick={() => handleCopyClick(meetingInformation)}
+      disabled={disabled}
+    >
       <SvgIcon>
         <ContentCopyIcon />
       </SvgIcon>

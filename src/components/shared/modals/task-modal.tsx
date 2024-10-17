@@ -47,6 +47,8 @@ import "react-quill/dist/quill.snow.css";
 import dynamic from "next/dynamic";
 import { Priorities } from "src/constants/list-items";
 import { useDialog } from "src/hooks";
+import { useDispatch } from "src/store";
+import { thunks } from "src/thunks/calendar";
 
 export interface TaskModalValues {
   _id: string;
@@ -72,7 +74,6 @@ interface TaskModalProps {
   onClose?: () => void;
   open?: boolean;
   task?: Tasks;
-  boardMembers?: any;
 }
 
 interface DeleteTaskDialogData {
@@ -93,7 +94,7 @@ const allowedFileTypes = [
 ];
 
 export const TaskModal: FC<TaskModalProps> = (props) => {
-  const { task, boardMembers, onClose, open = false, ...other } = props;
+  const { task, onClose, open = false, ...other } = props;
 
   const ReactQuill = useMemo(
     () => dynamic(() => import("react-quill"), { ssr: false }),
@@ -101,25 +102,35 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
   );
   const DeleteTaskDialog = useDialog<DeleteTaskDialogData>();
 
-  const { handleDeleteTask, handleUpdateTask } = useWorkSpace();
+  const { handleDeleteTask, handleUpdateTask, getBoardMembersByTaskId } =
+    useWorkSpace();
+  const boardMembers = getBoardMembersByTaskId(task!._id);
   const theme = useTheme();
 
   const [showAlert, setShowAlert] = useState(false);
   const [isFormBeingChanged, setIsFormBeingChanged] = useState(false);
 
+  const dispatch = useDispatch();
+
   const formik = useFormik({
-    // initialValues: taskModalInitialValues,
     initialValues: task
       ? {
           ...task,
           dueDate: new Date(task.dueDate),
         }
       : taskModalInitialValues,
-    enableReinitialize: true,
     onSubmit: async (values, helpers): Promise<void> => {
       setIsFormBeingChanged(false);
       setShowAlert(false);
-      const response = await handleUpdateTask(values);
+      await handleUpdateTask(values);
+
+      await dispatch(
+        thunks.updateEvent({
+          eventId: values._id,
+          eventType: "task",
+          update: values,
+        })
+      );
       onClose?.();
     },
   });
@@ -165,8 +176,6 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
           url: URL.createObjectURL(selectedFile),
         };
 
-        console.log("newAttachment", newAttachment);
-
         // Add the new attachment to the formik values
         formik.setFieldValue("attachments", [
           ...formik.values.attachments,
@@ -208,6 +217,17 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     }
   };
 
+  const handleDelete = async () => {
+    await dispatch(
+      thunks.deleteEvent({
+        eventId: DeleteTaskDialog.data!.id as string,
+        eventType: "task",
+      })
+    );
+    handleDeleteTask(DeleteTaskDialog.data?.id);
+    onClose?.();
+  };
+
   // Memoize the toolbar styles to update based on the theme
   const customToolbarStyles = useMemo(() => {
     return {
@@ -236,8 +256,18 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
     };
   }, [theme]);
 
-  const content =
-    task && task.column ? (
+  return (
+    <Dialog
+      onClose={handleAttemptClose}
+      open={open}
+      PaperProps={{
+        sx: {
+          width: "100%",
+          maxWidth: 900,
+        },
+      }}
+      {...other}
+    >
       <form onSubmit={formik.handleSubmit}>
         <Stack direction={"column"} px={3}>
           <Stack
@@ -257,7 +287,6 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
             {showAlert && (
               <SeverityPill color="error">Unsaved Changes!</SeverityPill>
             )}
-            {/* </Stack> */}
 
             <Stack
               justifyContent="flex-end"
@@ -273,7 +302,7 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                 size="small"
                 onClick={() =>
                   DeleteTaskDialog.handleOpen({
-                    id: task._id,
+                    id: task?._id,
                   })
                 }
                 startIcon={
@@ -356,9 +385,9 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                       height: "80%",
                     }}
                     onChange={(value) => {
-                      setIsFormBeingChanged(true);
-                      // formik.setFieldValue("description", value);
+                      console.log("hitting raect quill");
                       formik.setFieldValue("description", value);
+                      setIsFormBeingChanged(true);
                     }}
                   />
                 </Box>
@@ -528,9 +557,9 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                   </Typography>
                 </Grid>
                 <Grid xs={12}>
-                  {task.owner && (
-                    <Tooltip title={task.owner.full_name} arrow>
-                      <Avatar src={task.owner.avatar || undefined} />
+                  {task?.owner && (
+                    <Tooltip title={task?.owner.full_name} arrow>
+                      <Avatar src={task?.owner.avatar || undefined} />
                     </Tooltip>
                   )}
                 </Grid>
@@ -652,30 +681,12 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
           </Grid>
         </Grid>
       </form>
-    ) : null;
-
-  return (
-    <Dialog
-      onClose={handleAttemptClose}
-      open={open}
-      PaperProps={{
-        sx: {
-          width: "100%",
-          maxWidth: 900,
-        },
-      }}
-      {...other}
-    >
-      {content}
 
       {DeleteTaskDialog.open && (
         <ConfirmationModal
           modal={DeleteTaskDialog.open}
           onCancel={DeleteTaskDialog.handleClose}
-          onConfirm={() => {
-            handleDeleteTask(DeleteTaskDialog.data?.id);
-            onClose?.();
-          }}
+          onConfirm={handleDelete}
           content={{
             type: "Delete",
             text: "Are you sure you want to delete the Task ?",

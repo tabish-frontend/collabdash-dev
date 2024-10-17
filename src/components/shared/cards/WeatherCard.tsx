@@ -5,20 +5,23 @@ import axios from "axios";
 import { getDayFromDate } from "src/utils";
 
 export const WeatherCard = ({ name }: { name: string }) => {
-  const [weather, setWeather] = useState<any>();
+  const [weather, setWeather] = useState<any>(null);
 
   const getWeatherReport = useCallback(async (city: any) => {
     const KEY = process.env.NEXT_PUBLIC_WEATHER_API_KEY;
-
     const baseURL = `https://api.weatherapi.com/v1/forecast.json?key=${KEY}&q=${city}&days=5&aqi=no&alerts=no`;
 
-    const response = await axios.get(baseURL);
-    setWeather(response.data);
+    try {
+      const response = await axios.get(baseURL);
+      setWeather(response.data);
+    } catch (error) {
+      console.error("Error fetching weather report:", error);
+      setWeather(null); // Clear the weather data on error
+    }
   }, []);
 
   const getCityFromTimezone = () => {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
     const city = timezone.split("/")[1].replace("_", " ");
     return city;
   };

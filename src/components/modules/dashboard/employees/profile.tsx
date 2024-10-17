@@ -82,7 +82,7 @@ const EmployeeProfileComponent = () => {
             lg: 4,
           }}
         >
-          <Grid container spacing={4}>
+          <Grid container spacing={2}>
             <Grid item xs={12} sx={{ paddingBottom: 4 }}>
               <Stack
                 direction={"row"}
@@ -116,34 +116,33 @@ const EmployeeProfileComponent = () => {
               </Stack>
             </Grid>
 
-            <Grid item xs={12} md={8}>
-              <Grid item xs={12} sx={{ mb: 3 }}>
-                <EmployeeDetails
-                  employeeData={employeeData}
-                  openEditDialog={() => UpdateEmployeeDialog.handleOpen()}
-                />
-              </Grid>
-
-              <Grid item xs={12}>
-                <ShiftDetails
-                  employeeID={employeeData?._id}
-                  shiftDetails={employeeData?.shift}
-                />
-              </Grid>
+            <Grid item xs={12} md={6}>
+              <EmployeeDetails
+                employeeData={employeeData}
+                openEditDialog={() => UpdateEmployeeDialog.handleOpen()}
+              />
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={6}>
+              <ShiftDetails
+                employeeID={employeeData?._id}
+                shiftDetails={employeeData?.shift}
+              />
+            </Grid>
+
+            <Grid item xl={4} md={6} xs={12}>
               <MyTasksCard
-                cardHeight={590}
+                cardHeight={530}
                 userId={employeeData?._id as string}
               />
             </Grid>
 
-            <Grid item xs={12} md={4}>
-              <AttendanceChartCard employeeUsername={employeeData?._id} />
-            </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xl={4} md={6} xs={12}>
               <LeavesCard employeeId={employeeData?._id} cardHeight={530} />
+            </Grid>
+
+            <Grid item xl={4} md={6} xs={12}>
+              <AttendanceChartCard employeeUsername={employeeData?._id} />
             </Grid>
           </Grid>
         </Stack>

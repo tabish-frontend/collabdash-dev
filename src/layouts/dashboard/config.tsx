@@ -10,9 +10,13 @@ import {
   BullhornOutline,
   FileTreeOutline,
   CardAccountDetailsStarOutline,
-  ChatProcessingOutline,
 } from "mdi-material-ui";
+import DuoIcon from "@mui/icons-material/Duo";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import ChatIcon from "@mui/icons-material/Chat";
+import ViewKanbanIcon from "@mui/icons-material/ViewKanban";
+import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
+import HomeIcon from "@mui/icons-material/Home";
 
 export interface Item {
   disabled?: boolean;
@@ -33,7 +37,7 @@ export interface Section {
 const navItems: Item[] = [
   {
     title: "Dashboard",
-    icon: <SvgIcon component={HomeOutline} />,
+    icon: <SvgIcon component={HomeIcon} />,
     path: paths.index,
   },
   {
@@ -60,26 +64,22 @@ const navItems: Item[] = [
   {
     title: "Collab Chat",
     path: paths.chat,
-    icon: (
-      <SvgIcon fontSize="small">
-        <ChatProcessingOutline />
-      </SvgIcon>
-    ),
+    icon: <SvgIcon component={ChatIcon} />,
   },
   {
     title: "Collab Meetings",
     path: paths.meetings,
-    icon: (
-      <SvgIcon fontSize="small">
-        <CalendarMonthIcon />
-      </SvgIcon>
-    ),
+    icon: <SvgIcon component={DuoIcon} />,
   },
-
   {
     title: "Collab Spaces",
-    icon: <SvgIcon component={FileTreeOutline} />,
+    icon: <SvgIcon component={AutoAwesomeMotionIcon} />,
     path: paths.workspaces,
+  },
+  {
+    title: "My Calendar",
+    icon: <SvgIcon component={CalendarMonthIcon} />,
+    path: paths.calender,
   },
 ];
 

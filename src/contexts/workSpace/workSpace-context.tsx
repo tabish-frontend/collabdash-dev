@@ -48,6 +48,7 @@ export interface WorkSpaceContextType extends State {
   }) => void;
   handleUpdateTask: (data: any) => void;
   getAllTasksForUser: (userId: string, filter: string) => any;
+  getBoardMembersByTaskId: (taskId: string) => any;
   isLoading: boolean;
 }
 
@@ -71,5 +72,6 @@ export const WorkSpaceContext = createContext<WorkSpaceContextType>({
   handleMoveTask: () => {},
   handleUpdateTask: () => {},
   getAllTasksForUser: () => {},
+  getBoardMembersByTaskId: () => {},
   isLoading: false,
 });

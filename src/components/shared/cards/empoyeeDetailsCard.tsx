@@ -70,7 +70,7 @@ export const EmployeeDetails: FC<EmployeeDetailsProps> = ({
           </SvgIcon>
         </Box>
         <Grid container spacing={1}>
-          <StyledGrid item md={3} xs={12}>
+          <StyledGrid item xl={3} xs={12}>
             <CardContent>
               <ImageAvatar
                 path={employeeData?.avatar || ""}
@@ -80,7 +80,7 @@ export const EmployeeDetails: FC<EmployeeDetailsProps> = ({
               />
             </CardContent>
           </StyledGrid>
-          <Grid item md={9} xs={12}>
+          <Grid item xl={9} xs={12}>
             <CardContent>
               <Typography variant="h6" sx={{ textTransform: "capitalize" }}>
                 {employeeData?.full_name}

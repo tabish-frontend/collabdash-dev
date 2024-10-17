@@ -429,8 +429,12 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = ({ children }) => {
         workspace.boards.flatMap((board: any) =>
           board.columns.flatMap((column: any) =>
             column.tasks
-              .filter((task: any) =>
-                task.assignedTo.some((assignee: any) => assignee._id === userId)
+              .filter(
+                (task: any) =>
+                  task.owner._id === userId ||
+                  task.assignedTo.some(
+                    (assignee: any) => assignee._id === userId
+                  )
               )
               .map((task: any) => ({
                 ...task,
@@ -465,6 +469,25 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = ({ children }) => {
     [state.WorkSpaces]
   );
 
+  const getBoardMembersByTaskId = useCallback(
+    (taskId: string) => {
+      // Find the workspace containing the board with the task
+      for (const workspace of state.WorkSpaces) {
+        for (const board of workspace.boards) {
+          // Check each column of the board to find the task
+          for (const column of board.columns) {
+            if (column.tasks.some((task) => task._id === taskId)) {
+              // Task found, return the board members
+              return [board.owner, ...board.members];
+            }
+          }
+        }
+      }
+      return [];
+    },
+    [state.WorkSpaces]
+  );
+
   const accessToken = window.localStorage.getItem("accessToken");
 
   useEffect(() => {
@@ -489,7 +512,6 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = ({ children }) => {
     socket.on("workSpace created", handleGetWorkSpaces);
     socket.on("workSpace updated", handleGetWorkSpaces);
     socket.on("board deleted", () => {
-      console.log("calling");
       handleGetWorkSpaces();
       const { workspace_slug } = router.query;
       const { boards_slug } = router.query;
@@ -532,6 +554,7 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = ({ children }) => {
         handleAddWorkSpace,
         handleUpdateWorkSpace,
         getAllTasksForUser,
+        getBoardMembersByTaskId,
         handleDeleteWorkSpace,
         getCurrentBoard,
         handleAddBoard,

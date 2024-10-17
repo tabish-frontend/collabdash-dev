@@ -54,8 +54,6 @@ export const ConferenceRoom: React.FC<ConferenceRoomProps> = ({
           iframeRef.style.width = "100%";
         }}
         onApiReady={(externalApi) => {
-          console.log("Jitsi Meeting API is ready!", externalApi);
-
           // Add listener for videoConferenceLeft if the prop is passed
           if (onConferenceLeft) {
             externalApi.addListener("videoConferenceLeft", () => {
