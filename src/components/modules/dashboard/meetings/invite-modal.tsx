@@ -52,7 +52,7 @@ export const InviteModal: FC<InviteDialogProps> = ({ open, onClose }) => {
       sx={{ "& .MuiPaper-root": { overflowY: "unset" } }}
     >
       <form>
-        <Paper elevation={12}>
+        <Paper elevation={12} sx={{ minHeight: 350 }}>
           <DialogTitle sx={{ m: 0, p: 3, fontSize: 24, fontWeight: 600 }}>
             Invite People
           </DialogTitle>

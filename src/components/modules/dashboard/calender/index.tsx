@@ -1,13 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { NextPage } from "next";
-import type {
-  DateSelectArg,
-  EventClickArg,
-  EventDropArg,
-} from "@fullcalendar/core";
+import type { DateSelectArg, EventClickArg } from "@fullcalendar/core";
 import Calendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import type { EventResizeDoneArg } from "@fullcalendar/interaction";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -22,14 +17,22 @@ import type { Theme } from "@mui/material/styles/createTheme";
 import { useDialog } from "src/hooks/use-dialog";
 import { usePageView } from "src/hooks/use-page-view";
 import { DashboardLayout } from "src/layouts/dashboard";
-import { CalendarEventDialog } from "./calendar-event-dialog";
+// import { CalendarEventDialog } from "./calendar-event-dialog";
 import { CalendarToolbar } from "./calendar-toolbar";
 import { CalendarContainer } from "./calendar-container";
 import { useDispatch, useSelector } from "src/store";
 import { thunks } from "src/thunks/calendar";
 import type { CalendarEvent, CalendarView } from "src/types/calendar";
-import { TaskModal } from "src/components/shared";
-import { Tasks } from "src/types";
+import { ConfirmationModal, TaskModal } from "src/components/shared";
+import { Meeting, Tasks } from "src/types";
+import { MeetingCard } from "../meetings/meetingCard";
+import { Dialog } from "@mui/material";
+import { MeetingModal } from "../meetings/meeting-modal";
+// import { CalendarEventDialog } from "./calendar-event-dialog";
+
+interface VieweDialogData {
+  eventId?: string;
+}
 
 interface CreateDialogData {
   range?: {
@@ -39,6 +42,10 @@ interface CreateDialogData {
 }
 
 interface UpdateDialogData {
+  eventId?: string;
+}
+
+interface DeleteDialogData {
   eventId?: string;
 }
 
@@ -70,8 +77,6 @@ const useCurrentEvent = (
       return undefined;
     }
 
-    console.log("events", events);
-
     return events.find((event) => event.id === dialogData!.eventId);
   }, [dialogData, events]);
 };
@@ -83,13 +88,18 @@ const CalenderComponentScreen = () => {
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("md"));
   const [date, setDate] = useState<Date>(new Date());
   const [view, setView] = useState<CalendarView>(
-    mdUp ? "timeGridDay" : "dayGridMonth"
+    mdUp ? "timeGridDay" : "timeGridWeek"
   );
+
+  const viewDialog = useDialog<VieweDialogData>();
+  const viewEvent = useCurrentEvent(events, viewDialog.data);
+
   const createDialog = useDialog<CreateDialogData>();
+
   const updateDialog = useDialog<UpdateDialogData>();
   const updatingEvent = useCurrentEvent(events, updateDialog.data);
 
-  console.log("updatingEvent", updatingEvent);
+  const deleteDialog = useDialog<DeleteDialogData>();
 
   usePageView();
 
@@ -98,7 +108,7 @@ const CalenderComponentScreen = () => {
 
     if (calendarEl) {
       const calendarApi = calendarEl.getApi();
-      const newView = mdUp ? "dayGridMonth" : "timeGridDay";
+      const newView = mdUp ? "timeGridWeek" : "timeGridDay";
 
       calendarApi.changeView(newView);
       setView(newView);
@@ -183,56 +193,107 @@ const CalenderComponentScreen = () => {
 
   const handleEventSelect = useCallback(
     (arg: EventClickArg): void => {
-      updateDialog.handleOpen({
+      viewDialog.handleOpen({
         eventId: arg.event.id,
       });
     },
-    [updateDialog]
+    [viewDialog]
   );
 
-  const handleEventResize = useCallback(
-    async (arg: EventResizeDoneArg): Promise<void> => {
-      const { event } = arg;
+  const handleDelete = useCallback(async (): Promise<void> => {
+    if (!deleteDialog.data) {
+      return;
+    }
+
+    try {
+      await dispatch(
+        thunks.deleteEvent({
+          eventId: deleteDialog.data!.eventId as string,
+          eventType: "meeting",
+        })
+      );
+      deleteDialog.handleClose();
+      viewDialog.handleClose();
+    } catch (err) {
+      console.error(err);
+    }
+  }, [deleteDialog, dispatch, viewDialog]);
+
+  const handleUpdate = useCallback(
+    async (values: Meeting): Promise<void> => {
+      if (!updatingEvent) {
+        return;
+      }
 
       try {
         await dispatch(
           thunks.updateEvent({
-            eventId: event.id,
-            update: {
-              allDay: event.allDay,
-              start: event.start?.getTime(),
-              end: event.end?.getTime(),
-            },
+            eventId: updatingEvent.id,
+            eventType: "meeting",
+            update: values,
           })
         );
+        updateDialog.handleClose();
+        viewDialog.handleClose();
       } catch (err) {
         console.error(err);
       }
     },
-    [dispatch]
+    [dispatch, updateDialog, updatingEvent, viewDialog]
   );
 
-  const handleEventDrop = useCallback(
-    async (arg: EventDropArg): Promise<void> => {
-      const { event } = arg;
+  // const handleEventSelect = useCallback((arg: EventClickArg): void => {
+  //   console.log("arg", arg.event);
 
-      try {
-        await dispatch(
-          thunks.updateEvent({
-            eventId: event.id,
-            update: {
-              allDay: event.allDay,
-              start: event.start?.getTime(),
-              end: event.end?.getTime(),
-            },
-          })
-        );
-      } catch (err) {
-        console.error(err);
-      }
-    },
-    [dispatch]
-  );
+  //   // toast.success("Pemmission Denied");
+  //   updateDialog.handleOpen({
+  //     eventId: arg.event.id,
+  //   });
+  // }, []);
+
+  // const handleEventResize = useCallback(
+  //   async (arg: EventResizeDoneArg): Promise<void> => {
+  //     const { event } = arg;
+
+  //     try {
+  //       await dispatch(
+  //         thunks.updateEvent({
+  //           eventId: event.id,
+  //           update: {
+  //             allDay: event.allDay,
+  //             start: event.start?.getTime(),
+  //             end: event.end?.getTime(),
+  //           },
+  //         })
+  //       );
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   },
+  //   [dispatch]
+  // );
+
+  // const handleEventDrop = useCallback(
+  //   async (arg: EventDropArg): Promise<void> => {
+  //     const { event } = arg;
+
+  //     try {
+  //       await dispatch(
+  //         thunks.updateEvent({
+  //           eventId: event.id,
+  //           update: {
+  //             allDay: event.allDay,
+  //             start: event.start?.getTime(),
+  //             end: event.end?.getTime(),
+  //           },
+  //         })
+  //       );
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   },
+  //   [dispatch]
+  // );
 
   return (
     <>
@@ -240,7 +301,7 @@ const CalenderComponentScreen = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          py: 8,
+          py: 4,
         }}
       >
         <Container maxWidth="xl">
@@ -259,21 +320,20 @@ const CalenderComponentScreen = () => {
                 <Calendar
                   allDayMaintainDuration
                   dayMaxEventRows={3}
+                  allDaySlot={false}
                   droppable
                   editable
                   // eventClick={handleEventSelect}
                   eventClick={(e) => {
-                    console.log("=== eventClick", e);
-
                     handleEventSelect(e);
                   }}
                   eventDisplay="block"
-                  eventDrop={handleEventDrop}
-                  eventResizableFromStart
-                  eventResize={handleEventResize}
+                  // eventDrop={handleEventDrop}
+                  // eventResize={handleEventResize}
+                  // eventResizableFromStart
                   events={events}
                   headerToolbar={false}
-                  height={800}
+                  height={700}
                   initialDate={date}
                   initialView={view}
                   plugins={[
@@ -286,8 +346,6 @@ const CalenderComponentScreen = () => {
                   ref={calendarRef}
                   rerenderDelay={10}
                   select={(e) => {
-                    console.log("=== select", e);
-
                     handleRangeSelect(e);
                   }}
                   selectable
@@ -298,13 +356,13 @@ const CalenderComponentScreen = () => {
           </Stack>
         </Container>
       </Box>
-      <CalendarEventDialog
+      {/* <CalendarEventDialog
         action="create"
         onAddComplete={createDialog.handleClose}
         onClose={createDialog.handleClose}
         open={createDialog.open}
         range={createDialog.data?.range}
-      />
+      /> */}
       {/* <CalendarEventDialog
         action="update"
         event={updatingEvent}
@@ -313,11 +371,58 @@ const CalenderComponentScreen = () => {
         onEditComplete={updateDialog.handleClose}
         open={updateDialog.open}
       /> */}
-      {updatingEvent?.type === "task" && (
+
+      {viewDialog.open && viewEvent?.type === "task" && (
         <TaskModal
-          onClose={updateDialog.handleClose}
-          open={!!updateDialog.open}
-          task={updatingEvent?.details as Tasks}
+          onClose={viewDialog.handleClose}
+          open={!!viewDialog.open}
+          task={viewEvent?.details as Tasks}
+        />
+      )}
+
+      {viewDialog.open && viewEvent?.type === "meeting" && (
+        <Dialog
+          onClose={viewDialog.handleClose}
+          open={viewDialog.open}
+          maxWidth="sm"
+          fullWidth
+        >
+          <MeetingCard
+            meeting={viewEvent.details as Meeting}
+            isUpcomingMeetings={true}
+            handleUpdateMeeting={() => {
+              updateDialog.handleOpen({
+                eventId: viewEvent.id,
+              });
+            }}
+            handleDeleteMeeting={() =>
+              deleteDialog.handleOpen({
+                eventId: viewEvent.id,
+              })
+            }
+          />
+        </Dialog>
+      )}
+
+      {updateDialog.open && updatingEvent?.type === "meeting" && (
+        <MeetingModal
+          modalType={"Update"}
+          modal={updateDialog.open}
+          meetingValues={updatingEvent.details as Meeting}
+          onCancel={updateDialog.handleClose}
+          onSubmit={handleUpdate}
+        />
+      )}
+
+      {deleteDialog.open && (
+        <ConfirmationModal
+          modal={deleteDialog.open}
+          onConfirm={handleDelete}
+          onCancel={deleteDialog.handleClose}
+          content={{
+            type: "Delete Meeting",
+            text: `Are you sure you want to delete that meeting? `,
+          }}
         />
       )}
     </>

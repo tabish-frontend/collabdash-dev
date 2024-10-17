@@ -55,11 +55,11 @@ export const ShiftDetails: FC<ShiftDetailsProps> = ({
 
   const theme = useTheme();
 
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isLargeScreen = useMediaQuery(theme.breakpoints.down("xl"));
 
   return (
     <>
-      <Card sx={{ position: "relative" }}>
+      <Card sx={{ position: "relative", height: isLargeScreen ? 562 : 322 }}>
         {employeeShift && (
           <Box sx={{ position: "absolute", top: 20, right: 15 }}>
             <SvgIcon

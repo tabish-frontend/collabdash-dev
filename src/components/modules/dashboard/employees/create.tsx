@@ -54,14 +54,6 @@ const CreateEmployeeComponent = () => {
     },
   });
 
-  useEffect(() => {
-    console.log("formik values", formik.values);
-  }, [formik.values]);
-
-  useEffect(() => {
-    console.log("formik errors", formik.errors);
-  }, [formik.errors]);
-
   return (
     <Box
       component="main"
@@ -135,7 +127,6 @@ const CreateEmployeeComponent = () => {
                         <MobileField
                           value={formik.values.mobile}
                           handleChange={(...value: any[]) => {
-                            console.log("mobile value", value);
                             formik.setFieldValue("mobile", value[0]);
                           }}
                           handleBlur={formik.handleBlur}

@@ -7,6 +7,7 @@ import { TaskCard } from "../task-card";
 import { ColumnHeader } from "./column-header";
 import { Column, Tasks } from "src/types";
 import { Scrollbar } from "src/utils/scrollbar";
+import { height, minHeight } from "@mui/system";
 
 interface ColumnCardProps {
   column: Column;
@@ -54,14 +55,12 @@ export const ColumnCard: FC<ColumnCardProps> = (props) => {
           backgroundColor: (theme) =>
             theme.palette.mode === "dark" ? "neutral.900" : "neutral.100",
           borderRadius: 1,
-
           py: 1,
-          // height: "75vh",
         }}
       >
         <Scrollbar
           sx={{
-            maxHeight: {
+            height: {
               lg: "71vh",
               md: "56vh",
             },

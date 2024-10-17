@@ -13,7 +13,7 @@ import {
   SvgIcon,
 } from "@mui/material";
 import {
-  CoptToClipboard,
+  CopyToClipboard,
   ImageAvatar,
   UserAvatarGroup,
 } from "src/components/shared";
@@ -32,6 +32,7 @@ import { AuthContextType } from "src/contexts/auth";
 import { ROLES } from "src/constants/roles";
 import RepeatIcon from "@mui/icons-material/Repeat";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import { paths } from "src/constants/paths";
 
 interface MeetingCardProps {
   meeting: Meeting;
@@ -84,13 +85,14 @@ export const MeetingCard: FC<MeetingCardProps> = ({
             <IconButton
               aria-label="share"
               color="info"
-              disabled={!isUpcomingMeetings}
+              // disabled={!isUpcomingMeetings}
+              disabled
               onClick={() => setInviteDialog(true)}
             >
               <ShareOutlinedIcon />
             </IconButton>
 
-            <CoptToClipboard meeting={meeting} />
+            <CopyToClipboard meeting={meeting} disabled={!isUpcomingMeetings} />
           </Stack>
         }
       />
@@ -100,29 +102,7 @@ export const MeetingCard: FC<MeetingCardProps> = ({
             direction="row"
             justifyContent="space-between"
             alignItems="center"
-          >
-            {/* <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-              {meeting?.title}
-            </Typography> */}
-            {/* {meeting.recurring && (
-              <Tooltip
-                title={`Recurring: ${formatRecurringDays(
-                  meeting.meeting_days
-                )}`}
-              >
-                <Chip
-                  icon={
-                    <SvgIcon>
-                      <RepeatIcon sx={{ color: "white" }} />
-                    </SvgIcon>
-                  }
-                  label="Recurring"
-                  size="small"
-                  color="info"
-                />
-              </Tooltip>
-            )} */}
-          </Stack>
+          ></Stack>
           <Stack
             direction={isSmallScreen ? "column" : "column"}
             justifyContent={"space-between"}
@@ -247,32 +227,30 @@ export const MeetingCard: FC<MeetingCardProps> = ({
             color={theme.palette.mode === "dark" ? "info" : "primary"}
             disabled={!isUpcomingMeetings}
             endIcon={<ChevronRightOutlinedIcon />}
-            onClick={() => router.push(`${router.pathname}/${meeting?._id}`)}
+            onClick={() => router.push(`${paths.meetings}/${meeting?._id}`)}
             sx={{ borderRadius: 30 }}
           >
             Join Meeting
           </Button>
 
-          {user?._id === meeting?.owner!._id && (
-            <Stack direction="row" spacing={0.5}>
-              <IconButton
-                aria-label="edit"
-                color="success"
-                disabled={!isUpcomingMeetings}
-                onClick={handleUpdateMeeting}
-              >
-                <SquareEditOutline />
-              </IconButton>
-              <IconButton
-                aria-label="delete"
-                color="error"
-                disabled={!isUpcomingMeetings}
-                onClick={handleDeleteMeeting}
-              >
-                <TrashCanOutline />
-              </IconButton>
-            </Stack>
-          )}
+          <Stack direction="row" spacing={0.5}>
+            <IconButton
+              aria-label="edit"
+              color="success"
+              disabled={!isUpcomingMeetings}
+              onClick={handleUpdateMeeting}
+            >
+              <SquareEditOutline />
+            </IconButton>
+            <IconButton
+              aria-label="delete"
+              color="error"
+              disabled={!isUpcomingMeetings}
+              onClick={handleDeleteMeeting}
+            >
+              <TrashCanOutline />
+            </IconButton>
+          </Stack>
         </Stack>
       </CardContent>
 

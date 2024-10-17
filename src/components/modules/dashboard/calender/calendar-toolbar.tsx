@@ -1,20 +1,20 @@
-import type { ChangeEvent, FC, ReactNode } from 'react';
-import { useCallback, useMemo } from 'react';
-import PropTypes from 'prop-types';
-import { format } from 'date-fns';
-import ChevronLeftIcon from '@untitled-ui/icons-react/build/esm/ChevronLeft';
-import ChevronRightIcon from '@untitled-ui/icons-react/build/esm/ChevronRight';
-import PlusIcon from '@untitled-ui/icons-react/build/esm/Plus';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import Stack from '@mui/material/Stack';
-import SvgIcon from '@mui/material/SvgIcon';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import type { Theme } from '@mui/material/styles/createTheme';
+import type { ChangeEvent, FC, ReactNode } from "react";
+import { useCallback, useMemo } from "react";
+import PropTypes from "prop-types";
+import { format } from "date-fns";
+import ChevronLeftIcon from "@untitled-ui/icons-react/build/esm/ChevronLeft";
+import ChevronRightIcon from "@untitled-ui/icons-react/build/esm/ChevronRight";
+import PlusIcon from "@untitled-ui/icons-react/build/esm/Plus";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import Stack from "@mui/material/Stack";
+import SvgIcon from "@mui/material/SvgIcon";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import type { Theme } from "@mui/material/styles/createTheme";
 
-import type { CalendarView } from 'src/types/calendar';
+import type { CalendarView } from "src/types/calendar";
 
 interface ViewOption {
   label: string;
@@ -23,21 +23,21 @@ interface ViewOption {
 
 const viewOptions: ViewOption[] = [
   {
-    label: 'Month',
-    value: 'dayGridMonth'
+    label: "Month",
+    value: "dayGridMonth",
   },
   {
-    label: 'Week',
-    value: 'timeGridWeek'
+    label: "Week",
+    value: "timeGridWeek",
   },
   {
-    label: 'Day',
-    value: 'timeGridDay'
+    label: "Day",
+    value: "timeGridDay",
   },
   {
-    label: 'Agenda',
-    value: 'listWeek'
-  }
+    label: "Agenda",
+    value: "listWeek",
+  },
 ];
 
 interface CalendarToolbarProps {
@@ -62,7 +62,7 @@ export const CalendarToolbar: FC<CalendarToolbarProps> = (props) => {
     view,
     ...other
   } = props;
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'));
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("md"));
 
   const handleViewChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>): void => {
@@ -71,19 +71,19 @@ export const CalendarToolbar: FC<CalendarToolbarProps> = (props) => {
     [onViewChange]
   );
 
-  const dateMonth = format(date, 'MMMM');
-  const dateDay = format(date, 'y');
+  const dateMonth = format(date, "MMMM");
+  const dateYear = format(date, "y");
+  const currentDate = format(date, "dd");
 
   // On mobile allow only timeGridDay and agenda views
 
-  const availableViewOptions = useMemo(
-    () => {
-      return mdUp
-        ? viewOptions
-        : viewOptions.filter((option) => ['timeGridDay', 'listWeek'].includes(option.value));
-    },
-    [mdUp]
-  );
+  const availableViewOptions = useMemo(() => {
+    return mdUp
+      ? viewOptions
+      : viewOptions.filter((option) =>
+          ["timeGridDay", "listWeek"].includes(option.value)
+        );
+  }, [mdUp]);
 
   return (
     <Stack
@@ -91,33 +91,23 @@ export const CalendarToolbar: FC<CalendarToolbarProps> = (props) => {
       flexWrap="wrap"
       justifyContent="space-between"
       flexDirection={{
-        xs: 'column',
-        md: 'row'
+        xs: "column",
+        md: "row",
       }}
       spacing={3}
       sx={{ px: 3 }}
       {...other}
     >
-      <Stack
-        alignItems="center"
-        direction="row"
-        spacing={1}
-      >
-        <Typography variant="h5">
-          {dateMonth}
-        </Typography>
-        <Typography
-          sx={{ fontWeight: 400 }}
-          variant="h5"
-        >
-          {dateDay}
+      <Stack alignItems="center" direction="row" spacing={1}>
+        {view === "timeGridDay" && (
+          <Typography variant="h5">{currentDate}</Typography>
+        )}
+        <Typography variant="h5">{dateMonth}</Typography>
+        <Typography sx={{ fontWeight: 400 }} variant="h5">
+          {dateYear}
         </Typography>
       </Stack>
-      <Stack
-        alignItems="center"
-        direction="row"
-        spacing={1}
-      >
+      <Stack alignItems="center" direction="row" spacing={1}>
         <IconButton onClick={onDatePrev}>
           <SvgIcon>
             <ChevronLeftIcon />
@@ -139,37 +129,34 @@ export const CalendarToolbar: FC<CalendarToolbarProps> = (props) => {
             minWidth: 120,
             order: {
               xs: -1,
-              md: 0
-            }
+              md: 0,
+            },
           }}
           value={view}
         >
           {availableViewOptions.map((option) => (
-            <option
-              key={option.value}
-              value={option.value}
-            >
+            <option key={option.value} value={option.value}>
               {option.label}
             </option>
           ))}
         </TextField>
-        <Button
+        {/* <Button
           onClick={onAddClick}
-          startIcon={(
+          startIcon={
             <SvgIcon>
               <PlusIcon />
             </SvgIcon>
-          )}
+          }
           sx={{
             width: {
-              xs: '100%',
-              md: 'auto'
-            }
+              xs: "100%",
+              md: "auto",
+            },
           }}
           variant="contained"
         >
           New Event
-        </Button>
+        </Button> */}
       </Stack>
     </Stack>
   );
@@ -184,9 +171,9 @@ CalendarToolbar.propTypes = {
   onDateToday: PropTypes.func,
   onViewChange: PropTypes.func,
   view: PropTypes.oneOf<CalendarView>([
-    'dayGridMonth',
-    'timeGridWeek',
-    'timeGridDay',
-    'listWeek'
-  ]).isRequired
+    "dayGridMonth",
+    "timeGridWeek",
+    "timeGridDay",
+    "listWeek",
+  ]).isRequired,
 };

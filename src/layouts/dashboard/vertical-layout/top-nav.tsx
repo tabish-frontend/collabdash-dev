@@ -13,6 +13,10 @@ import { ModeToggler } from "src/components/shared/ModeToggler";
 import { useSettings } from "src/hooks";
 import { AccountButton } from "../account-button";
 import { NotificationsButton } from "../notifications-button";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import { useRouter } from "next/router";
+import { paths } from "src/constants/paths";
+import { Tooltip } from "@mui/material";
 
 const TOP_NAV_HEIGHT = 64;
 const SIDE_NAV_WIDTH = 240;
@@ -26,6 +30,7 @@ export const TopNav: FC<TopNavProps> = (props) => {
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
 
   const setting = useSettings();
+  const router = useRouter();
 
   const handleFieldUpdate = useCallback(
     (field: keyof Settings, value: unknown): void => {
@@ -41,8 +46,7 @@ export const TopNav: FC<TopNavProps> = (props) => {
       component="header"
       sx={{
         backdropFilter: "blur(6px)",
-        backgroundColor: (theme) =>
-          alpha(theme.palette.background.default, 1),
+        backgroundColor: (theme) => alpha(theme.palette.background.default, 1),
 
         position: "sticky",
         left: {
@@ -83,11 +87,18 @@ export const TopNav: FC<TopNavProps> = (props) => {
           )}
         </Stack>
         <Stack alignItems="center" direction="row" spacing={2} px={4}>
+          <Tooltip title="My Calender">
+            <IconButton onClick={() => router.push(paths.calender)}>
+              <SvgIcon>
+                <CalendarMonthIcon />
+              </SvgIcon>
+            </IconButton>
+          </Tooltip>
+          <NotificationsButton />
           <ModeToggler
             value={setting.paletteMode}
             onChange={(value) => handleFieldUpdate("paletteMode", value)}
           />
-          <NotificationsButton />
           <AccountButton />
         </Stack>
       </Stack>

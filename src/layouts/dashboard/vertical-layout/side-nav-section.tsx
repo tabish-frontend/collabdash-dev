@@ -114,7 +114,7 @@ export const SideNavSection: FC<SideNavSectionProps> = (props) => {
   return (
     <Stack
       component="ul"
-      spacing={1.5}
+      spacing={1}
       sx={{
         listStyle: "none",
         m: 0,

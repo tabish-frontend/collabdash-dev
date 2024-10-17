@@ -429,8 +429,12 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = ({ children }) => {
         workspace.boards.flatMap((board: any) =>
           board.columns.flatMap((column: any) =>
             column.tasks
-              .filter((task: any) =>
-                task.assignedTo.some((assignee: any) => assignee._id === userId)
+              .filter(
+                (task: any) =>
+                  task.owner._id === userId ||
+                  task.assignedTo.some(
+                    (assignee: any) => assignee._id === userId
+                  )
               )
               .map((task: any) => ({
                 ...task,
@@ -508,7 +512,6 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = ({ children }) => {
     socket.on("workSpace created", handleGetWorkSpaces);
     socket.on("workSpace updated", handleGetWorkSpaces);
     socket.on("board deleted", () => {
-      console.log("calling");
       handleGetWorkSpaces();
       const { workspace_slug } = router.query;
       const { boards_slug } = router.query;

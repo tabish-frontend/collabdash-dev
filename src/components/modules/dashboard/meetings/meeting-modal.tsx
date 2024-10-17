@@ -17,7 +17,7 @@ import {
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { useFormik } from "formik";
-import { CloseCircleOutline } from "mdi-material-ui";
+import { CloseCircleOutline, FormatAlignRight } from "mdi-material-ui";
 import { useEffect, useState, type FC } from "react";
 import { contactsApi, employeesApi } from "src/api";
 import { Contact, Employee, Meeting, WorkSpace } from "src/types";
@@ -25,6 +25,7 @@ import { SelectMultipleUsers } from "src/components/shared";
 import { LoadingButton } from "@mui/lab";
 import { DateTimePicker, TimePicker } from "@mui/x-date-pickers";
 import { weekDays } from "src/constants/days";
+import * as Yup from "yup";
 
 interface MeetingModalProps {
   modal: boolean;
@@ -33,6 +34,13 @@ interface MeetingModalProps {
   onCancel: () => void;
   onSubmit: (values: Meeting) => void;
 }
+
+// Define the validation schema
+const validationSchema = Yup.object().shape({
+  title: Yup.string()
+    .required("Title is required")
+    .matches(/^[a-zA-Z0-9 ]*$/, "Title cannot contain special characters"),
+});
 
 export const MeetingModal: FC<MeetingModalProps> = ({
   modal,
@@ -47,6 +55,7 @@ export const MeetingModal: FC<MeetingModalProps> = ({
       time: meetingValues.time ? new Date(meetingValues.time) : null,
     },
     enableReinitialize: true,
+    validationSchema,
     onSubmit: async (values, helpers): Promise<void> => {
       await onSubmit(values);
       helpers.setStatus({ success: true });
@@ -103,6 +112,9 @@ export const MeetingModal: FC<MeetingModalProps> = ({
                 value={formik.values.title}
                 name="title"
                 onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={!!(formik.touched.title && formik.errors.title)}
+                helperText={formik.touched.title && formik.errors.title}
               />
             </Grid>
 

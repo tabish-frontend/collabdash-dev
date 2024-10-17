@@ -77,7 +77,7 @@ const navItems: Item[] = [
     path: paths.workspaces,
   },
   {
-    title: "Callender",
+    title: "My Calendar",
     icon: <SvgIcon component={CalendarMonthIcon} />,
     path: paths.calender,
   },
