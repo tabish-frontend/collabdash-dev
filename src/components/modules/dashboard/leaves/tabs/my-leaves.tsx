@@ -77,7 +77,7 @@ export const MyLeaves: React.FC<MyLeavesProps> = ({
                   <TableRow hover role="checkbox" key={index}>
                     <TableCell>
                       <Typography width={150}>
-                        {formatDate(leave.createdAt)}
+                        {formatDate(leave.createdAt, "ddd, D MMM YYYY")}
                       </Typography>
                     </TableCell>
 
@@ -87,13 +87,13 @@ export const MyLeaves: React.FC<MyLeavesProps> = ({
 
                     <TableCell>
                       <Typography width={150}>
-                        {formatDate(leave.startDate)}
+                        {formatDate(leave.startDate, "ddd, D MMM YYYY")}
                       </Typography>
                     </TableCell>
 
                     <TableCell>
                       <Typography width={150}>
-                        {formatDate(leave.endDate)}
+                        {formatDate(leave.endDate, "ddd, D MMM YYYY")}
                       </Typography>
                     </TableCell>
 

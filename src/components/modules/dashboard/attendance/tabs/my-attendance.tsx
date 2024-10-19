@@ -118,7 +118,7 @@ export const MyAttendance = ({ filters }: any) => {
                   <TableRow hover role="checkbox" key={index}>
                     <TableCell align="center">
                       <Typography minWidth={150}>
-                        {formatDate(attendance.date, true)}
+                        {formatDate(attendance.date, "ddd, D MMM YYYY")}
                       </Typography>
                     </TableCell>
                     <TableCell align="center">

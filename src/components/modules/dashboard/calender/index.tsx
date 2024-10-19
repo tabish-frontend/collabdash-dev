@@ -28,7 +28,8 @@ import { Meeting, Tasks } from "src/types";
 import { MeetingCard } from "../meetings/meetingCard";
 import { Dialog } from "@mui/material";
 import { MeetingModal } from "../meetings/meeting-modal";
-// import { CalendarEventDialog } from "./calendar-event-dialog";
+import { CreateEventDialog } from "./calendar-event-dialog";
+import dayjs from "dayjs";
 
 interface VieweDialogData {
   eventId?: string;
@@ -37,7 +38,6 @@ interface VieweDialogData {
 interface CreateDialogData {
   range?: {
     start: number;
-    end: number;
   };
 }
 
@@ -184,7 +184,6 @@ const CalenderComponentScreen = () => {
       createDialog.handleOpen({
         range: {
           start: arg.start.getTime(),
-          end: arg.end.getTime(),
         },
       });
     },
@@ -242,59 +241,6 @@ const CalenderComponentScreen = () => {
     [dispatch, updateDialog, updatingEvent, viewDialog]
   );
 
-  // const handleEventSelect = useCallback((arg: EventClickArg): void => {
-  //   console.log("arg", arg.event);
-
-  //   // toast.success("Pemmission Denied");
-  //   updateDialog.handleOpen({
-  //     eventId: arg.event.id,
-  //   });
-  // }, []);
-
-  // const handleEventResize = useCallback(
-  //   async (arg: EventResizeDoneArg): Promise<void> => {
-  //     const { event } = arg;
-
-  //     try {
-  //       await dispatch(
-  //         thunks.updateEvent({
-  //           eventId: event.id,
-  //           update: {
-  //             allDay: event.allDay,
-  //             start: event.start?.getTime(),
-  //             end: event.end?.getTime(),
-  //           },
-  //         })
-  //       );
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   },
-  //   [dispatch]
-  // );
-
-  // const handleEventDrop = useCallback(
-  //   async (arg: EventDropArg): Promise<void> => {
-  //     const { event } = arg;
-
-  //     try {
-  //       await dispatch(
-  //         thunks.updateEvent({
-  //           eventId: event.id,
-  //           update: {
-  //             allDay: event.allDay,
-  //             start: event.start?.getTime(),
-  //             end: event.end?.getTime(),
-  //           },
-  //         })
-  //       );
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   },
-  //   [dispatch]
-  // );
-
   return (
     <>
       <Box
@@ -318,24 +264,25 @@ const CalenderComponentScreen = () => {
             <Card>
               <CalendarContainer>
                 <Calendar
-                  allDayMaintainDuration
                   dayMaxEventRows={3}
-                  allDaySlot={false}
-                  droppable
-                  editable
-                  // eventClick={handleEventSelect}
-                  eventClick={(e) => {
-                    handleEventSelect(e);
-                  }}
-                  eventDisplay="block"
-                  // eventDrop={handleEventDrop}
-                  // eventResize={handleEventResize}
-                  // eventResizableFromStart
-                  events={events}
-                  headerToolbar={false}
                   height={700}
+                  rerenderDelay={10}
+                  ref={calendarRef}
                   initialDate={date}
                   initialView={view}
+                  events={events}
+                  allDaySlot={false}
+                  headerToolbar={false}
+                  eventStartEditable={false}
+                  droppable
+                  editable
+                  selectable
+                  weekends
+                  firstDay={dayjs().day()}
+                  eventClick={handleEventSelect}
+                  select={handleRangeSelect}
+                  eventDisplay="block"
+                  eventResizableFromStart
                   plugins={[
                     dayGridPlugin,
                     interactionPlugin,
@@ -343,34 +290,21 @@ const CalenderComponentScreen = () => {
                     timeGridPlugin,
                     timelinePlugin,
                   ]}
-                  ref={calendarRef}
-                  rerenderDelay={10}
-                  select={(e) => {
-                    handleRangeSelect(e);
-                  }}
-                  selectable
-                  weekends
                 />
               </CalendarContainer>
             </Card>
           </Stack>
         </Container>
       </Box>
-      {/* <CalendarEventDialog
-        action="create"
-        onAddComplete={createDialog.handleClose}
-        onClose={createDialog.handleClose}
-        open={createDialog.open}
-        range={createDialog.data?.range}
-      /> */}
-      {/* <CalendarEventDialog
-        action="update"
-        event={updatingEvent}
-        onClose={updateDialog.handleClose}
-        onDeleteComplete={updateDialog.handleClose}
-        onEditComplete={updateDialog.handleClose}
-        open={updateDialog.open}
-      /> */}
+
+      {createDialog.open && (
+        <CreateEventDialog
+          onAddComplete={createDialog.handleClose}
+          onClose={createDialog.handleClose}
+          open={createDialog.open}
+          range={createDialog.data?.range}
+        />
+      )}
 
       {viewDialog.open && viewEvent?.type === "task" && (
         <TaskModal

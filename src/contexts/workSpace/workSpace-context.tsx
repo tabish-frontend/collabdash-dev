@@ -35,11 +35,7 @@ export interface WorkSpaceContextType extends State {
     column_id: string;
     index: number;
   }) => void;
-  handleAddTask: (data: {
-    title: string;
-    board: string;
-    column: string;
-  }) => void;
+  handleAddTask: (data: any) => void;
   handleDeleteTask: (_id: string) => void;
   handleMoveTask: (data: {
     task_id: string;
@@ -49,6 +45,8 @@ export interface WorkSpaceContextType extends State {
   handleUpdateTask: (data: any) => void;
   getAllTasksForUser: (userId: string, filter: string) => any;
   getBoardMembersByTaskId: (taskId: string) => any;
+  getWorkSpaceOptions: (userId: string) => any;
+  getBoardOptions: (workSpaceId: string) => any;
   isLoading: boolean;
 }
 
@@ -73,5 +71,7 @@ export const WorkSpaceContext = createContext<WorkSpaceContextType>({
   handleUpdateTask: () => {},
   getAllTasksForUser: () => {},
   getBoardMembersByTaskId: () => {},
+  getWorkSpaceOptions: () => {},
+  getBoardOptions: () => {},
   isLoading: false,
 });

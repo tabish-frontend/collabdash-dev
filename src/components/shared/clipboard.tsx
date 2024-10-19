@@ -1,6 +1,6 @@
 import { IconButton, SvgIcon } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { getClassDate, getClassTime, getUserTimeZone } from "src/utils";
+import { formatDate, formatTime, getUserTimeZone } from "src/utils";
 import { toast } from "react-toastify";
 import { Meeting } from "src/types";
 import { paths } from "src/constants/paths";
@@ -22,8 +22,8 @@ export const CopyToClipboard = ({
   }\n\n${
     meeting.recurring
       ? `Days: ${formatRecurringDays(meeting.meeting_days)}`
-      : `Date: ${getClassDate(meeting.time)}`
-  }\nTime: ${getClassTime(meeting.time)} ${getUserTimeZone()}\n\nAgenda: ${
+      : `Date: ${formatDate(meeting.time, "D MMM YYYY")}`
+  }\nTime: ${formatTime(meeting.time)} ${getUserTimeZone()}\n\nAgenda: ${
     meeting.title
   }\nJoin Meeting\n${process.env.NEXT_PUBLIC_COMPANY_DOMAIN}${paths.meetings}/${
     meeting._id

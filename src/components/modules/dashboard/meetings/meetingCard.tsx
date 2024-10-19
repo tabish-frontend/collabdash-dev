@@ -21,7 +21,7 @@ import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
 import { SquareEditOutline, TrashCanOutline } from "mdi-material-ui";
-import { getClassDate, getClassTime, getDay_Time } from "src/utils";
+import { formatDate, formatTime } from "src/utils";
 import { FC, useState } from "react";
 import { Meeting } from "src/types";
 import { useRouter } from "next/router";
@@ -125,7 +125,7 @@ export const MeetingCard: FC<MeetingCardProps> = ({
                     />
 
                     <Typography variant="body2">
-                      {getClassDate(meeting!.time)}
+                      {formatDate(meeting!.time, "D MMM YYYY")}
                     </Typography>
                   </Stack>
                 )}
@@ -139,7 +139,7 @@ export const MeetingCard: FC<MeetingCardProps> = ({
                       ? `Every ${formatRecurringDays(
                           meeting.meeting_days
                         )} at ${formatMeetingTime(meeting.time)}`
-                      : getClassTime(meeting!.time)}
+                      : formatTime(meeting!.time)}
                   </Typography>
                 </Stack>
               </Stack>

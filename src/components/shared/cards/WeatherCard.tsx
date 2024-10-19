@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Card, Typography, Box, Grid, Stack } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import axios from "axios";
-import { getDayFromDate } from "src/utils";
+import { getDayOfWeek } from "src/utils";
 
 export const WeatherCard = ({ name }: { name: string }) => {
   const [weather, setWeather] = useState<any>(null);
@@ -129,7 +129,7 @@ export const WeatherCard = ({ name }: { name: string }) => {
                         }}
                       >
                         <Typography variant="body2">
-                          {getDayFromDate(forcastDay.date)}
+                          {getDayOfWeek(forcastDay.date)}
                         </Typography>
                         {
                           <img

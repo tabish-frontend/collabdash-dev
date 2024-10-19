@@ -32,7 +32,7 @@ import {
   Pencil,
   School,
 } from "mdi-material-ui";
-import { formatDob } from "src/utils/helpers";
+import { formatDate } from "src/utils/helpers";
 import { FC, useState } from "react";
 import { ImageAvatar } from "../image-avatar";
 import { UpdateEmployeeModal } from "src/components/modules/dashboard/employees/update-modal";
@@ -102,7 +102,7 @@ export const EmployeeDetails: FC<EmployeeDetailsProps> = ({
                     <Cake fontSize="small" />
                     <Typography variant="subtitle2">
                       {employeeData?.dob &&
-                        formatDob(new Date(employeeData?.dob))}
+                        formatDate(employeeData?.dob, "DD/MM/YYYY")}
                     </Typography>
                   </Box>
 
