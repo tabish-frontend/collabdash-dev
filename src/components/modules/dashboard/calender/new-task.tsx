@@ -54,7 +54,7 @@ export const CreateTaskEvent: FC<NewTaskProps> = (props) => {
   const { getWorkSpaceOptions, getBoardOptions, handleAddTask } =
     useWorkSpace();
 
-  const workSpaceOptions = getWorkSpaceOptions(user!._id);
+  const workSpaceOptions = getWorkSpaceOptions(user!._id, user!.role);
   const boardOptions = getBoardOptions(workSpaceId);
 
   const formik = useFormik({

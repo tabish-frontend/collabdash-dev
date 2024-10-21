@@ -502,12 +502,18 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = ({ children }) => {
   );
 
   const getWorkSpaceOptions = useCallback(
-    (userId: string) => {
-      return state.WorkSpaces.filter(
-        (workspace: any) =>
+    (userId: string, userRole: string) => {
+      return state.WorkSpaces.filter((workspace: any) => {
+        // If the user is an admin, return all workspaces
+        if (userRole === "admin") {
+          return true;
+        }
+        // Otherwise, filter by owner or membership
+        return (
           workspace.owner!._id === userId ||
           workspace.members.some((member: any) => member._id === userId)
-      ).map((workspace) => ({
+        );
+      }).map((workspace) => ({
         _id: workspace._id,
         name: workspace.name,
       }));

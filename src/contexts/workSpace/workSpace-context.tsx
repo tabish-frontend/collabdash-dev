@@ -45,7 +45,7 @@ export interface WorkSpaceContextType extends State {
   handleUpdateTask: (data: any) => void;
   getAllTasksForUser: (userId: string, filter: string) => any;
   getBoardMembersByTaskId: (taskId: string) => any;
-  getWorkSpaceOptions: (userId: string) => any;
+  getWorkSpaceOptions: (userId: string, userRole: string) => any;
   getBoardOptions: (workSpaceId: string) => any;
   isLoading: boolean;
 }
