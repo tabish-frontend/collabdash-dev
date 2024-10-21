@@ -94,6 +94,10 @@ export const ChatMessage: FC<ChatMessageProps> = (props) => {
               borderRadius: 1,
               px: 1,
               py: 1,
+              maxWidth: {
+                xs: 230,
+                md: 500,
+              },
             }}
           >
             {position === "left" && isGroup && (
@@ -118,7 +122,13 @@ export const ChatMessage: FC<ChatMessageProps> = (props) => {
               />
             )}
             {contentType === "text" && (
-              <Typography color="inherit" variant="body2">
+              <Typography
+                color="inherit"
+                variant="body2"
+                sx={{
+                  wordWrap: "break-word",
+                }}
+              >
                 {body}
               </Typography>
             )}

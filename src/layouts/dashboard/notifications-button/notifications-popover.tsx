@@ -21,7 +21,7 @@ import Typography from "@mui/material/Typography";
 
 import { Scrollbar } from "src/utils/scrollbar";
 import { Notification } from "src/types";
-import { getDay_Time } from "src/utils";
+import { formatDateWithTime } from "src/utils";
 import { RouterLink } from "src/components";
 import dayjs from "dayjs";
 import React from "react";
@@ -77,7 +77,7 @@ const formatMessageWithLink = (
           >
             {linkText}
           </Link>{" "}
-          {getDay_Time(time)}
+          {formatDateWithTime(time)}
           {lineIndex < messageLines.length - 1 && <br />}{" "}
         </React.Fragment>
       );

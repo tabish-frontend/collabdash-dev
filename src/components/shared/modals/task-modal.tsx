@@ -22,7 +22,6 @@ import {
   ConfirmationModal,
 } from "src/components/shared";
 import { useFormik } from "formik";
-import { MobileDateTimePicker } from "@mui/x-date-pickers";
 import { AttachFile, Delete, Description } from "@mui/icons-material";
 import VideoFileIcon from "@mui/icons-material/VideoFile";
 import AudioFileIcon from "@mui/icons-material/AudioFile";
@@ -49,6 +48,7 @@ import { Priorities } from "src/constants/list-items";
 import { useDialog } from "src/hooks";
 import { useDispatch } from "src/store";
 import { thunks } from "src/thunks/calendar";
+import { DateTimePicker } from "@mui/x-date-pickers";
 
 export interface TaskModalValues {
   _id: string;
@@ -585,43 +585,11 @@ export const TaskModal: FC<TaskModalProps> = (props) => {
                   <Typography color="text.secondary" variant="caption">
                     Due date
                   </Typography>
-                  <MobileDateTimePicker
-                    sx={{
-                      width: "100%",
-                    }}
+                  <DateTimePicker
                     value={formik.values.dueDate}
                     onChange={(date: Date | null) => {
                       setIsFormBeingChanged(true);
                       formik.setFieldValue("dueDate", date || new Date()); // Ensure a Date value is set
-                    }}
-                    slotProps={{
-                      textField: {
-                        size: "small", // Set the input size to small
-                        fullWidth: true, // Make the input take full width
-                        sx: {
-                          height: 50,
-                          ".css-10vtu9u-MuiInputBase-input-MuiFilledInput-input":
-                            {
-                              pt: "12px",
-                              pb: "12px",
-                            },
-                          ".css-dqma4l-MuiInputBase-input-MuiFilledInput-input":
-                            {
-                              pt: "12px",
-                              pb: "12px",
-                            },
-                        },
-                        InputProps: {
-                          endAdornment: (
-                            <InputAdornment
-                              position="end"
-                              sx={{ cursor: "pointer" }}
-                            >
-                              <Calendar />
-                            </InputAdornment>
-                          ),
-                        },
-                      },
                     }}
                   />
                 </Grid>

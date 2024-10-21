@@ -29,6 +29,7 @@ import { RouterLink } from "../router-link";
 import { paths } from "src/constants/paths";
 import { Contact } from "src/types";
 import { TaskModal } from "src/components/shared/modals/task-modal";
+import { formatDate } from "src/utils";
 
 interface Task {
   _id: string;
@@ -96,11 +97,6 @@ export const MyTasksCard = ({
       default:
         return theme.palette.text.secondary;
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
   return (
@@ -223,7 +219,7 @@ export const MyTasksCard = ({
                             sx={{ mr: 0.5 }}
                           />
                           <Typography variant="body2" color="text.secondary">
-                            Due {formatDate(task.dueDate)}
+                            Due {formatDate(task.dueDate, "D MMM YYYY")}
                           </Typography>
 
                           <SeverityPill color="info">

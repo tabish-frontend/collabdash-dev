@@ -31,7 +31,7 @@ import {
 import { Plus } from "mdi-material-ui";
 import { HolidayModal } from "./holiday-modal";
 import { holidaysApi } from "src/api";
-import { formatDate, getDayFromDate } from "src/utils/helpers";
+import { formatDate } from "src/utils/helpers";
 import {
   ConfirmationModal,
   NoRecordFound,
@@ -45,14 +45,8 @@ import { Scrollbar } from "src/utils/scrollbar";
 import UpdateAction from "src/components/shared/update-action";
 import DeleteAction from "src/components/shared/delete-action";
 
-const employee_Screen = ["Holiday Day", "Holiday Date", "Holiday Name"];
-const HR_Screen = [
-  "Holiday Day",
-  "Holiday Date",
-  "Holiday Name",
-  "Users",
-  "Action",
-];
+const employee_Screen = ["Holiday Date", "Holiday Name"];
+const HR_Screen = ["Holiday Date", "Holiday Name", "Users", "Action"];
 
 interface HolidayDialogData {
   type: string;
@@ -223,15 +217,9 @@ const HolidaysListComponent = () => {
                         holidayList.map((holiday, index) => {
                           return (
                             <TableRow hover role="checkbox" key={index}>
-                              <TableCell align="center" width={100}>
-                                <Typography width={100}>
-                                  {getDayFromDate(holiday.date)}
-                                </Typography>
-                              </TableCell>
-
                               <TableCell align="center">
                                 <Typography minWidth={150}>
-                                  {formatDate(holiday.date)}
+                                  {formatDate(holiday.date, "ddd, D MMM YYYY")}
                                 </Typography>
                               </TableCell>
 

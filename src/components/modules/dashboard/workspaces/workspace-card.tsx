@@ -43,7 +43,7 @@ export const WorkspaceCard = ({
           {workspace.name}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Created on: {formatDate(workspace.createdAt)}
+          Created on: {formatDate(workspace.createdAt, "ddd, D MMM YYYY")}
         </Typography>
       </Box>
 

@@ -50,6 +50,7 @@ export const SelectMultipleUsers: React.FC<SelectMultipleUsersProps> = ({
   return (
     <Autocomplete
       multiple
+      fullWidth
       options={employees}
       size={inputSize}
       value={employees.filter((employee) => formikUsers.includes(employee._id))}

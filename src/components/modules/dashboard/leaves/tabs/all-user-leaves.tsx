@@ -113,7 +113,7 @@ export const AllUserLeaves: React.FC<AllUserLeavesProps> = ({
 
                     <TableCell>
                       <Typography width={150}>
-                        {formatDate(leave.createdAt)}
+                        {formatDate(leave.createdAt, "ddd, D MMM YYYY")}
                       </Typography>
                     </TableCell>
 
@@ -123,13 +123,13 @@ export const AllUserLeaves: React.FC<AllUserLeavesProps> = ({
 
                     <TableCell>
                       <Typography width={150}>
-                        {formatDate(leave.startDate)}
+                        {formatDate(leave.startDate, "ddd, D MMM YYYY")}
                       </Typography>
                     </TableCell>
 
                     <TableCell>
                       <Typography width={150}>
-                        {formatDate(leave.endDate)}
+                        {formatDate(leave.endDate, "ddd, D MMM YYYY")}
                       </Typography>
                     </TableCell>
 

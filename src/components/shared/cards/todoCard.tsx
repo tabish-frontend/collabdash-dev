@@ -39,7 +39,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import dayjs from "dayjs";
 import { todosApi } from "src/api";
-import { formatDate, getClassDate, getDay_Time } from "src/utils";
+import { formatDate } from "src/utils";
 
 interface Todo {
   _id: string;
@@ -210,7 +210,7 @@ export const TodoCard = () => {
             <Card sx={{ maxWidth: 600 }} variant="outlined">
               <Stack direction={"column"} p={2} spacing={1}>
                 <Typography variant="h6" gutterBottom>
-                  {getClassDate(queryDate)}
+                  {formatDate(queryDate, "D MMM YYYY")}
                 </Typography>
 
                 <Box>

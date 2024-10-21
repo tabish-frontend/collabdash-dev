@@ -19,7 +19,6 @@ import { useCallback, useEffect, useState } from "react";
 import { Meeting } from "src/types";
 import { meetingApi } from "src/api";
 import { styled } from "@mui/material";
-import { getDay_Time } from "src/utils";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import { useRouter } from "next/router";
 import { Scrollbar } from "src/utils/scrollbar";

@@ -1,9 +1,9 @@
 import { calendarApi } from "src/api/calendar";
 import { slice } from "src/store/slices/calendar";
 import type { AppThunk } from "src/store";
-import { CalendarEvent } from "src/types/calendar";
-import { Meeting, Tasks } from "src/types";
 import { meetingApi } from "src/api";
+import { TaskApi } from "src/api/kanban/tasks";
+import { useWorkSpace } from "src/hooks/use-workSpace";
 
 const getEvents =
   (): AppThunk =>
@@ -14,17 +14,39 @@ const getEvents =
   };
 
 type CreateEventParams = {
-  end: number;
-  start: number;
-  title: string;
+  eventType: string;
+  values: any;
 };
 
 const createEvent =
   (params: CreateEventParams): AppThunk =>
   async (dispatch): Promise<void> => {
-    const response = await calendarApi.createEvent(params);
+    const baseEvent = {
+      id: params.values._id,
+      start: new Date(params.values.dueDate).getTime(),
+      end: new Date(params.values.dueDate).getTime() + 1 * 60 * 60 * 1000,
+      title: params.values.title,
+      type: params.eventType,
+      color: "#F79009",
+      details: params.values,
+    };
 
-    dispatch(slice.actions.createEvent(response));
+    let createdEvent = { ...baseEvent };
+
+    if (params.eventType === "meeting") {
+      const response = await meetingApi.createMeeting(params.values);
+
+      createdEvent = {
+        ...createdEvent,
+        id: response.data._id,
+        end: new Date(params.values.time).getTime() + 1 * 60 * 60 * 1000,
+        color: "#0a8263",
+        details: response.data,
+      };
+    } else if (params.eventType === "task") {
+    }
+
+    dispatch(slice.actions.createEvent(createdEvent));
   };
 
 type UpdateEventParams = {
@@ -36,35 +58,33 @@ type UpdateEventParams = {
 const updateEvent =
   (params: UpdateEventParams): AppThunk =>
   async (dispatch): Promise<void> => {
-    let updatedEvenet: any;
-    if (params.eventType === "task") {
-      updatedEvenet = {
-        id: params.eventId,
-        start: new Date(params.update.dueDate).getTime(),
-        end: new Date(params.update.dueDate).getTime() + 1 * 60 * 60 * 1000,
-        title: params.update.title,
-        type: params.eventType,
-        color: "#F79009",
-        details: params.update,
-      };
-    } else if (params.eventType === "meeting") {
+    const baseEvent: any = {
+      id: params.eventId,
+      title: params.update.title,
+      type: params.eventType,
+      details: params.update,
+      color: "#F79009",
+      start: new Date(params.update.dueDate).getTime(),
+      end: new Date(params.update.dueDate).getTime() + 1 * 60 * 60 * 1000,
+    };
+
+    let updatedEvent = { ...baseEvent };
+
+    if (params.eventType === "meeting") {
       const response = await meetingApi.updateMeeting(
         params.eventId as string,
         params.update
       );
-      updatedEvenet = {
-        id: params.eventId,
-        start: params.update.time,
-        end:
-          new Date(params.update.time as Date).getTime() + 2 * 60 * 60 * 1000,
-        title: params.update.title,
-        type: params.eventType,
+      updatedEvent = {
+        ...updatedEvent,
+        end: new Date(params.update.time).getTime() + 2 * 60 * 60 * 1000,
         color: "#0a8263",
         details: response.data,
       };
     }
 
-    dispatch(slice.actions.updateEvent(updatedEvenet));
+    // Dispatch the updated event
+    dispatch(slice.actions.updateEvent(updatedEvent));
   };
 
 type DeleteEventParams = {

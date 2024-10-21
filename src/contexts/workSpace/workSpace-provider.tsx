@@ -12,6 +12,8 @@ import { TaskApi } from "src/api/kanban/tasks";
 import { useRouter } from "next/router";
 import { paths } from "src/constants/paths";
 import { useSocketContext } from "src/hooks";
+import { useDispatch } from "src/store";
+import { thunks } from "src/thunks/calendar";
 
 // Utility function to generate slugs
 const generateSlug = (name: string) => {
@@ -28,6 +30,7 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { socket } = useSocketContext();
   const router = useRouter();
+  const dispatch = useDispatch();
 
   // Fetch WorkSpaces
   const handleGetWorkSpaces = useCallback(async () => {
@@ -295,7 +298,7 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = ({ children }) => {
 
   // Add Task
   const handleAddTask = useCallback(
-    async (data: { title: string; column: string; board: string }) => {
+    async (data: any) => {
       const response = await TaskApi.addTask(data);
 
       setState((prev) => ({
@@ -312,8 +315,12 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = ({ children }) => {
           })),
         })),
       }));
+
+      await dispatch(
+        thunks.createEvent({ eventType: "task", values: response.data })
+      );
     },
-    []
+    [dispatch]
   );
 
   // Update Task
@@ -321,7 +328,13 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = ({ children }) => {
     async (data: { _id: string; board_id: string; column_id: string }) => {
       const { _id: task_id, ...restValues } = data;
 
-      const response = await TaskApi.updateTask(task_id, restValues);
+      const { workspace_slug, boards_slug } = router.query;
+      const target_link = `/workspaces/${workspace_slug}/boards/${boards_slug}`;
+
+      const response = await TaskApi.updateTask(task_id, {
+        ...restValues,
+        target_link,
+      });
 
       setState((prev) => ({
         ...prev,
@@ -339,7 +352,7 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = ({ children }) => {
         })),
       }));
     },
-    []
+    [router.query]
   );
 
   // Delete Task
@@ -488,6 +501,46 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = ({ children }) => {
     [state.WorkSpaces]
   );
 
+  const getWorkSpaceOptions = useCallback(
+    (userId: string, userRole: string) => {
+      return state.WorkSpaces.filter((workspace: any) => {
+        // If the user is an admin, return all workspaces
+        if (userRole === "admin") {
+          return true;
+        }
+        // Otherwise, filter by owner or membership
+        return (
+          workspace.owner!._id === userId ||
+          workspace.members.some((member: any) => member._id === userId)
+        );
+      }).map((workspace) => ({
+        _id: workspace._id,
+        name: workspace.name,
+      }));
+    },
+    [state.WorkSpaces]
+  );
+
+  const getBoardOptions = useCallback(
+    (workSpaceId: string) => {
+      const workSpace = state.WorkSpaces.find((ws) => ws._id === workSpaceId);
+
+      if (!workSpace || !workSpace.boards) {
+        return [];
+      }
+
+      const boardOptions = workSpace.boards.map((board) => ({
+        name: board.name,
+        _id: board._id,
+        columns: board.columns.map((column) => column._id.toString()), // Convert column _id to string
+      }));
+
+      return boardOptions;
+    },
+
+    [state.WorkSpaces]
+  );
+
   const accessToken = window.localStorage.getItem("accessToken");
 
   useEffect(() => {
@@ -569,6 +622,8 @@ export const WorkSpaceProvider: FC<WorkSpaceProviderProps> = ({ children }) => {
         handleDeleteTask,
         handleMoveTask,
         handleUpdateTask,
+        getWorkSpaceOptions,
+        getBoardOptions,
       }}
     >
       {children}

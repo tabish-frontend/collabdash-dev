@@ -139,8 +139,12 @@ export const LeavesCard = ({
                     )}
                   >
                     <Typography variant="subtitle1">{`${formatDate(
-                      leave.startDate
-                    )} - ${formatDate(leave.endDate)}`}</Typography>
+                      leave.startDate,
+                      "D MMM YYYY"
+                    )} - ${formatDate(
+                      leave.endDate,
+                      "D MMM YYYY"
+                    )}`}</Typography>
                   </StepLabel>
                   <StepContent>
                     <Stack
